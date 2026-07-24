@@ -1,22 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext.jsx';
 import { EVENTS, CATEGORIES, teamSizeLabel } from '../data/events.js';
 import { Icon } from '../components/UI.jsx';
+
+const PER_PAGE = 6;
 
 export default function Events() {
     const { profile, myEvents, addEvent, removeEvent, eventsLoading } = useApp();
     const [query, setQuery] = useState('');
     const [division, setDivision] = useState(profile?.division || 'HS');
     const [category, setCategory] = useState('All');
+    const [page, setPage] = useState(1);
 
     const q = query.trim().toLowerCase();
+    const divisionCount = EVENTS.filter((e) => e.division === division).length;
+
     const list = EVENTS.filter((e) => {
         if (e.division !== division) return false;
         if (category !== 'All' && e.category !== category) return false;
         if (q && !(e.name + ' ' + e.category).toLowerCase().includes(q)) return false;
         return true;
     });
+
+    // Any filter change resets to page 1, so you're never stranded on a
+    // page number that no longer exists after the list shrinks.
+    useEffect(() => {
+        setPage(1);
+    }, [query, division, category]);
+
+    const pageCount = Math.max(1, Math.ceil(list.length / PER_PAGE));
+    const safePage = Math.min(page, pageCount);
+    const pageItems = list.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE);
 
     return (
         <>
@@ -53,7 +68,7 @@ export default function Events() {
             <div className="pilltabs" role="tablist" aria-label="Category filter">
                 {['All', ...CATEGORIES].map((c) => (
                     <button key={c} className={category === c ? 'on' : ''} onClick={() => setCategory(c)}>
-                        {c}
+                        {c === 'All' ? `All (${divisionCount})` : c}
                     </button>
                 ))}
             </div>
@@ -64,8 +79,10 @@ export default function Events() {
                 </Link>
             </div>
 
+            {eventsLoading && <p className="muted">Loading events…</p>}
+
             <div className="event-grid">
-                {list.map((e) => {
+                {pageItems.map((e) => {
                     const added = myEvents.includes(e.id);
                     return (
                         <div className="event-card" key={e.id}>
@@ -84,6 +101,7 @@ export default function Events() {
                                     </>
                                 )}
                             </div>
+                            {e.overview && <p className="event-overview">{e.overview}</p>}
                             <div className="foot">
                                 <Link to={`/events/${e.id}`} className="btn ghost small">
                                     Details
@@ -103,14 +121,36 @@ export default function Events() {
                 })}
             </div>
 
-            {eventsLoading && <p className="muted">Loading events…</p>}
-
             {!eventsLoading && list.length === 0 && (
                 <div className="card">
-                    <p className="muted" style={{ margin: 0 }}>
-                        No events match that search in this division. Try clearing filters.
-                    </p>
+                    <p className="muted">No events match that search in this division. Try clearing filters.</p>
                 </div>
+            )}
+
+            {pageCount > 1 && (
+                <nav className="pager" aria-label="Pages">
+                    <button
+                        className="pager-arrow"
+                        onClick={() => setPage(safePage - 1)}
+                        disabled={safePage === 1}
+                        aria-label="Previous page"
+                    >
+                        <Icon name="chevron-right" size={16} />
+                    </button>
+                    {Array.from({ length: pageCount }, (_, i) => i + 1).map((n) => (
+                        <button key={n} className={`pager-num ${n === safePage ? 'on' : ''}`} onClick={() => setPage(n)}>
+                            {n}
+                        </button>
+                    ))}
+                    <button
+                        className="pager-arrow next"
+                        onClick={() => setPage(safePage + 1)}
+                        disabled={safePage === pageCount}
+                        aria-label="Next page"
+                    >
+                        <Icon name="chevron-right" size={16} />
+                    </button>
+                </nav>
             )}
         </>
     );

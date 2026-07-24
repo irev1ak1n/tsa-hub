@@ -90,3 +90,60 @@
 }
 
 .timeline-item .tl-text { font-size: 0.9rem; padding-top: 2px; }
+
+.event-overview {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--muted);
+  margin: 8px 0 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pager {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 20px 0 8px;
+}
+.pager-num,
+.pager-arrow {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-system);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pager-num:hover,
+.pager-arrow:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+.pager-num.on {
+  background: var(--ig-blue);
+  border-color: var(--ig-blue);
+  color: #fff;
+  font-weight: 600;
+}
+.pager-arrow:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.pager-arrow svg {
+  transform: rotate(180deg);
+}
+.pager-arrow.next svg {
+  transform: none;
+}
