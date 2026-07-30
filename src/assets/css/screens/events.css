@@ -96,12 +96,28 @@
   font-size: 13px;
   line-height: 18px;
   color: var(--muted);
-  margin: 8px 0 12px;
+  margin: 8px 0 4px;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+.event-overview.open {
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+.event-more {
+  align-self: flex-start;
+  border: 0;
+  background: none;
+  padding: 0 0 8px;
+  color: var(--ig-link);
+  font-family: var(--font-system);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.event-more:hover { text-decoration: underline; }
 
 .pager {
   display: flex;

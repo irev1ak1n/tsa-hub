@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useApp } from '../context/AppContext.jsx';
-import { EVENTS, CATEGORIES, teamSizeLabel } from '../data/events.js';
-import { Icon } from '../components/UI.jsx';
+import { useApp } from '../../context/AppContext.jsx';
+import EventCard from '../../components/EventCard.jsx';
+import { EVENTS, CATEGORIES } from '../../data/events.js';
+import { Icon } from '../../components/UI.jsx';
 
 const PER_PAGE = 6;
 
@@ -23,8 +24,6 @@ export default function Events() {
         return true;
     });
 
-    // Any filter change resets to page 1, so you're never stranded on a
-    // page number that no longer exists after the list shrinks.
     useEffect(() => {
         setPage(1);
     }, [query, division, category]);
@@ -41,6 +40,18 @@ export default function Events() {
                 <p className="muted small">
                     Official TSA competitive events, {division === 'HS' ? 'High School' : 'Middle School'} division.
                 </p>
+            </div>
+
+            {/* Recommender promo — sits above search */}
+            <div className="rec-promo">
+                <h2>Not sure which event is right for you?</h2>
+                <p>
+                    Tell us what sounds fun, what you're interested in, and how you like to compete. We'll recommend TSA events
+                    that fit you.
+                </p>
+                <Link to="/recommend" className="btn primary">
+                    <Icon name="spark" size={16} /> Find my events
+                </Link>
             </div>
 
             <div className="section card flat" style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -73,52 +84,18 @@ export default function Events() {
                 ))}
             </div>
 
-            <div className="section" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Link to="/recommend" className="btn primary small">
-                    <Icon name="spark" size={16} /> Not sure? Get recommendations
-                </Link>
-            </div>
-
             {eventsLoading && <p className="muted">Loading events…</p>}
 
             <div className="event-grid">
-                {pageItems.map((e) => {
-                    const added = myEvents.includes(e.id);
-                    return (
-                        <div className="event-card" key={e.id}>
-                            <div className="top">
-                                <h3>
-                                    <Link to={`/events/${e.id}`}>{e.name}</Link>
-                                </h3>
-                                <span className="tag">{e.category.split(' ')[0]}</span>
-                            </div>
-                            <div className="meta">
-                                <span>{e.category}</span>
-                                {teamSizeLabel(e) && (
-                                    <>
-                                        <span>·</span>
-                                        <span>{teamSizeLabel(e)}</span>
-                                    </>
-                                )}
-                            </div>
-                            {e.overview && <p className="event-overview">{e.overview}</p>}
-                            <div className="foot">
-                                <Link to={`/events/${e.id}`} className="btn ghost small">
-                                    Details
-                                </Link>
-                                {added ? (
-                                    <button className="btn navy small" onClick={() => removeEvent(e.id)}>
-                                        ✓ Added — remove
-                                    </button>
-                                ) : (
-                                    <button className="btn primary small" onClick={() => addEvent(e.id)}>
-                                        <Icon name="plus" size={14} /> My events
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    );
-                })}
+                {pageItems.map((e) => (
+                    <EventCard
+                        key={e.id}
+                        event={e}
+                        added={myEvents.includes(e.id)}
+                        onAdd={() => addEvent(e.id)}
+                        onRemove={() => removeEvent(e.id)}
+                    />
+                ))}
             </div>
 
             {!eventsLoading && list.length === 0 && (

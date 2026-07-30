@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase } from '../services/supabase.js';
+import { supabase } from '../../services/supabase.js';
 
 function readError(err) {
     if (!err) return 'Something went wrong.';

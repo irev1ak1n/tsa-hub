@@ -39,7 +39,7 @@
   left: 0;
   right: 0;
   height: var(--nav-h);
-  background: var(--surface);
+  background: #000000;
   border-top: 1px solid var(--line);
   display: flex;
   z-index: 50;
@@ -70,7 +70,7 @@
   .shell { flex-direction: row; }
   .rail {
     width: 218px;
-    background: var(--navy-700);
+    background: #000000;
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -79,7 +79,7 @@
     height: 100vh;
     padding: 22px 14px;
     gap: 4px;
-    border-right: 1px solid var(--navy-600);
+    border-right: 1px solid #252525;
   }
   .rail .wordmark { margin-bottom: 22px; padding: 0 8px; }
   .tabbar {
@@ -144,8 +144,8 @@
 }
 
 @media (min-width: 920px) {
-  .rail .tab-badge { border-color: var(--navy-700); }
-  .rail .tabbar a.active .tab-badge { border-color: #1d3763; }
+  .rail .tab-badge { border-color: #000000; }
+  .rail .tabbar a.active .tab-badge { border-color: #000000; }
 }
 
 @media (max-width: 919.5px) {

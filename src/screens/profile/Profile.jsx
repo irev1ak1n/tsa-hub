@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '../context/AppContext.jsx';
-import { useAuth } from '../context/AuthContext.jsx';
-import { saveMyProfile, isUsernameAvailable, divisionForGrade } from '../services/profileService.js';
-import { resizeImage, AVATAR_MAX } from '../services/images.js';
-import { initialsOf } from '../data/people.js';
-import { Icon } from '../components/UI.jsx';
+import { useApp } from '../../context/AppContext.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { saveMyProfile, isUsernameAvailable, divisionForGrade } from '../../services/profileService.js';
+import { resizeImage, AVATAR_MAX } from '../../services/images.js';
+import { initialsOf } from '../../data/people.js';
+import { Icon } from '../../components/UI.jsx';
 
 const GRADES = ['6', '7', '8', '9', '10', '11', '12'];
 
@@ -327,10 +327,7 @@ export default function Profile() {
             setNote("Help Center isn't available yet.");
             setTimeout(() => setNote(''), 2200);
           }} />
-          <Row icon="shield" label="Privacy Center" soon onClick={() => {
-            setNote("Privacy Center isn't available yet.");
-            setTimeout(() => setNote(''), 2200);
-          }} />
+          <Row icon="shield" label="Privacy Policy" onClick={() => navigate('/privacy')} />
           <Row icon="file-text" label="Terms and Policies" soon onClick={() => {
             setNote("Terms and Policies aren't available yet.");
             setTimeout(() => setNote(''), 2200);

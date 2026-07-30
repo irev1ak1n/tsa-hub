@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '../context/AppContext.jsx';
-import { useAuth } from '../context/AuthContext.jsx';
-import { Icon } from '../components/UI.jsx';
+import { useApp } from '../../context/AppContext.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { Icon } from '../../components/UI.jsx';
 
 function Row({ icon, label, value, onClick, danger, soon }) {
     return (

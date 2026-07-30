@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useApp } from '../context/AppContext.jsx';
-import { getEvent, teamSizeLabel } from '../data/events.js';
-import { Icon } from '../components/UI.jsx';
+import { useApp } from '../../context/AppContext.jsx';
+import { getEvent, teamSizeLabel } from '../../data/events.js';
+import { Icon } from '../../components/UI.jsx';
 
 export default function EventDetail() {
     const { id } = useParams();

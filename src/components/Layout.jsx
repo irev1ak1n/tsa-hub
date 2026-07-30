@@ -47,7 +47,6 @@ export default function Layout() {
             <aside className="rail">
                 <Wordmark />
                 <Tabs unread={unreadTotal} />
-                <div className="who">{who}</div>
             </aside>
 
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>

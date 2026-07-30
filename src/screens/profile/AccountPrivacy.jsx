@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '../context/AppContext.jsx';
-import { Icon } from '../components/UI.jsx';
+import { useApp } from '../../context/AppContext.jsx';
+import { Icon } from "../../components/UI.jsx";
 
 export default function AccountPrivacy() {
     const navigate = useNavigate();

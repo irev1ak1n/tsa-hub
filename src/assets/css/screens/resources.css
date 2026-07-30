@@ -1,0 +1,227 @@
+/* ============================================================================
+   TSA Guide (Resources) page styles.
+   Existing .rs-* classes kept as-is; new blocks added for the assistant card,
+   suggested-question buttons, and the Quick Answers grid. Dark theme,
+   tap-friendly, keyboard-accessible.
+   ============================================================================ */
+
+.rs-group-label {
+    font-family: var(--font-system);
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 17px;
+    color: var(--muted);
+    padding: 0 4px 8px;
+    margin-top: 18px;
+}
+.rs-group-label:first-of-type {
+    margin-top: 0;
+}
+
+.rs-card {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+    /* thin divider between sections */
+    padding-bottom: 14px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--line);
+}
+/* no divider under the very last card on the page */
+.rs-card:last-of-type {
+    border-bottom: 0;
+}
+
+.rs-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 12px 4px;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    text-decoration: none;
+    text-align: left;
+    font-family: var(--font-system);
+    font-size: inherit;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background 0.12s ease;
+}
+.rs-row:hover {
+    background: var(--surface-2);
+}
+
+.rs-ico {
+    display: flex;
+    color: var(--ink);
+    flex-shrink: 0;
+}
+
+.rs-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.rs-title {
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: 600;
+    color: var(--ig-ink);
+}
+
+.rs-desc {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--muted);
+}
+
+.rs-note {
+    font-family: var(--font-system);
+    font-size: 12px;
+    line-height: 17px;
+    color: var(--muted);
+    margin: 10px 4px 0;
+}
+
+/* shared focus ring for interactive elements */
+.rs-row:focus-visible {
+    outline: 2px solid var(--ig-blue);
+    outline-offset: 2px;
+}
+
+/* ---- disabled row (link with no destination yet) ---- */
+.rs-row.is-disabled {
+    opacity: .55;
+    cursor: default;
+}
+.rs-row.is-disabled:hover {
+    background: transparent;
+}
+
+/* image icon (downloaded brand logo) sits at the same size as line icons */
+.rs-ico-img {
+    display: block;
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+/* ---- contact modal (State Advisor, etc.) ---- */
+.rs-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, .6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: rs-fade .12s ease;
+}
+@keyframes rs-fade { from { opacity: 0; } to { opacity: 1; } }
+.rs-modal {
+    width: 100%;
+    max-width: 380px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+    animation: rs-pop .14s ease;
+}
+@keyframes rs-pop { from { transform: scale(.97); opacity: .6; } to { transform: scale(1); opacity: 1; } }
+.rs-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+}
+.rs-modal-head h3 {
+    margin: 0;
+    font-family: var(--font-system);
+    font-size: 16px;
+    color: var(--ig-ink);
+}
+.rs-modal-close {
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.rs-modal-close:hover { background: var(--surface-2); color: var(--ink); }
+.rs-modal-body {
+    padding: 16px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.rs-contact-name {
+    font-family: var(--font-system);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ig-ink);
+}
+.rs-contact-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-system);
+    font-size: 14px;
+    color: var(--ink);
+    text-decoration: none;
+}
+a.rs-contact-line:hover { color: var(--ig-blue); }
+.rs-contact-line svg { color: var(--muted); flex-shrink: 0; }
+
+/* ---- sub-dividers inside a card (e.g. State / National groups) ---- */
+.rs-subhead {
+    font-family: var(--font-system);
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 14px 16px 8px;
+    border-bottom: 1px solid var(--line);
+}
+/* a group divider that isn't the first row gets a slightly stronger top edge */
+.rs-subhead + .rs-row { border-top: 0; }
+.rs-card > .rs-subhead:not(:first-child) {
+    border-top: 1px solid var(--line);
+    margin-top: 0;
+}
+
+/* ---- back link (top of leadership sub-pages) ---- */
+.rs-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    margin-left: -5px;
+    padding: 6px 10px 6px 6px;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    font-family: var(--font-system);
+    font-size: 15px;
+    font-weight: 600;
+    transition: background .12s ease, opacity .12s ease;
+}
+.rs-back:hover { background: var(--surface-2); }
+.rs-back:focus-visible { outline: 2px solid var(--ig-blue); outline-offset: 2px; }
+.rs-back-arrow { display: block; }

@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '../context/AppContext.jsx';
+import { useApp } from '../../context/AppContext.jsx';
 import {
   saveMyProfile,
   isUsernameAvailable,
   suggestUsername,
   divisionForGrade,
-} from '../services/profileService.js';
-import { STATES } from '../data/meta.js';
+} from '../../services/profileService.js';
+import { STATES } from '../../data/meta.js';
 
 const GRADES = ['6', '7', '8', '9', '10', '11', '12'];
 

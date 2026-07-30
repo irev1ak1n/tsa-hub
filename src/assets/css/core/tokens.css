@@ -1,7 +1,10 @@
 :root {
   color-scheme: dark;
 
-  --bg: #0c1014;
+  /*--bg: #0c1014;*/
+  --bg: #0A0A0A;
+  /*--bg: #000000;*/
+
   --surface: #151c26;
   --surface-2: #1d2733;
   --surface-3: #263242;
