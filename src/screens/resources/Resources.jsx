@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext.jsx';
 import { Icon } from '../../components/UI.jsx';
 import { getStateTsa } from '../../data/stateTsa.js';
+import { COMPETITION_RULES } from '../../data/competitionRules.js';
 import { Row, StateLinkRow, LEADERSHIP_ROLES } from './resourcesShared.jsx';
 
 import facebookIcon from '../../assets/img/social-media/facebook.png';
@@ -19,13 +20,6 @@ import tsaLeadership from '../../assets/img/tsa-leadership.png';
 const YOUTUBE_SVG =
     '<path fill="#FF0000" d="M23 12s0-3.2-.4-4.7a2.5 2.5 0 0 0-1.7-1.7C19.3 5.2 12 5.2 12 5.2s-7.3 0-8.9.4A2.5 2.5 0 0 0 1.4 7.3C1 8.8 1 12 1 12s0 3.2.4 4.7a2.5 2.5 0 0 0 1.7 1.7c1.6.4 8.9.4 8.9.4s7.3 0 8.9-.4a2.5 2.5 0 0 0 1.7-1.7C23 15.2 23 12 23 12z"/>' +
     '<path fill="#fff" d="M9.8 15.3V8.7l6 3.3-6 3.3z"/>';
-
-// Official TSA documents. Add real URLs later — kept here in one place.
-const OFFICIAL_DOCS = [
-    { icon: 'file-text', title: 'Competitive Events Guide', desc: 'Official event rules and requirements', url: null },
-    { icon: 'book', title: 'General Competition Rules', desc: 'Rules that apply across all competitive events', url: null },
-    { icon: 'calendar', title: 'Conference Information', desc: 'Conference policies, schedules, and official updates', url: null },
-];
 
 // National TSA — official website, socials, and store.
 const NATIONAL_TSA = [
@@ -66,17 +60,35 @@ export default function Resources() {
     return (
         <>
             <div className="section">
-                <h1>TSA Guide</h1>
-                <p className="muted small" style={{ margin: 0 }}>
+                <div style={{
+                    color: '#FF5A6E',
+                    fontSize: '15px',
+                    fontWeight: 600,
+                    letterSpacing: '0.14em',
+                    textTransform: 'uppercase',
+                    marginBottom: '6px'
+                }}>
+                    TSA Guide
+                </div>
+                <h1 style={{color: '#ffffff', margin: '0 0 10px'}}>Resources</h1>
+                <p className="small"
+                   style={{margin: 0, color: 'rgba(255,255,255,0.7)', fontSize: '15px', lineHeight: '22px'}}>
                     Get quick answers, understand the rules, and find official TSA information.
                 </p>
             </div>
 
-            {/* OFFICIAL DOCUMENTS --------------------------------------------- */}
-            <div className="rs-group-label">Official documents</div>
+            {/* COMPETITION RULES & PREPARATION -------------------------------- */}
+            <div className="rs-group-label">General Rules &amp; Regulations</div>
             <div className="rs-card">
-                {OFFICIAL_DOCS.map((doc) => (
-                    <Row key={doc.title} icon={doc.icon} title={doc.title} desc={doc.desc} href={doc.url} />
+                {COMPETITION_RULES.map((cat) => (
+                    <Link key={cat.id} to={`/resources/competition-rules/${cat.id}`} className="rs-row">
+                        <span className="rs-ico"><Icon name={cat.icon} size={20}/></span>
+                        <span className="rs-text">
+                            <span className="rs-title">{cat.title}</span>
+                            <span className="rs-desc">{cat.description}</span>
+                        </span>
+                        <Icon name="chevron-right" size={18} />
+                    </Link>
                 ))}
             </div>
 

@@ -17,6 +17,9 @@ import Settings from './screens/profile/Settings.jsx';
 import AccountPrivacy from './screens/profile/AccountPrivacy.jsx';
 import PrivacyPolicy from './screens/profile/PrivacyPolicy.jsx';
 
+import CompetitionRuleCategory from './screens/CompetitionRuleCategory.jsx';
+import CompetitionRuleTopic from './screens/CompetitionRuleTopic.jsx';
+
 function Loading() {
     return (
         <div className="auth-wrap">
@@ -70,6 +73,9 @@ function Gate() {
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/settings/privacy" element={<AccountPrivacy />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
+
+                <Route path="/resources/competition-rules/:cat" element={<CompetitionRuleCategory />} />
+                <Route path="/resources/competition-rules/:cat/:topic" element={<CompetitionRuleTopic />} />
 
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />

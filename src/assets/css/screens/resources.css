@@ -225,3 +225,265 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
 .rs-back:hover { background: var(--surface-2); }
 .rs-back:focus-visible { outline: 2px solid var(--ig-blue); outline-offset: 2px; }
 .rs-back-arrow { display: block; }
+
+/* ============================================================================
+   Competition Rules knowledge base (hub + detail pages)
+   ============================================================================ */
+
+/* meta chips (section + division labels) */
+.rk-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+.rk-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-family: var(--font-system);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .03em;
+    color: var(--muted);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+}
+/* division accents: HS blue, MS red (subtle TSA accents) */
+.rk-chip-hs {
+    color: var(--ig-link);
+    border-color: color-mix(in srgb, var(--ig-blue) 40%, var(--line));
+    background: color-mix(in srgb, var(--ig-blue) 12%, var(--surface-2));
+}
+.rk-chip-ms {
+    color: var(--red-400);
+    border-color: color-mix(in srgb, var(--red-600) 40%, var(--line));
+    background: color-mix(in srgb, var(--red-600) 12%, var(--surface-2));
+}
+
+/* placeholder content blocks on detail pages */
+.rk-block {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+}
+.rk-block:first-of-type { border-top: 1px solid var(--line); }
+.rk-block-title {
+    margin: 0 0 6px;
+    font-family: var(--font-system);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ig-ink);
+}
+.rk-block-body {
+    margin: 0;
+    font-family: var(--font-system);
+    font-size: 13px;
+    line-height: 19px;
+    color: var(--muted);
+}
+
+/* official source block */
+.rk-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    padding: 14px 16px;
+    border-radius: var(--radius);
+    background: var(--surface);
+    border: 1px solid var(--line);
+}
+.rk-source .rs-ico { color: var(--muted); }
+.rk-source-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.rk-source-label {
+    font-family: var(--font-system);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+.rk-source-name {
+    font-family: var(--font-system);
+    font-size: 14px;
+    color: var(--ink);
+}
+.rk-source-link {
+    font-family: var(--font-system);
+    font-size: 14px;
+    color: var(--ig-link);
+    text-decoration: none;
+}
+.rk-source-link:hover { text-decoration: underline; }
+
+/* ---- topic page: warning callout ---- */
+.rk-callout {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 12px 0;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    background: color-mix(in srgb, var(--red-600) 12%, var(--surface));
+    border: 1px solid color-mix(in srgb, var(--red-600) 40%, var(--line));
+}
+.rk-callout-ico { color: var(--red-400); flex-shrink: 0; display: flex; }
+.rk-callout-text {
+    font-family: var(--font-system);
+    font-size: 13px;
+    line-height: 19px;
+    color: var(--ink);
+}
+
+/* ---- topic page: division differences ---- */
+.rk-diff {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--ig-blue) 8%, var(--surface));
+    border: 1px solid color-mix(in srgb, var(--ig-blue) 30%, var(--line));
+}
+.rk-diff-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+.rk-diff-head .rs-ico { color: var(--ig-link); }
+
+/* ---- topic page: official source list ---- */
+.rk-source-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.rk-source-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 4px 4px;
+}
+.rk-source-section {
+    font-family: var(--font-system);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+}
+.rk-source-sub {
+    font-family: var(--font-system);
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--muted);
+}
+
+/* ---- topic page: numbered rule points ---- */
+.rk-points {
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 0;
+    counter-reset: rk;
+}
+.rk-point {
+    display: flex;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+}
+.rk-point:last-child { border-bottom: 0; }
+.rk-point-num {
+    flex: 0 0 auto;
+    min-width: 16px;
+    color: var(--ink);
+    font-family: var(--font-system);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 21px;
+}
+.rk-point-text {
+    font-family: var(--font-system);
+    font-size: 14px;
+    line-height: 21px;
+    color: var(--ink);
+    padding-top: 1px;
+}
+
+/* ---- topic page: subpoints (a. b.) under a numbered point ---- */
+.rk-point-body { display: flex; flex-direction: column; gap: 0; flex: 1; min-width: 0; }
+.rk-sub {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0 0 0 4px;
+}
+.rk-subpoint {
+    display: flex;
+    gap: 10px;
+    padding: 5px 0;
+}
+.rk-sub-num {
+    flex: 0 0 auto;
+    min-width: 14px;
+    color: var(--muted);
+    font-family: var(--font-system);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 20px;
+}
+.rk-subpoint .rk-point-text { font-size: 13px; line-height: 20px; color: var(--ink); }
+
+/* ---- topic page: named subsection groups ---- */
+.rk-group {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+}
+.rk-group:last-of-type { border-bottom: 0; }
+.rk-group-title {
+    margin: 0 0 4px;
+    font-family: var(--font-system);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ig-ink);
+}
+.rk-group-intro {
+    margin: 0 0 8px;
+    font-family: var(--font-system);
+    font-size: 13px;
+    line-height: 19px;
+    color: var(--muted);
+}
+.rk-group-list {
+    margin: 0;
+    padding-left: 20px;
+}
+.rk-group-item {
+    font-family: var(--font-system);
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--ink);
+}
+
+/* ---- topic page: intro line + plain bullet list + footer ---- */
+.rk-intro {
+    margin: 0 0 8px;
+    font-family: var(--font-system);
+    font-size: 14px;
+    line-height: 21px;
+    color: var(--ink);
+}
+.rk-list {
+    margin: 0 0 4px;
+    padding-left: 20px;
+}
+.rk-list-item {
+    font-family: var(--font-system);
+    font-size: 14px;
+    line-height: 23px;
+    color: var(--ink);
+}
+.rk-footer {
+    margin: 16px 0 0;
+    font-family: var(--font-system);
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--muted);
+}
