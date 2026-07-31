@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext.jsx';
 import { Icon } from '../../components/UI.jsx';
@@ -54,43 +55,72 @@ export default function Resources() {
     const state = profile?.state;
     const stateInfo = getStateTsa(state);
 
+    const [query, setQuery] = useState('');
+    const q = query.trim().toLowerCase();
+
     // State section shows only the plain (non-leadership) links: website + socials.
     const stateSectionLinks = (stateInfo?.links || []).filter((l) => !LEADERSHIP_ROLES.has(l.role));
+
+    // Filter competition-rule categories by title/description + their topic titles.
+    const rules = q
+        ? COMPETITION_RULES.filter((cat) => {
+            const inCat = `${cat.title} ${cat.description || ''}`.toLowerCase().includes(q);
+            const inTopics = (cat.topics || []).some((t) =>
+                `${t.title} ${t.description || ''}`.toLowerCase().includes(q)
+            );
+            return inCat || inTopics;
+        })
+        : COMPETITION_RULES;
 
     return (
         <>
             <div className="section">
-                <div style={{
-                    color: '#FF5A6E',
-                    fontSize: '15px',
-                    fontWeight: 600,
-                    letterSpacing: '0.14em',
-                    textTransform: 'uppercase',
-                    marginBottom: '6px'
-                }}>
-                    TSA Guide
-                </div>
-                <h1 style={{color: '#ffffff', margin: '0 0 10px'}}>Resources</h1>
-                <p className="small"
-                   style={{margin: 0, color: 'rgba(255,255,255,0.7)', fontSize: '15px', lineHeight: '22px'}}>
-                    Get quick answers, understand the rules, and find official TSA information.
-                </p>
+                <div className="rs-eyebrow">TSA Guide</div>
+                <h1 className="rs-h1">Resources</h1>
+                <p className="rs-sub">Get quick answers, understand the rules, and find official TSA information.</p>
+            </div>
+
+            {/* SEARCH --------------------------------------------------------- */}
+            <div className="rs-search">
+                <Icon name="search" size={18} />
+                <input
+                    type="text"
+                    className="rs-search-input"
+                    placeholder="Search"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    aria-label="Search resources"
+                />
+                {query && (
+                    <button type="button" className="rs-search-clear" onClick={() => setQuery('')} aria-label="Clear search">
+                        <Icon name="x" size={16} />
+                    </button>
+                )}
             </div>
 
             {/* COMPETITION RULES & PREPARATION -------------------------------- */}
-            <div className="rs-group-label">General Rules &amp; Regulations</div>
-            <div className="rs-card">
-                {COMPETITION_RULES.map((cat) => (
-                    <Link key={cat.id} to={`/resources/competition-rules/${cat.id}`} className="rs-row">
-                        <span className="rs-ico"><Icon name={cat.icon} size={20}/></span>
+            <div className="rs-group-label">Competition Rules &amp; Preparation</div>
+            {rules.length > 0 ? (
+                <div className="rs-card">
+                    {rules.map((cat) => (
+                        <Link key={cat.id} to={`/resources/competition-rules/${cat.id}`} className="rs-row">
+                            <span className="rs-ico"><Icon name={cat.icon} size={20} /></span>
+                            <span className="rs-text">
+                                <span className="rs-title">{cat.title}</span>
+                            </span>
+                            <Icon name="chevron-right" size={18} />
+                        </Link>
+                    ))}
+                </div>
+            ) : (
+                <div className="rs-card">
+                    <span className="rs-row is-disabled" aria-disabled="true">
                         <span className="rs-text">
-                            <span className="rs-title">{cat.title}</span>
-                            <span className="rs-desc">{cat.description}</span>
+                            <span className="rs-desc">No rules match "{query}".</span>
                         </span>
-                        <Icon name="chevron-right" size={18} />
-                    </Link>
-                ))}
-            </div>
+                    </span>
+                </div>
+            )}
 
             {/* {STATE} TSA ---------------------------------------------------- */}
             {stateSectionLinks.length > 0 && (

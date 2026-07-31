@@ -53,6 +53,11 @@
 .rs-row:hover {
     background: var(--surface-2);
 }
+/* trailing chevron: calmer tone (leading icon stays in .rs-ico) */
+.rs-row > svg {
+    color: rgba(255, 255, 255, 0.55);
+    flex-shrink: 0;
+}
 
 .rs-ico {
     display: flex;
@@ -72,7 +77,7 @@
     font-size: 15px;
     line-height: 20px;
     font-weight: 600;
-    color: var(--ig-ink);
+    color: #F6F6F6;
 }
 
 .rs-desc {
@@ -486,4 +491,71 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     font-size: 13px;
     line-height: 20px;
     color: var(--muted);
+}
+
+/* ============================================================================
+   Resources page header + search
+   ============================================================================ */
+
+/* three-tier header: red eyebrow, white title, gray subtitle */
+.rs-eyebrow {
+    font-family: var(--font-display);
+    color: #FF5A6E;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+.rs-h1 {
+    color: #ffffff;
+    margin: 0 0 8px;
+}
+.rs-sub {
+    font-family: var(--font-system);
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 22px;
+    margin: 0 0 18px;
+}
+
+/* Instagram-style search bar */
+.rs-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 12px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+}
+.rs-search svg { color: var(--muted); flex-shrink: 0; }
+.rs-search-input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    color: var(--ink);
+    font-family: var(--font-system);
+    font-size: 14px;
+}
+.rs-search-input::placeholder { color: var(--muted); }
+.rs-search-clear {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--surface-3, var(--line));
+    color: var(--muted);
+    cursor: pointer;
+}
+.rs-search-clear:hover { color: var(--ink); }
+.rs-search:focus-within {
+    border-color: color-mix(in srgb, var(--ig-blue) 40%, var(--line));
 }

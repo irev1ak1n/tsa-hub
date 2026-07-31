@@ -16,7 +16,7 @@ export default function CompetitionRuleCategory() {
 
             <div className="section">
                 <h1>{cat.title}</h1>
-                <p className="muted small" style={{ margin: 0 }}>{cat.description}</p>
+                {cat.intro && <p className="muted small" style={{ margin: 0 }}>{cat.intro}</p>}
             </div>
 
             <div className="rs-group-label">Topics</div>

@@ -22,9 +22,10 @@ export const COMPETITION_RULES = [
     {
         id: 'eligibility-participation',
         icon: 'users',
-        title: 'Eligibility & Participation',
+        title: 'Competition Eligibility',
         description: 'Membership, conference registration, teams, event limits, and participant responsibilities.',
         sourceSection: 'Sections A–C — Eligibility & Participation',
+        intro: 'Learn who can compete, how registration works, team limits, and what participants are responsible for.',
         topics: [
             { id: 'membership-affiliation', title: 'Membership & Affiliation', description: 'Who must be affiliated with TSA to compete.', sourceSection: 'Section A — Membership', divisions: ['HS', 'MS'], points: ['Students, advisors, and chapters must be currently affiliated with TSA to enter competitive events.', 'TSA membership rights continue through the student\u2019s year of graduation.', 'Students who graduate midyear may compete at the National TSA Conference that immediately follows their end-of-year graduation.'], warnings: [], divisionDifferences: false, relatedTopics: ['event-limits-team-rules'] },
             { id: 'conference-registration-attendance', title: 'Conference Registration & Attendance', description: 'Registration and attendance requirements for National TSA Conferences.', sourceSection: 'Section B — Registration & Attendance', divisions: ['HS', 'MS'], points: ['Everyone attending the conference must complete conference registration.', 'Students must be registered and attend with an adult chaperone to compete or qualify as a semifinalist or finalist.', 'Students, advisors, and chaperones must attend the entire conference.', 'Conference identification badges must be worn at all times.'], warnings: [], divisionDifferences: false, relatedTopics: ['membership-affiliation'] },
@@ -35,9 +36,10 @@ export const COMPETITION_RULES = [
     {
         id: 'competition-entries',
         icon: 'file-text',
-        title: 'Competition Entries',
+        title: 'Entry Requirements',
         description: 'Entry creation, portfolios, testing equipment, identification rules, displays, and USB drives.',
         sourceSection: 'Section D — Competition Entries',
+        intro: 'Review the rules for creating, preparing, submitting, and retrieving competition entries.',
         topics: [
             { id: 'creating-reusing-entries', title: 'Creating and Reusing Entries', description: 'Basic rules for creating and submitting competition entries.', sourceSection: 'Section D — Competition Entries', divisions: ['HS', 'MS'], points: ['All entries must be started and completed during the current school year.', 'An entry may only be submitted for one competition and for one year.', 'Reusing the same entry for more than one competition or more than one year results in disqualification.', 'Each participant or team may submit only one entry per event.'], warnings: [], divisionDifferences: false, relatedTopics: ['portfolios-language-checkin'] },
             { id: 'portfolios-language-checkin', title: 'Portfolios, Language & Check-In', description: 'Requirements for documentation portfolios and conference submission logistics.', sourceSection: 'Section D — Competition Entries', divisions: ['HS', 'MS'], points: ['If an event requires a documentation portfolio, it must be placed in a clear-front report cover unless the event rules say otherwise.', 'All entries must be in English.', 'Participants are responsible for checking in and picking up entries at the times and locations listed in the conference program or announced during the conference.'], warnings: [], divisionDifferences: false, relatedTopics: ['creating-reusing-entries'] },
@@ -55,9 +57,10 @@ export const COMPETITION_RULES = [
     {
         id: 'original-work-content',
         icon: 'shield',
-        title: 'Original Work & Content Rules',
+        title: 'Work and Content Rules',
         description: 'Citations, copyright, original work, AI rules, prohibited materials, and restricted content.',
         sourceSection: 'Sections E–F — Original Work & Content',
+        intro: 'Understand citation, copyright, AI, originality, and prohibited content requirements.',
         topics: [
             { id: 'citation-styles-references', title: 'Citation Styles & References', description: 'How sources must be documented in competition entries.', sourceSection: 'Section E — Citations & Copyright', divisions: ['HS', 'MS'], points: ['If an event requires citations, competitors must use a professional citation style unless the event specifies a required format.', 'Accepted examples include MLA, APA, Chicago, and IEEE.', 'If proper citation style is not used, the entry receives a 20% rules violation.'], warnings: [], divisionDifferences: false, relatedTopics: ['original-work-attribution'] },
             { id: 'original-work-attribution', title: 'Original Work & Source Attribution', description: 'Requirements for original work and outside sources.', sourceSection: 'Section E — Citations & Copyright', divisions: ['HS', 'MS'], points: ['Every entry must be the original work of the student or team.', 'Any outside ideas, text, images, or sound must be credited.', 'Even images marked for reuse still need citation.'], warnings: [], divisionDifferences: false, relatedTopics: ['citation-styles-references', 'plagiarism-honor-ai'] },
@@ -70,9 +73,10 @@ export const COMPETITION_RULES = [
     {
         id: 'conflicts-emergencies-liability',
         icon: 'info',
-        title: 'Conflicts, Emergencies & Liability',
+        title: 'Schedule Conflicts and Emergencies',
         description: 'Personal property, event schedule conflicts, and emergency team substitutions.',
         sourceSection: 'Sections G–I — Conflicts, Emergencies & Liability',
+        intro: 'Learn what happens during schedule conflicts, emergencies, substitutions, and property issues.',
         topics: [
             { id: 'personal-property-liability', title: 'Personal Property & TSA Liability', description: 'Who is responsible for items brought to the conference.', sourceSection: 'Section G — Liability', divisions: ['HS', 'MS'], points: ['TSA is not responsible for personal belongings, equipment, competition content, or materials brought to the National TSA Conference.', 'Participants and attendees are responsible for protecting and keeping track of everything they bring.'], warnings: [], divisionDifferences: false, relatedTopics: ['event-scheduling-conflicts'] },
             { id: 'event-scheduling-conflicts', title: 'Event Scheduling Conflicts', description: 'What happens when competition times overlap.', sourceSection: 'Section H — Scheduling Conflicts', divisions: ['HS', 'MS'], points: ['If a scheduling conflict prevents a student from participating in an event, the student may choose not to compete in that event.', 'TSA does not guarantee that conflicting event schedules can be adjusted.'], warnings: [], divisionDifferences: false, relatedTopics: ['emergency-team-substitutions'] },
@@ -81,10 +85,11 @@ export const COMPETITION_RULES = [
     },
     {
         id: 'judging-grievances',
-        icon: 'check',
-        title: 'Judging & Grievances',
+        icon: 'spark',
+        title: 'How Judging Works',
         description: 'Judging procedures, tier scoring, final decisions, and the grievance process.',
         sourceSection: 'Sections J–K — Judging & Grievances',
+        intro: 'See how events are judged and how official competition concerns are submitted.',
         topics: [
             { id: 'how-events-are-judged', title: 'How Events Are Judged', description: 'The standards used to evaluate competition entries.', sourceSection: 'Section J — Judging', divisions: ['HS', 'MS'], points: ['Every competitive event is judged according to the criteria listed in its official event guide.', 'Competitors should review the event requirements and rating criteria before submitting or presenting their work.'], warnings: [], divisionDifferences: false, relatedTopics: ['tier-scoring-decisions'] },
             { id: 'tier-scoring-decisions', title: 'Tier Scoring & Final Decisions', description: 'How some preliminary rounds are evaluated.', sourceSection: 'Section J — Judging', divisions: ['HS', 'MS'], points: ['Some events use tier scoring during the preliminary round.', 'Tier scoring helps streamline the evaluation process and determine which competitors advance as semifinalists.', 'Decisions made by competition judges are final.'], warnings: [], divisionDifferences: false, relatedTopics: ['how-events-are-judged'] },
@@ -95,15 +100,17 @@ export const COMPETITION_RULES = [
     {
         id: 'penalties-advancement',
         icon: 'trophy',
-        title: 'Penalties & Advancement',
+        title: 'Violations and Advancement',
         description: 'Rules violations, disqualification, semifinalists, and advancement to the top ten.',
         sourceSection: 'Sections L–M — Penalties & Advancement',
+        intro: 'Understand point deductions, disqualification, semifinal rounds, and advancement to the top ten.',
         topics: [
-            { id: 'rules-violations', title: '20% Rules Violations', description: 'When a rules violation causes a point deduction.', sourceSection: 'Section L — Penalties', divisions: ['HS', 'MS'], contentBlocks: [{ heading: 'What triggers a deduction' }, { heading: 'How the 20% is applied' }], warnings: [{ text: 'A rules violation can cost 20% of the total score.' }], divisionDifferences: false, relatedTopics: ['disqualification-process'] },
-            { id: 'disqualification-process', title: 'Disqualification Process', description: 'When competitors may be disqualified and who must approve it.', sourceSection: 'Section L — Penalties', divisions: ['HS', 'MS'], contentBlocks: [{ heading: 'Grounds for disqualification' }, { heading: 'Approval' }], warnings: [], divisionDifferences: false, relatedTopics: ['rules-violations'] },
-            { id: 'becoming-semifinalist', title: 'Becoming a Semifinalist', description: 'Minimum number of semifinalists and semifinal round qualification.', sourceSection: 'Section M — Advancement', divisions: ['HS', 'MS'], contentBlocks: [{ heading: 'Minimum semifinalists' }, { heading: 'Qualifying for semifinals' }], warnings: [], divisionDifferences: false, relatedTopics: ['advancing-top-ten'] },
-            { id: 'advancing-top-ten', title: 'Advancing to the Top Ten', description: 'How semifinalists become event finalists.', sourceSection: 'Section M — Advancement', divisions: ['HS', 'MS'], contentBlocks: [{ heading: 'From semifinalist to finalist' }, { heading: 'The top ten' }], warnings: [], divisionDifferences: false, relatedTopics: ['becoming-semifinalist'] },
-            { id: 'semifinalist-team-participation', title: 'Semifinalist Team Participation', description: 'Team member participation requirements during semifinal rounds.', sourceSection: 'Section M — Advancement', divisions: ['HS', 'MS'], contentBlocks: [{ heading: 'Team participation requirements' }], warnings: [], divisionDifferences: true, relatedTopics: ['becoming-semifinalist'] },
+            { id: 'rules-violations', title: '20% Rules Violations', description: 'When a competition rule violation results in a point deduction.', sourceSection: 'Section L — Penalties', divisions: ['HS', 'MS'], points: ['A violation that gives a competitor an unfair advantage results in a 20% deduction from the total possible points.', 'The deduction applies to the preliminary or semifinal round in which the violation occurs.', 'Competitors should also review the official rating form, rubric, and any applicable Go/No-Go requirements.'], warnings: [], divisionDifferences: false, relatedTopics: ['disqualification-process'] },
+            { id: 'disqualification-process', title: 'Disqualification Process', description: 'When a competitor may be removed from an event.', sourceSection: 'Section L — Penalties', divisions: ['HS', 'MS'], points: ['An event coordinator or manager may disqualify a competitor when a rules violation creates an unfair advantage.', 'Both the event coordinator and event manager must approve and sign off on a 20% deduction or disqualification.'], warnings: [], divisionDifferences: false, relatedTopics: ['rules-violations'] },
+            { id: 'becoming-semifinalist', title: 'Becoming a Semifinalist', description: 'How semifinal rounds are structured.', sourceSection: 'Section M — Advancement', divisions: ['HS', 'MS'], points: ['If an event includes a semifinal round, at least 12 individuals or teams will advance as semifinalists.', 'Event-specific rules may provide additional semifinal requirements.'], warnings: [], divisionDifferences: false, relatedTopics: ['advancing-top-ten'] },
+            { id: 'advancing-top-ten', title: 'Advancing to the Top Ten', description: 'How finalists are selected.', sourceSection: 'Section M — Advancement', divisions: ['HS', 'MS'], points: ['Semifinalists compete against one another during the semifinal round.', 'The results of this round determine the event\u2019s top ten finalists.'], warnings: [], divisionDifferences: false, relatedTopics: ['becoming-semifinalist'] },
+            { id: 'semifinalist-team-participation', title: 'Semifinalist Team Participation', description: 'Who must participate after a team advances.', sourceSection: 'Section M — Advancement', divisions: ['HS', 'MS'], points: ['Every member of a semifinalist team must participate in the semifinal portion of the event.', 'An event may provide an exception in its specific regulations.'], warnings: [], divisionDifferences: false, relatedTopics: ['becoming-semifinalist'] },
+            { id: 'recording-device-rules', title: 'Recording & Device Rules', description: 'Restrictions on electronic devices during competition.', sourceSection: 'Section M — Advancement', divisions: ['HS', 'MS'], points: ['Recording devices are prohibited in certain competitive events.', 'Recording an event requires approval from both the CRC manager and the event coordinator.', 'Phones, tablets, electronic readers, smart watches, and other devices must be turned off unless the event rules specifically allow them.', 'Electronic communication devices are not permitted during competition.'], warnings: [], divisionDifferences: false, relatedTopics: ['rules-violations'] },
         ],
     },
 ];
