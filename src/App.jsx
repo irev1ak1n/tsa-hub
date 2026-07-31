@@ -26,6 +26,8 @@ import LeadershipProgram from './screens/programs/LeadershipProgram.jsx';
 import NationalServiceProject from './screens/programs/NationalServiceProject.jsx';
 import AchievementProgram from './screens/programs/AchievementProgram.jsx';
 
+import AboutTsaPage from './screens/about/AboutTsaPage.jsx';
+
 function Loading() {
     return (
         <div className="auth-wrap">
@@ -88,6 +90,8 @@ function Gate() {
                 <Route path="/resources/programs/leadership-program" element={<LeadershipProgram />} />
                 <Route path="/resources/programs/national-service-project" element={<NationalServiceProject />} />
                 <Route path="/resources/programs/achievement-program" element={<AchievementProgram />} />
+
+                <Route path="/resources/about/:id" element={<AboutTsaPage />} />
 
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />

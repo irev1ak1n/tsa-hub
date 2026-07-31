@@ -4,6 +4,7 @@ import { useApp } from '../../context/AppContext.jsx';
 import { Icon } from '../../components/UI.jsx';
 import { getStateTsa } from '../../data/stateTsa.js';
 import { COMPETITION_RULES } from '../../data/competitionRules.js';
+import { ABOUT_TSA } from '../../data/aboutTsa.js';
 import { PROGRAMS } from '../../data/programs.js';
 import { Row, StateLinkRow, LEADERSHIP_ROLES } from './resourcesShared.jsx';
 
@@ -99,8 +100,22 @@ export default function Resources() {
                 )}
             </div>
 
+            {/* ABOUT TSA ------------------------------------------------------ */}
+            <div className="rs-group-label">About TSA</div>
+            <div className="rs-card">
+                {ABOUT_TSA.map((p) => (
+                    <Link key={p.id} to={`/resources/about/${p.id}`} className="rs-row">
+                        <span className="rs-ico"><Icon name={p.icon} size={20} /></span>
+                        <span className="rs-text">
+                            <span className="rs-title">{p.title}</span>
+                        </span>
+                        <Icon name="chevron-right" size={18} />
+                    </Link>
+                ))}
+            </div>
+
             {/* COMPETITION RULES & PREPARATION -------------------------------- */}
-            <div className="rs-group-label">General Rules &amp; Regulations</div>
+            <div className="rs-group-label">Competition Rules &amp; Preparation</div>
             {rules.length > 0 ? (
                 <div className="rs-card">
                     {rules.map((cat) => (
