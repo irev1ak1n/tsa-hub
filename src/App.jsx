@@ -20,6 +20,12 @@ import PrivacyPolicy from './screens/profile/PrivacyPolicy.jsx';
 import CompetitionRuleCategory from './screens/CompetitionRuleCategory.jsx';
 import CompetitionRuleTopic from './screens/CompetitionRuleTopic.jsx';
 
+import ForwardToFifty from './screens/programs/ForwardToFifty.jsx';
+import AwardsScholarships from './screens/programs/AwardsScholarships.jsx';
+import LeadershipProgram from './screens/programs/LeadershipProgram.jsx';
+import NationalServiceProject from './screens/programs/NationalServiceProject.jsx';
+import AchievementProgram from './screens/programs/AchievementProgram.jsx';
+
 function Loading() {
     return (
         <div className="auth-wrap">
@@ -76,6 +82,12 @@ function Gate() {
 
                 <Route path="/resources/competition-rules/:cat" element={<CompetitionRuleCategory />} />
                 <Route path="/resources/competition-rules/:cat/:topic" element={<CompetitionRuleTopic />} />
+
+                <Route path="/resources/programs/forward-to-fifty" element={<ForwardToFifty />} />
+                <Route path="/resources/programs/awards-scholarships" element={<AwardsScholarships />} />
+                <Route path="/resources/programs/leadership-program" element={<LeadershipProgram />} />
+                <Route path="/resources/programs/national-service-project" element={<NationalServiceProject />} />
+                <Route path="/resources/programs/achievement-program" element={<AchievementProgram />} />
 
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />

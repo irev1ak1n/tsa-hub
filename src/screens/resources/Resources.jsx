@@ -4,6 +4,7 @@ import { useApp } from '../../context/AppContext.jsx';
 import { Icon } from '../../components/UI.jsx';
 import { getStateTsa } from '../../data/stateTsa.js';
 import { COMPETITION_RULES } from '../../data/competitionRules.js';
+import { PROGRAMS } from '../../data/programs.js';
 import { Row, StateLinkRow, LEADERSHIP_ROLES } from './resourcesShared.jsx';
 
 import facebookIcon from '../../assets/img/social-media/facebook.png';
@@ -121,6 +122,20 @@ export default function Resources() {
                     </span>
                 </div>
             )}
+
+            {/* PROGRAMS & INITIATIVES ----------------------------------------- */}
+            <div className="rs-group-label">Programs &amp; Initiatives</div>
+            <div className="rs-card">
+                {PROGRAMS.map((p) => (
+                    <Link key={p.id} to={`/resources/programs/${p.id}`} className="rs-row">
+                        <span className="rs-ico"><Icon name={p.icon} size={20} /></span>
+                        <span className="rs-text">
+                            <span className="rs-title">{p.title}</span>
+                        </span>
+                        <Icon name="chevron-right" size={18} />
+                    </Link>
+                ))}
+            </div>
 
             {/* {STATE} TSA ---------------------------------------------------- */}
             {stateSectionLinks.length > 0 && (

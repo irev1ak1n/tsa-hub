@@ -559,3 +559,64 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
 .rs-search:focus-within {
     border-color: color-mix(in srgb, var(--ig-blue) 40%, var(--line));
 }
+
+/* ---- Awards & Scholarships: scholarship blocks (frameless) ---- */
+.rk-scholar {
+    padding: 16px 0;
+    margin-bottom: 0;
+    border-radius: 0;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+}
+.rk-scholar:last-of-type { border-bottom: 0; }
+.rk-scholar-title {
+    margin: 0 0 8px;
+    font-family: var(--font-system);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ig-link);
+}
+.rk-scholar-text {
+    margin: 0 0 8px;
+    font-family: var(--font-system);
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--ink);
+}
+.rk-scholar-text:last-of-type { margin-bottom: 0; }
+.rk-scholar-block { margin-top: 14px; }
+.rk-scholar-label {
+    font-family: var(--font-system);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ig-link);
+    margin-bottom: 6px;
+}
+
+/* ---- Awards & Scholarships page: red headings, white text ---- */
+.aw-page h1 { color: #FF5A6E; }
+.aw-page .aw-heading { color: #CC4A3E; }
+.aw-sub {
+    font-family: var(--font-system);
+    font-size: 14px;
+    line-height: 22px;
+    color: #ffffff;
+}
+.aw-intro {
+    margin: 0 0 8px;
+    font-family: var(--font-system);
+    font-size: 14px;
+    line-height: 21px;
+    color: #ffffff;
+}
+.aw-note {
+    font-family: var(--font-system);
+    font-size: 14px;
+    line-height: 20px;
+    color: #ffffff;
+}
+
+.aw-page .rk-list-item { font-size: 14px; }
