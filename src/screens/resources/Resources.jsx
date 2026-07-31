@@ -5,6 +5,7 @@ import { Icon } from '../../components/UI.jsx';
 import { getStateTsa } from '../../data/stateTsa.js';
 import { COMPETITION_RULES } from '../../data/competitionRules.js';
 import { ABOUT_TSA } from '../../data/aboutTsa.js';
+import { NATIONAL_CONFERENCE } from '../../data/nationalConference.js';
 import { PROGRAMS } from '../../data/programs.js';
 import { Row, StateLinkRow, LEADERSHIP_ROLES } from './resourcesShared.jsx';
 
@@ -51,6 +52,67 @@ const LEADERSHIP_NAV = [
 // ---------------------------------------------------------------------------
 // Page
 // ---------------------------------------------------------------------------
+
+// National Conference section: a normal link row + an accordion (Conference
+// Essentials) whose children reveal nested topic rows. Data-driven from
+// NATIONAL_CONFERENCE.items.
+function NationalConferenceSection() {
+    const [openId, setOpenId] = useState(null);
+
+    return (
+        <>
+            <div className="rs-group-label">{NATIONAL_CONFERENCE.title}</div>
+            <div className="rs-card">
+                {NATIONAL_CONFERENCE.items.map((item) => {
+                    if (item.type === 'link') {
+                        return (
+                            <Link key={item.id} to={item.route} className="rs-row">
+                                <span className="rs-ico"><Icon name={item.icon} size={20} /></span>
+                                <span className="rs-text">
+                                    <span className="rs-title">{item.title}</span>
+                                </span>
+                                <Icon name="chevron-right" size={18} />
+                            </Link>
+                        );
+                    }
+
+                    // dropdown / accordion
+                    const isOpen = openId === item.id;
+                    const panelId = `acc-panel-${item.id}`;
+                    return (
+                        <div key={item.id}>
+                            <button
+                                type="button"
+                                className="rs-acc-btn"
+                                aria-expanded={isOpen}
+                                aria-controls={panelId}
+                                onClick={() => setOpenId(isOpen ? null : item.id)}
+                            >
+                                <span className="rs-ico"><Icon name={item.icon} size={20} /></span>
+                                <span className="rs-text">
+                                    <span className="rs-title">{item.title}</span>
+                                </span>
+                                <span className="rs-acc-chevron"><Icon name="chevron-right" size={18} /></span>
+                            </button>
+
+                            <div id={panelId} className={`rs-acc-panel${isOpen ? ' is-open' : ''}`} role="region">
+                                <div className="rs-acc-inner">
+                                    {item.children.map((child) => (
+                                        <Link key={child.id} to={child.route} className="rs-subrow">
+                                            <span className="rs-sub-ico"><Icon name="file-text" size={17} /></span>
+                                            <span className="rs-sub-title">{child.title}</span>
+                                            <Icon name="chevron-right" size={16} />
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </>
+    );
+}
 
 export default function Resources() {
     const { profile } = useApp();
@@ -114,8 +176,11 @@ export default function Resources() {
                 ))}
             </div>
 
+            {/* NATIONAL CONFERENCE -------------------------------------------- */}
+            <NationalConferenceSection />
+
             {/* COMPETITION RULES & PREPARATION -------------------------------- */}
-            <div className="rs-group-label">Competition Rules &amp; Preparation</div>
+            <div className="rs-group-label">General Rules &amp; Regulations</div>
             {rules.length > 0 ? (
                 <div className="rs-card">
                     {rules.map((cat) => (

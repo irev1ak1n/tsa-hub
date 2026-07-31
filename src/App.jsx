@@ -28,6 +28,9 @@ import AchievementProgram from './screens/programs/AchievementProgram.jsx';
 
 import AboutTsaPage from './screens/about/AboutTsaPage.jsx';
 
+import ConferenceGuides from './screens/conference/ConferenceGuides.jsx';
+import ConferenceTopic from './screens/conference/ConferenceTopic.jsx';
+
 function Loading() {
     return (
         <div className="auth-wrap">
@@ -92,6 +95,9 @@ function Gate() {
                 <Route path="/resources/programs/achievement-program" element={<AchievementProgram />} />
 
                 <Route path="/resources/about/:id" element={<AboutTsaPage />} />
+
+                <Route path="/resources/national-conference/guides" element={<ConferenceGuides />} />
+                <Route path="/resources/national-conference/:topic" element={<ConferenceTopic />} />
 
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />

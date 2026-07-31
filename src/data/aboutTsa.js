@@ -8,6 +8,7 @@ export const ABOUT_TSA = [
     { id: 'who-we-are', icon: 'users', title: 'Who We Are' },
     { id: 'history', icon: 'book', title: 'History' },
     { id: 'tsa-competitions', icon: 'trophy', title: 'TSA Competitions' },
+    { id: 'competition-divisions', icon: 'grid', title: 'Competition Divisions' },
 ];
 
 export function getAboutPage(id) {
@@ -70,6 +71,9 @@ export const ABOUT_TSA_CONTENT = {
             'From 1958 to 1978, AIASA was a sponsored activity of the American Industrial Arts Association (AIAA). In 1978, the non-profit corporation AIASA, Inc. was formed to oversee AIASA as a separate organization.',
             'From 1978 to 1988, the organization grew in size, strength, structure, and impact on students and secondary school programs. In the summer of 1988, AIASA became the Technology Student Association.',
         ],
+        links: [
+            { id: 'tsa-website', title: 'TSA Website', url: 'https://www.tsaweb.org/' },
+        ],
     },
 
     'tsa-competitions': {
@@ -101,6 +105,43 @@ export const ABOUT_TSA_CONTENT = {
                 heading: 'TEAMS',
                 paragraphs: [
                     'Tests of Engineering Aptitude, Mathematics, and Science (TEAMS) is a set of four engineering-focused competitions for middle and high school students, centered on the math and science skills engineers use to solve real-world challenges. For 2027, TSA has partnered with the National Council of Teachers of Mathematics (NCTM) to develop the competition content.',
+                ],
+            },
+        ],
+    },
+
+    'competition-divisions': {
+        title: 'Competition Divisions',
+        paragraphs: [
+            'TSA competitive events are divided by school level, and each division uses its own competitive events guide.',
+        ],
+        sections: [
+            {
+                heading: 'Middle School Division',
+                paragraphs: [
+                    'The Middle School (or Junior High) division includes students in grades 5 through 9.',
+                ],
+            },
+            {
+                heading: 'High School Division',
+                paragraphs: [
+                    'The High School division includes students in grades 9 through 12.',
+                ],
+            },
+            {
+                heading: 'Ninth Grade Students',
+                paragraphs: [
+                    'Ninth-grade students compete in the division their TSA chapter is affiliated with.',
+                ],
+                list: [
+                    'Students in schools serving grades 9\u201312 compete in High School events.',
+                    'Students in schools serving grades 6\u20139 or 7\u20139 compete in Middle School events.',
+                ],
+            },
+            {
+                heading: 'Other School Configurations',
+                paragraphs: [
+                    'Schools with a K\u201312 structure or another grade configuration should contact National TSA to confirm and approve the appropriate competition division.',
                 ],
             },
         ],
