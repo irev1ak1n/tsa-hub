@@ -100,7 +100,7 @@ export default function Resources() {
             </div>
 
             {/* COMPETITION RULES & PREPARATION -------------------------------- */}
-            <div className="rs-group-label">Competition Rules &amp; Preparation</div>
+            <div className="rs-group-label">General Rules &amp; Regulations</div>
             {rules.length > 0 ? (
                 <div className="rs-card">
                     {rules.map((cat) => (
