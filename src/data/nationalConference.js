@@ -14,8 +14,11 @@ export const NATIONAL_CONFERENCE = {
             id: 'conference-guides',
             title: 'Conference Guides',
             icon: 'book',
-            type: 'link',
-            route: '/resources/national-conference/guides',
+            type: 'dropdown',
+            children: [
+                { id: 'conference-2026', title: '2026 National Conference', route: '/resources/national-conference/2026' },
+                { id: 'conference-2027', title: '2027 National Conference', status: 'Upcoming', route: '/resources/national-conference/2027' },
+            ],
         },
         {
             id: 'conference-essentials',
@@ -49,13 +52,7 @@ export const CONFERENCE_GUIDES = [
         id: 'nc-2026',
         title: '2026 National TSA Conference',
         detail: 'National Harbor, Maryland \u00B7 June 22\u201326, 2026',
-        url: '',
-    },
-    {
-        id: 'nc-2025',
-        title: '2025 National TSA Conference',
-        detail: 'Nashville, Tennessee \u00B7 June 27\u2013July 1, 2025',
-        url: '',
+        route: '/resources/national-conference/guides/2026',
     },
 ];
 

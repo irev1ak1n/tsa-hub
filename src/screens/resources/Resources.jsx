@@ -101,6 +101,7 @@ function NationalConferenceSection() {
                                         <Link key={child.id} to={child.route} className="rs-subrow">
                                             <span className="rs-sub-ico"><Icon name="file-text" size={17} /></span>
                                             <span className="rs-sub-title">{child.title}</span>
+                                            {child.status && <span className="rs-status-badge">{child.status}</span>}
                                             <Icon name="chevron-right" size={16} />
                                         </Link>
                                     ))}
@@ -180,7 +181,7 @@ export default function Resources() {
             <NationalConferenceSection />
 
             {/* COMPETITION RULES & PREPARATION -------------------------------- */}
-            <div className="rs-group-label">General Rules &amp; Regulations</div>
+            <div className="rs-group-label">Competition Rules &amp; Preparation</div>
             {rules.length > 0 ? (
                 <div className="rs-card">
                     {rules.map((cat) => (

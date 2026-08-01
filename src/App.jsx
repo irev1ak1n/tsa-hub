@@ -30,6 +30,11 @@ import AboutTsaPage from './screens/about/AboutTsaPage.jsx';
 
 import ConferenceGuides from './screens/conference/ConferenceGuides.jsx';
 import ConferenceTopic from './screens/conference/ConferenceTopic.jsx';
+import Conference2026 from './screens/programs/Conference2026.jsx';
+
+import Conference2026Landing from './screens/conference/Conference2026Landing.jsx';
+import ConferenceTopicPage from './screens/conference/ConferenceTopicPage.jsx';
+import Conference2027 from './screens/conference/Conference2027.jsx';
 
 function Loading() {
     return (
@@ -96,8 +101,13 @@ function Gate() {
 
                 <Route path="/resources/about/:id" element={<AboutTsaPage />} />
 
+                <Route path="/resources/national-conference/guides/2026" element={<Conference2026 />} />
                 <Route path="/resources/national-conference/guides" element={<ConferenceGuides />} />
+                <Route path="/resources/national-conference/2026" element={<Conference2026Landing />} />
+                <Route path="/resources/national-conference/2026/:topic" element={<ConferenceTopicPage />} />
+                <Route path="/resources/national-conference/2027" element={<Conference2027 />} />
                 <Route path="/resources/national-conference/:topic" element={<ConferenceTopic />} />
+
 
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
