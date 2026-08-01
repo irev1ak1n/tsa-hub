@@ -1,96 +1,64 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext.jsx';
-import { useAuth } from '../../context/AuthContext.jsx';
 import { Icon } from '../../components/UI.jsx';
 
-function Row({ icon, label, value, onClick, danger, soon }) {
+function Row({ icon, label, value, onEdit, soon, onClick }) {
+    const clickable = !!(onEdit || onClick);
     return (
-        <button className={`set-row ${danger ? 'danger' : ''}`} onClick={onClick}>
-      <span className="set-ico">
-        <Icon name={icon} size={20} />
+        <div className={`set-row ${clickable ? '' : 'pf-static'}`}>
+            {icon && (
+                <span className="set-ico">
+          <Icon name={icon} size={20} />
+        </span>
+            )}
+            <span className="set-label">
+        {label}
+                {value && <span className="set-sub">{value}</span>}
       </span>
-            <span className="set-label">{label}</span>
             {soon && <span className="set-soon">Soon</span>}
-            {value && <span className="set-value">{value}</span>}
-            <Icon name="chevron-right" size={18} />
-        </button>
+            {onEdit && (
+                <button className="link linkbtn pf-change" onClick={onEdit}>
+                    Change
+                </button>
+            )}
+            {onClick && !onEdit && (
+                <button className="pf-rowbtn" onClick={onClick} aria-label={label}>
+                    <Icon name="chevron-right" size={18} />
+                </button>
+            )}
+        </div>
     );
-}
-
-function handleOf(profile) {
-    if (profile?.username) return profile.username;
-    const slug = (profile?.name || '').toLowerCase().replace(/[^a-z0-9._]/g, '');
-    return slug || 'student';
 }
 
 export default function Settings() {
     const navigate = useNavigate();
-    const { profile } = useApp();
-    const { signOut } = useAuth();
+    const { prefs, setName } = useApp();
+
+    const [editing, setEditing] = useState(false);
+    const [draft, setDraft] = useState('');
     const [note, setNote] = useState('');
 
-    const isPrivate = !!profile?.isPrivate;
-
-    async function shareProfile() {
-        try {
-            await navigator.clipboard.writeText(handleOf(profile));
-            setNote('Profile username copied to clipboard.');
-        } catch {
-            setNote('Could not copy — clipboard is blocked.');
-        }
-        setTimeout(() => setNote(''), 2200);
+    function openEdit() {
+        setDraft(prefs?.name || '');
+        setEditing(true);
     }
-
-    function comingSoon(what) {
-        setNote(`${what} isn't available in this demo yet.`);
-        setTimeout(() => setNote(''), 2200);
+    function saveName() {
+        setName(draft.trim());
+        setEditing(false);
+        setNote('Saved.');
+        setTimeout(() => setNote(''), 1600);
     }
-
-    async function logOut() {
-        if (window.confirm('Log out of TSA Hub?')) {
-            await signOut();
-        }
+    function soon(msg) {
+        setNote(msg);
+        setTimeout(() => setNote(''), 2200);
     }
 
     return (
         <>
-            <div className="set-head">
-                <button className="set-back" onClick={() => navigate('/profile')} aria-label="Back">
-                    <Icon name="arrow-left" size={22} />
-                </button>
-                <h1 className="set-title">Settings</h1>
-            </div>
-
-            <div className="set-group-label">Account</div>
-            <div className="set-card">
-                <Row icon="user" label="Account" soon onClick={() => comingSoon('Account center')} />
-                <Row icon="switch" label="Share profile" onClick={shareProfile} />
-                <Row
-                    icon="lock"
-                    label="Private account"
-                    value={isPrivate ? 'Private' : 'Public'}
-                    onClick={() => navigate('/settings/privacy')}
-                />
-            </div>
-
-            <div className="set-group-label">Content &amp; display</div>
-            <div className="set-card">
-                <Row icon="globe" label="Display Language" value="English" soon onClick={() => comingSoon('Display language')} />
-                <Row icon="accessibility" label="Accessibility" soon onClick={() => comingSoon('Accessibility settings')} />
-            </div>
-
-            <div className="set-group-label">Support &amp; about</div>
-            <div className="set-card">
-                <Row icon="help" label="Help Center" soon onClick={() => comingSoon('Help Center')} />
-                <Row icon="shield" label="Privacy Center" soon onClick={() => comingSoon('Privacy Center')} />
-                <Row icon="file-text" label="Terms and Policies" soon onClick={() => comingSoon('Terms and Policies')} />
-            </div>
-
-            <div className="set-group-label">Login</div>
-            <div className="set-card">
-                <Row icon="switch" label="Switch account" soon onClick={() => comingSoon('Switching accounts')} />
-                <Row icon="log-out" label="Log out" danger onClick={logOut} />
+            <div className="section">
+                <div className="rs-eyebrow">Settings</div>
+                <h1 className="cal-h1">Settings</h1>
             </div>
 
             {note && (
@@ -100,7 +68,52 @@ export default function Settings() {
                 </div>
             )}
 
-            <p className="small muted set-version">TSA Hub v0.1.0 — demo build</p>
+            {/* Personalization */}
+            <div className="set-group-label">Personalization</div>
+            <div className="set-card">
+                {editing ? (
+                    <div className="pf-edit">
+                        <div className="field">
+                            <label htmlFor="s-name">Name</label>
+                            <input
+                                id="s-name"
+                                className="input"
+                                value={draft}
+                                onChange={(e) => setDraft(e.target.value)}
+                                placeholder="Your name"
+                                autoFocus
+                            />
+                            <p className="small muted" style={{ margin: '6px 0 0' }}>
+                                This appears on your home page. Optional.
+                            </p>
+                        </div>
+                        <div className="pf-edit-nav">
+                            <button className="btn ghost small" onClick={() => setEditing(false)}>Cancel</button>
+                            <button className="btn primary small" onClick={saveName}>Save</button>
+                        </div>
+                    </div>
+                ) : (
+                    <Row label="Name" value={prefs?.name || 'Not set'} onEdit={openEdit} />
+                )}
+            </div>
+
+            {/* Content & display */}
+            <div className="set-group-label">Content &amp; display</div>
+            <div className="set-card">
+                <Row icon="globe" label="Display language" value="English" soon onClick={() => soon("Language options aren't available yet.")} />
+                <Row icon="accessibility" label="Accessibility" soon onClick={() => soon("Accessibility settings aren't available yet.")} />
+                <Row icon="switch" label="Appearance" soon onClick={() => soon("Appearance settings aren't available yet.")} />
+            </div>
+
+            {/* Support & about */}
+            <div className="set-group-label">Support &amp; about</div>
+            <div className="set-card">
+                <Row icon="help" label="Help Center" soon onClick={() => soon("Help Center isn't available yet.")} />
+                <Row icon="shield" label="Privacy Policy" onClick={() => navigate('/privacy')} />
+                <Row icon="file-text" label="Terms and Policies" soon onClick={() => soon("Terms and Policies aren't available yet.")} />
+            </div>
+
+            <p className="small muted set-version">TSA Hub v0.1.0</p>
         </>
     );
 }

@@ -3,15 +3,14 @@ import { useApp } from '../context/AppContext.jsx';
 import { Icon } from '../components/UI.jsx';
 
 export default function Dashboard() {
-  const { profile } = useApp();
+  const { prefs } = useApp();
+  const name = prefs?.name?.trim();
 
   return (
       <>
         <div className="section">
-          <p className="eyebrow">
-            {profile?.state ? profile.state : 'TSA Hub'}
-          </p>
-          <h1>Hey, {profile?.first_name}</h1>
+          <p className="eyebrow">TSA Hub</p>
+          <h1>{name ? `Hey, ${name}` : 'Welcome'}</h1>
         </div>
 
         <div className="section">

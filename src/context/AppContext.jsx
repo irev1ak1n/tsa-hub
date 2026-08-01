@@ -1,14 +1,13 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getMyProfile } from '../services/profileService.js';
 import { fetchEvents } from '../services/eventsService.js';
 import { setEvents } from '../data/events.js';
-import { supabase } from '../services/supabase.js';
 
 const KEY = 'tsa-hub-state-v1';
 
-
+// No accounts. Everything lives locally on the device.
+// `prefs` holds the small set of user-chosen preferences (name, state, ...).
 const EMPTY = {
-  profile: null,
+  prefs: { name: '', state: '' },
   myEvents: [],
   tasks: [],
   checklists: {},
@@ -16,16 +15,15 @@ const EMPTY = {
   meetings: [],
   teamMembers: [],
   coachCount: 0,
-  chats: [],
-  follows: [],
-  hiddenSuggestions: [],
 };
 
 function load() {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return EMPTY;
-    return { ...EMPTY, ...JSON.parse(raw) };
+    const saved = JSON.parse(raw);
+    // Merge, and make sure prefs always has its default shape.
+    return { ...EMPTY, ...saved, prefs: { ...EMPTY.prefs, ...(saved.prefs || {}) } };
   } catch {
     return EMPTY;
   }
@@ -35,20 +33,19 @@ const Ctx = createContext(null);
 
 export function AppProvider({ children }) {
   const [state, setState] = useState(load);
+  const [eventsLoading, setEventsLoading] = useState(true);
 
+  // Persist everything (there is no account, so all state is local).
   useEffect(() => {
     try {
-      const { profile, ...local } = state;
-      localStorage.setItem(KEY, JSON.stringify(local));
+      localStorage.setItem(KEY, JSON.stringify(state));
     } catch {
     }
   }, [state]);
 
   const uid = () => Math.random().toString(36).slice(2, 9);
 
-  const [profileLoading, setProfileLoading] = useState(true);
-  const [eventsLoading, setEventsLoading] = useState(true);
-
+  // Events are read anonymously (no login required).
   useEffect(() => {
     let alive = true;
     fetchEvents()
@@ -67,32 +64,16 @@ export function AppProvider({ children }) {
     };
   }, []);
 
-  async function refreshProfile() {
-    try {
-      const row = await getMyProfile();
-      setState((s) => ({ ...s, profile: row }));
-    } catch {
-      setState((s) => ({ ...s, profile: null }));
-    } finally {
-      setProfileLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    refreshProfile();
-    const { data: sub } = supabase.auth.onAuthStateChange(() => {
-      refreshProfile();
-    });
-    return () => sub.subscription.unsubscribe();
-  }, []);
-
   const actions = {
-    refreshProfile,
-
-    saveProfile(profile) {
-      setState((s) => ({ ...s, profile }));
+    // ---- preferences ----
+    setName(name) {
+      setState((s) => ({ ...s, prefs: { ...s.prefs, name } }));
+    },
+    setStatePref(stateName) {
+      setState((s) => ({ ...s, prefs: { ...s.prefs, state: stateName } }));
     },
 
+    // ---- my events / checklists ----
     addEvent(eventId) {
       setState((s) => {
         if (s.myEvents.includes(eventId)) return s;
@@ -128,6 +109,19 @@ export function AppProvider({ children }) {
       }));
     },
 
+    toggleChecklist(eventId, itemId) {
+      setState((s) => ({
+        ...s,
+        checklists: {
+          ...s.checklists,
+          [eventId]: (s.checklists[eventId] || []).map((it) =>
+              it.id === itemId ? { ...it, done: !it.done } : it
+          ),
+        },
+      }));
+    },
+
+    // ---- tasks ----
     addTask({ title, assignee, eventId, due }) {
       setState((s) => ({
         ...s,
@@ -146,22 +140,12 @@ export function AppProvider({ children }) {
       setState((s) => ({ ...s, tasks: s.tasks.filter((t) => t.id !== taskId) }));
     },
 
-    toggleChecklist(eventId, itemId) {
-      setState((s) => ({
-        ...s,
-        checklists: {
-          ...s.checklists,
-          [eventId]: (s.checklists[eventId] || []).map((it) =>
-              it.id === itemId ? { ...it, done: !it.done } : it
-          ),
-        },
-      }));
-    },
-
+    // ---- notes ----
     setNotes(notes) {
       setState((s) => ({ ...s, notes }));
     },
 
+    // ---- meetings ----
     addMeeting({ date, title }) {
       setState((s) => ({
         ...s,
@@ -175,6 +159,7 @@ export function AppProvider({ children }) {
       setState((s) => ({ ...s, meetings: s.meetings.filter((m) => m.id !== id) }));
     },
 
+    // ---- team ----
     addMember({ name, role }) {
       setState((s) => ({
         ...s,
@@ -186,54 +171,9 @@ export function AppProvider({ children }) {
       setState((s) => ({ ...s, teamMembers: s.teamMembers.filter((m) => m.id !== id) }));
     },
 
+    // ---- coach ----
     bumpCoach() {
       setState((s) => ({ ...s, coachCount: s.coachCount + 1 }));
-    },
-
-    createThread({ id, name, kind, sub }) {
-      setState((s) => {
-        if (s.chats.some((t) => t.id === id)) return s;
-        return { ...s, chats: [{ id, name, kind, sub, messages: [] }, ...s.chats] };
-      });
-    },
-
-    toggleFollow(accountId) {
-      setState((s) => ({
-        ...s,
-        follows: s.follows.includes(accountId)
-            ? s.follows.filter((a) => a !== accountId)
-            : [...s.follows, accountId],
-      }));
-    },
-
-    hideSuggestion(accountId) {
-      setState((s) => ({ ...s, hiddenSuggestions: [...s.hiddenSuggestions, accountId] }));
-    },
-
-    sendMessage(threadId, text) {
-      setState((s) => ({
-        ...s,
-        chats: s.chats.map((t) =>
-            t.id === threadId
-                ? {
-                  ...t,
-                  messages: [
-                    ...t.messages,
-                    { id: uid(), from: 'me', text, at: 'Now', read: true },
-                  ],
-                }
-                : t
-        ),
-      }));
-    },
-
-    markThreadRead(threadId) {
-      setState((s) => ({
-        ...s,
-        chats: s.chats.map((t) =>
-            t.id === threadId ? { ...t, messages: t.messages.map((m) => ({ ...m, read: true })) } : t
-        ),
-      }));
     },
 
     resetAll() {
@@ -251,20 +191,18 @@ export function AppProvider({ children }) {
     return Math.round((done / total) * 100);
   }
 
-  function unreadFor(threadId) {
-    const t = (state.chats || []).find((c) => c.id === threadId);
-    if (!t) return 0;
-    return t.messages.filter((m) => m.from !== 'me' && !m.read).length;
-  }
-
-  const unreadTotal = (state.chats || []).reduce(
-      (sum, t) => sum + t.messages.filter((m) => m.from !== 'me' && !m.read).length,
-      0
-  );
-
   return (
       <Ctx.Provider
-          value={{ ...state, ...actions, profileLoading, eventsLoading, progressFor, unreadFor, unreadTotal }}
+          value={{
+            ...state,
+            ...actions,
+            eventsLoading,
+            progressFor,
+            // back-compat shims (there is no account/profile or chats anymore)
+            profile: null,
+            unreadTotal: 0,
+            unreadFor: () => 0,
+          }}
       >
         {children}
       </Ctx.Provider>
