@@ -36,6 +36,8 @@ import Conference2026Landing from './screens/conference/Conference2026Landing.js
 import ConferenceTopicPage from './screens/conference/ConferenceTopicPage.jsx';
 import Conference2027 from './screens/conference/Conference2027.jsx';
 
+import Calendar from './screens/Calendar.jsx';
+
 function Loading() {
     return (
         <div className="auth-wrap">
@@ -108,6 +110,7 @@ function Gate() {
                 <Route path="/resources/national-conference/2027" element={<Conference2027 />} />
                 <Route path="/resources/national-conference/:topic" element={<ConferenceTopic />} />
 
+                <Route path="/calendar" element={<Calendar />} />
 
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />

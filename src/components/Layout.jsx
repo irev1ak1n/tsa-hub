@@ -5,6 +5,7 @@ import { Icon, TabBadge } from './UI.jsx';
 const TABS = [
     { to: '/', label: 'Home', icon: 'home', end: true },
     { to: '/events', label: 'Events', icon: 'grid' },
+    { to: '/calendar', label: 'Calendar', icon: 'cal' },
     { to: '/resources', label: 'Resources', icon: 'book' },
     { to: '/profile', label: 'Profile', icon: 'user' },
 ];

@@ -123,7 +123,9 @@
     position: fixed;
     inset: 0;
     z-index: 100;
-    background: rgba(0, 0, 0, .6);
+    background: rgba(0, 0, 0, .4);
+    backdrop-filter: blur(16px) saturate(115%);
+    -webkit-backdrop-filter: blur(16px) saturate(115%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -134,10 +136,15 @@
 .rs-modal {
     width: 100%;
     max-width: 380px;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+    /* dark translucent glass; page behind is blurred by the backdrop */
+    background: rgba(10, 10, 12, .55);
+    /* thin, soft warm-orange border */
+    border: 1px solid rgba(232, 148, 74, .28);
+    border-radius: 18px;
+    /* very gentle warm glow + soft depth shadow */
+    box-shadow:
+            0 0 50px rgba(232, 148, 74, .08),
+            0 20px 60px rgba(0, 0, 0, .5);
     animation: rs-pop .14s ease;
 }
 @keyframes rs-pop { from { transform: scale(.97); opacity: .6; } to { transform: scale(1); opacity: 1; } }
@@ -147,7 +154,7 @@
     justify-content: space-between;
     gap: 10px;
     padding: 16px 18px;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid rgba(232, 148, 74, .15);
 }
 .rs-modal-head h3 {
     margin: 0;
