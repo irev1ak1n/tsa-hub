@@ -3,6 +3,8 @@ import { useApp } from '../../context/AppContext.jsx';
 import { EVENTS, CATEGORIES } from '../../data/events.js';
 import { Icon } from '../../components/UI.jsx';
 import { imageForEvent } from '../../data/eventImages.js';
+import filterWhite from '../../assets/img/filter-white.png';
+import filterBlack from '../../assets/img/filter-black.png';
 
 // Combined division badge, MS before HS (e.g. "MS/HS").
 function divisionLabel(divs) {
@@ -62,7 +64,8 @@ export default function Events() {
                     />
                 </div>
                 <button type="button" className="ev-filter-btn" aria-label="Filters">
-                    <Icon name="funnel" size={20} />
+                    <img className="ev-filter-ico ev-filter-ico--dark" src={filterWhite} alt="Filters" />
+                    <img className="ev-filter-ico ev-filter-ico--light" src={filterBlack} alt="" aria-hidden="true" />
                 </button>
             </div>
 
@@ -85,21 +88,29 @@ export default function Events() {
 
                 <span className="ev-chip-sep" aria-hidden="true" />
 
-                {['All', ...CATEGORIES].map((c) => (
+                <button
+                    type="button"
+                    className={`ev-chip ev-chip-all ${category === 'All' ? 'on' : ''}`}
+                    onClick={() => setCategory('All')}
+                >
+                    All ({divisionCount})
+                </button>
+
+                {/* Opens extra filters later (team size, cost, difficulty, ...) */}
+                <button type="button" className="ev-chip-add" aria-label="More filters">
+                    <Icon name="plus" size={16} />
+                </button>
+
+                {CATEGORIES.map((c) => (
                     <button
                         key={c}
                         type="button"
                         className={`ev-chip ${category === c ? 'on' : ''}`}
                         onClick={() => setCategory(c)}
                     >
-                        {c === 'All' ? `All (${divisionCount})` : c}
+                        {c}
                     </button>
                 ))}
-
-                {/* Opens extra filters later (team size, cost, difficulty, ...) */}
-                <button type="button" className="ev-chip ev-chip-add" aria-label="More filters">
-                    <Icon name="plus" size={16} />
-                </button>
             </div>
 
             {eventsLoading && <p className="muted" style={{ marginTop: 12 }}>Loading events…</p>}

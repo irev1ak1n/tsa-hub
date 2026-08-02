@@ -18,10 +18,10 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 14px;
-  border-radius: 14px;
+  padding: 11px 18px;
+  border-radius: 999px;
   background: var(--surface-2, var(--surface));
-  border: 1px solid var(--line);
+  border: 1px solid transparent;
 }
 .ev-search svg { color: var(--muted); flex-shrink: 0; }
 .ev-search-input {
@@ -35,30 +35,50 @@
   font-size: 15px;
 }
 .ev-search-input::placeholder { color: var(--muted); }
-.ev-search:focus-within { border-color: color-mix(in srgb, var(--ig-blue) 45%, var(--line)); }
+.ev-search:focus-within { border-color: color-mix(in srgb, var(--ig-blue) 40%, transparent); }
 
 .ev-filter-btn {
   flex: 0 0 auto;
-  width: 44px;
-  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 14px;
-  background: var(--surface-2, var(--surface));
-  border: 1px solid var(--line);
+  /* icon only: no circle, border, background, or shadow */
+  width: auto;
+  height: auto;
+  padding: 8px;
+  margin-right: -2px;
+  border: 0;
+  background: transparent;
   color: var(--ink);
   cursor: pointer;
-  transition: background 0.12s ease, border-color 0.12s ease;
+  opacity: 0.9;
+  transition: opacity 0.12s ease;
 }
-.ev-filter-btn:hover { background: var(--surface-3, var(--surface)); border-color: color-mix(in srgb, var(--ig-blue) 40%, var(--line)); }
-.ev-filter-btn:focus-visible { outline: 2px solid var(--ig-blue); outline-offset: 2px; }
+.ev-filter-btn:hover { opacity: 1; background: transparent; }
+.ev-filter-btn:focus-visible { outline: 2px solid var(--ig-blue); outline-offset: 2px; border-radius: 8px; }
+
+/* filter PNG icons: white for dark appearance, black for light appearance */
+.ev-filter-ico {
+  display: block;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+.ev-filter-ico--light { display: none; } /* dark appearance (default): show white */
+
+/* when a light theme is active on the root, show the black icon instead */
+:root[data-theme="light"] .ev-filter-ico--dark,
+html.light .ev-filter-ico--dark,
+body.light .ev-filter-ico--dark { display: none; }
+:root[data-theme="light"] .ev-filter-ico--light,
+html.light .ev-filter-ico--light,
+body.light .ev-filter-ico--light { display: block; }
 
 /* ---- horizontal chips (scrollable, hidden scrollbar) ---- */
 .ev-chips {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   overflow-x: auto;
   padding-bottom: 4px;
   margin-bottom: 14px;
@@ -70,41 +90,64 @@
 .ev-chip {
   flex: 0 0 auto;
   white-space: nowrap;
-  padding: 7px 14px;
+  height: 36px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
   border-radius: 999px;
-  background: var(--surface-2, var(--surface));
+  /* inactive: nearly-black fill with a thin gray outline */
+  background: transparent;
   border: 1px solid var(--line);
-  color: var(--ink);
+  color: #ffffff;
   font-family: var(--font-system);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
 }
-.ev-chip:hover { background: var(--surface-3, var(--surface)); }
+.ev-chip:hover { background: var(--surface-2, var(--surface)); }
 .ev-chip:focus-visible { outline: 2px solid var(--ig-blue); outline-offset: 2px; }
+/* active: solid muted dark-gray fill */
 .ev-chip.on {
-  background: var(--ig-blue);
-  border-color: var(--ig-blue);
+  background: var(--surface-3, #2a323d);
+  border-color: transparent;
+  color: #ffffff;
+  font-weight: 600;
+}
+/* selected "All" uses the same grey fill as every other chip */
+.ev-chip.ev-chip-all.on {
+  background: var(--surface-3, #2a323d);
+  border-color: transparent;
   color: #ffffff;
 }
 
 .ev-chip-sep {
   flex: 0 0 auto;
   width: 1px;
-  align-self: stretch;
-  margin: 4px 2px;
+  height: 22px;
+  margin: 0 4px;
   background: var(--line);
 }
 
+/* circular + button: matches chip height, thin outline, transparent bg */
 .ev-chip-add {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   padding: 0;
   border-radius: 50%;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: #ffffff;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+.ev-chip-add:hover { background: var(--surface-2, var(--surface)); }
+.ev-chip-add.on {
+  background: var(--ig-blue);
+  border-color: var(--ig-blue);
 }
 
 /* ---- explore gallery (near edge-to-edge, Instagram-style) ---- */
