@@ -15,6 +15,7 @@ const PATHS = {
     bell: 'M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0',
     book: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15zM4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5',
     funnel: 'M3.6 4.5h16.8a1.1 1.1 0 0 1 .84 1.81L14.6 14.3v5.2a1.1 1.1 0 0 1-.6.98l-3 1.53a1.1 1.1 0 0 1-1.6-.98V14.3L2.76 6.31A1.1 1.1 0 0 1 3.6 4.5z',
+    sliders: 'M4 7h6M14 7h6M4 12h10M18 12h2M4 17h3M11 17h9M10 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM16 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM7 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
     lock: 'M5 11h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM7 11V7a5 5 0 0 1 10 0v4',
     'chevron-right': 'm9 18 6-6-6-6',
     'arrow-left': 'M19 12H5M12 19l-7-7 7-7',
@@ -46,6 +47,38 @@ export function Icon({ name, size = 22 }) {
             aria-hidden="true"
         >
             <path d={PATHS[name] || PATHS.spark} />
+        </svg>
+    );
+}
+
+/* Filter/sliders icon with FILLED knobs, matching the reference image.
+   Kept separate from <Icon> because <Icon> forces fill="none" on the whole
+   svg, which can't fill the knobs. Lines are stroked; knobs are filled. */
+export function SlidersIcon({ size = 22 }) {
+    return (
+        <svg
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+        >
+            {/* top row: knob on the left */}
+            <line x1="10" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="6" x2="6" y2="6" />
+            <circle cx="8" cy="6" r="2.4" fill="currentColor" stroke="none" />
+            {/* middle row: knob toward the right */}
+            <line x1="3" y1="12" x2="14" y2="12" />
+            <line x1="18" y1="12" x2="21" y2="12" />
+            <circle cx="16" cy="12" r="2.4" fill="currentColor" stroke="none" />
+            {/* bottom row: knob on the left */}
+            <line x1="10" y1="18" x2="21" y2="18" />
+            <line x1="3" y1="18" x2="6" y2="18" />
+            <circle cx="8" cy="18" r="2.4" fill="currentColor" stroke="none" />
         </svg>
     );
 }
