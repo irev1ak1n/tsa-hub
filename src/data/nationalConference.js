@@ -56,8 +56,12 @@ export const CONFERENCE_GUIDES = [
     },
 ];
 
-// Lookup for the (currently placeholder) Conference Essentials topic pages.
+// Lookup for a Conference Essentials topic page (searches every dropdown).
 export function getConferenceTopic(topicId) {
-    const dd = NATIONAL_CONFERENCE.items.find((i) => i.type === 'dropdown');
-    return (dd?.children || []).find((c) => c.id === topicId) || null;
+    for (const item of NATIONAL_CONFERENCE.items) {
+        if (item.type !== 'dropdown') continue;
+        const found = (item.children || []).find((c) => c.id === topicId);
+        if (found) return found;
+    }
+    return null;
 }
