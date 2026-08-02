@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext.jsx';
 import { Icon } from '../../components/UI.jsx';
-import { getStateTsa } from '../../data/stateTsa.js';
+import { getStateTsa, US_STATES, STATE_DIRECTORY_URL } from '../../data/stateTsa.js';
 import { COMPETITION_RULES } from '../../data/competitionRules.js';
 import { ABOUT_TSA } from '../../data/aboutTsa.js';
 import { NATIONAL_CONFERENCE } from '../../data/nationalConference.js';
 import { PROGRAMS } from '../../data/programs.js';
-import { Row, StateLinkRow, LEADERSHIP_ROLES } from './resourcesShared.jsx';
+import { Row, StateLinkRow, ContactModal, LEADERSHIP_ROLES } from './resourcesShared.jsx';
 
 import facebookIcon from '../../assets/img/social-media/facebook.png';
 import instagramIcon from '../../assets/img/social-media/instagram.png';
@@ -116,15 +116,20 @@ function NationalConferenceSection() {
 }
 
 export default function Resources() {
-    const { profile } = useApp();
-    const state = profile?.state;
+    const { prefs, setStatePref } = useApp();
+    const state = prefs?.state;
     const stateInfo = getStateTsa(state);
 
     const [query, setQuery] = useState('');
+    const [showPicker, setShowPicker] = useState(false);
+    const [contact, setContact] = useState(null); // { title, contact }
     const q = query.trim().toLowerCase();
 
-    // State section shows only the plain (non-leadership) links: website + socials.
-    const stateSectionLinks = (stateInfo?.links || []).filter((l) => !LEADERSHIP_ROLES.has(l.role));
+    const openContact = (title, c) => setContact({ title, contact: c });
+
+    // State section: plain links (website + socials) shown under "Your State".
+    // Advisor and officer-team links live on their dedicated leadership pages.
+    const stateSocials = (stateInfo?.links || []).filter((l) => !LEADERSHIP_ROLES.has(l.role));
 
     // Filter competition-rule categories by title/description + their topic titles.
     const rules = q
@@ -218,17 +223,44 @@ export default function Resources() {
                 ))}
             </div>
 
-            {/* {STATE} TSA ---------------------------------------------------- */}
-            {stateSectionLinks.length > 0 && (
-                <>
-                    <div className="rs-group-label">{stateInfo?.name || 'Your state'}</div>
-                    <div className="rs-card">
-                        {stateSectionLinks.map((link) => (
-                            <StateLinkRow key={link.title} link={link} onOpenContact={() => {}} />
-                        ))}
+            {/* YOUR STATE ---------------------------------------------------- */}
+            <div className="rs-group-label">{state ? (stateInfo?.name || `${state} TSA`) : 'Your State'}</div>
+            <div className="rs-card">
+                {!state ? (
+                    <div className="rs-state-prompt">
+                        <p className="rs-state-prompt-text">
+                            Want to see more content for your state? Set your state and get access to more resources.
+                        </p>
+                        <button type="button" className="rs-state-btn" onClick={() => setShowPicker(true)}>
+                            <Icon name="globe" size={18} />
+                            Set your state
+                        </button>
                     </div>
-                </>
-            )}
+                ) : (
+                    <>
+                        {stateSocials.length > 0 ? (
+                            stateSocials.map((link) => (
+                                <StateLinkRow key={link.title} link={link} onOpenContact={openContact} />
+                            ))
+                        ) : (
+                            <div className="rs-state-prompt">
+                                <p className="rs-state-prompt-text">
+                                    We don&rsquo;t have {state} resources yet. In the meantime, browse the national
+                                    directory of state delegations.
+                                </p>
+                                <a className="rs-row" href={STATE_DIRECTORY_URL} target="_blank" rel="noreferrer">
+                                    <span className="rs-ico"><Icon name="globe" size={20} /></span>
+                                    <span className="rs-text"><span className="rs-title">State Delegations Directory</span></span>
+                                    <Icon name="chevron-right" size={18} />
+                                </a>
+                            </div>
+                        )}
+                        <button type="button" className="rs-change-state" onClick={() => setShowPicker(true)}>
+                            Change state
+                        </button>
+                    </>
+                )}
+            </div>
 
             {/* NATIONAL TSA --------------------------------------------------- */}
             <div className="rs-group-label">National TSA</div>
@@ -276,6 +308,69 @@ export default function Resources() {
                     </Link>
                 ))}
             </div>
+
+            {showPicker && (
+                <StatePicker
+                    current={state}
+                    onPick={(s) => { setStatePref(s); setShowPicker(false); }}
+                    onClose={() => setShowPicker(false)}
+                />
+            )}
+            {contact && (
+                <ContactModal title={contact.title} contact={contact.contact} onClose={() => setContact(null)} />
+            )}
         </>
+    );
+}
+
+// Modal state picker: a searchable list of states (not a native dropdown).
+function StatePicker({ current, onPick, onClose }) {
+    const [q, setQ] = useState('');
+    const needle = q.trim().toLowerCase();
+    const list = needle ? US_STATES.filter((s) => s.toLowerCase().includes(needle)) : US_STATES;
+
+    return (
+        <div className="rs-modal-backdrop" onClick={onClose}>
+            <div
+                className="rs-modal rs-state-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Choose your state"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="rs-modal-head">
+                    <h3>Choose your state</h3>
+                    <button type="button" className="rs-modal-close" onClick={onClose} aria-label="Close">×</button>
+                </div>
+
+                <div className="rs-state-search">
+                    <Icon name="search" size={16} />
+                    <input
+                        className="rs-state-search-input"
+                        placeholder="Search states"
+                        value={q}
+                        onChange={(e) => setQ(e.target.value)}
+                        aria-label="Search states"
+                        autoFocus
+                    />
+                </div>
+
+                <div className="rs-state-list">
+                    {list.map((s) => (
+                        <button
+                            key={s}
+                            type="button"
+                            className={`rs-state-option ${s === current ? 'is-current' : ''}`}
+                            onClick={() => onPick(s)}
+                        >
+                            <span className="rs-state-option-name">{s}</span>
+                            {getStateTsa(s) && <span className="rs-state-has">Content</span>}
+                            {s === current && <Icon name="check" size={16} />}
+                        </button>
+                    ))}
+                    {list.length === 0 && <p className="rs-state-empty">No states match &ldquo;{q}&rdquo;.</p>}
+                </div>
+            </div>
+        </div>
     );
 }

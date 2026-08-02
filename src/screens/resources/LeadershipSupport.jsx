@@ -12,8 +12,8 @@ import {
 import tsaLeadership from '../../assets/img/tsa-leadership.png';
 
 export default function LeadershipSupport() {
-    const { profile } = useApp();
-    const state = profile?.state;
+    const { prefs } = useApp();
+    const state = prefs?.state;
     const stateInfo = getStateTsa(state);
 
     const [contactModal, setContactModal] = useState(null); // { title, contact } | null

@@ -3,8 +3,8 @@ import { getStateTsa } from '../../data/stateTsa.js';
 import { Row, StateLinkRow, BackLink } from './resourcesShared.jsx';
 
 export default function StudentLeadership() {
-    const { profile } = useApp();
-    const state = profile?.state;
+    const { prefs } = useApp();
+    const state = prefs?.state;
     const stateInfo = getStateTsa(state);
 
     // Dynamic state officer team (from the user's state data), if available.
@@ -17,7 +17,7 @@ export default function StudentLeadership() {
             <div className="section">
                 <h1>Student Leadership</h1>
                 <p className="muted small" style={{ margin: 0 }}>
-                    Get to know the state and national student officers who represent TSA members and help lead the organization.
+                    Meet the state and national student officers who lead TSA.
                 </p>
             </div>
 
