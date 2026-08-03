@@ -10,9 +10,7 @@ export default function ResourceSearch() {
     const stateInfo = getStateTsa(prefs?.state);
     const inputRef = useRef(null);
 
-    const [query, setQuery] = useState(() => {
-        try { return sessionStorage.getItem('rs-query') || ''; } catch { return ''; }
-    });
+    const [query, setQuery] = useState('');
     const [recent, setRecent] = useState(() => {
         try { return JSON.parse(localStorage.getItem('rs-recent') || '[]'); } catch { return []; }
     });
@@ -22,13 +20,6 @@ export default function ResourceSearch() {
     // Focus the field as soon as the page opens.
     useEffect(() => { inputRef.current?.focus(); }, []);
 
-    const updateQuery = (v) => {
-        setQuery(v);
-        try {
-            if (v.trim()) sessionStorage.setItem('rs-query', v);
-            else sessionStorage.removeItem('rs-query');
-        } catch { /* ignore */ }
-    };
 
     const saveRecent = (list) => {
         setRecent(list);
@@ -58,12 +49,12 @@ export default function ResourceSearch() {
                     className="rs-search-input"
                     placeholder="Search resources"
                     value={query}
-                    onChange={(e) => updateQuery(e.target.value)}
+                    onChange={(e) => setQuery(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') addRecent(query); }}
                     aria-label="Search resources"
                 />
                 {query && (
-                    <button type="button" className="rs-search-clear" onClick={() => updateQuery('')} aria-label="Clear search">
+                    <button type="button" className="rs-search-clear" onClick={() => setQuery('')} aria-label="Clear search">
                         <Icon name="x" size={16} />
                     </button>
                 )}
@@ -80,7 +71,7 @@ export default function ResourceSearch() {
                     <div className="rs-recent-list">
                         {recent.map((term) => (
                             <div key={term} className="rs-recent-item">
-                                <button type="button" className="rs-recent-term" onClick={() => updateQuery(term)}>
+                                <button type="button" className="rs-recent-term" onClick={() => setQuery(term)}>
                                     <Icon name="search" size={14} />
                                     <span>{term}</span>
                                 </button>
