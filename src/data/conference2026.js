@@ -22,7 +22,6 @@ export const CONFERENCE_2026_HEADER = {
     dateLabel: 'June 22\u201326, 2026',
     venue: 'Gaylord National Resort and Convention Center',
     location: 'National Harbor, Maryland',
-    theme: 'Unity Through Community',
 };
 
 // Landing-page topic rows.

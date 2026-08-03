@@ -17,7 +17,6 @@ export default function Conference2026Landing() {
                     {H.venue}<br />
                     {H.location}
                 </p>
-                <div className="cf26-theme">Theme: {H.theme}</div>
             </div>
 
             <div className="rs-card">

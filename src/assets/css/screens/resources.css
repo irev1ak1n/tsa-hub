@@ -604,10 +604,10 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
 }
 
 /* ---- Awards & Scholarships page: red headings, white text ---- */
-.aw-page h1 { color: #FF3B52; }
+.aw-page h1 { color: #ffffff; }
 .aw-page .aw-heading { color: #CC4A3E; }
 /* brighter, more saturated blue for section titles on program pages */
-.aw-page .rk-scholar-title { color: #6B8AFF; }
+.aw-page .rk-scholar-title { color: #ffffff; }
 .aw-sub {
     font-family: var(--font-system);
     font-size: 14px;
@@ -1067,7 +1067,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
 .cf2026-attrib-role {
     font-family: var(--font-system);
     font-size: 13px;
-    color: var(--muted);
+    color: var(--muted)#6B8AFF
 }
 
 /* ============================================================================

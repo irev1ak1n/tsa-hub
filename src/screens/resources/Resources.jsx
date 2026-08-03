@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext.jsx';
 import { Icon } from '../../components/UI.jsx';
@@ -57,7 +57,28 @@ const LEADERSHIP_NAV = [
 // Essentials) whose children reveal nested topic rows. Data-driven from
 // NATIONAL_CONFERENCE.items.
 function NationalConferenceSection() {
-    const [openId, setOpenId] = useState(null);
+    // Persist which dropdown is open across navigation (and tab reloads), so it
+    // stays open when the user returns from a topic page until they close it.
+    const [openId, setOpenId] = useState(() => {
+        try {
+            return sessionStorage.getItem('rs-conf-open') || null;
+        } catch {
+            return null;
+        }
+    });
+
+    const toggle = (id) => {
+        setOpenId((cur) => {
+            const next = cur === id ? null : id;
+            try {
+                if (next) sessionStorage.setItem('rs-conf-open', next);
+                else sessionStorage.removeItem('rs-conf-open');
+            } catch {
+                // ignore storage errors
+            }
+            return next;
+        });
+    };
 
     return (
         <>
@@ -86,7 +107,7 @@ function NationalConferenceSection() {
                                 className="rs-acc-btn"
                                 aria-expanded={isOpen}
                                 aria-controls={panelId}
-                                onClick={() => setOpenId(isOpen ? null : item.id)}
+                                onClick={() => toggle(item.id)}
                             >
                                 <span className="rs-ico"><Icon name={item.icon} size={20} /></span>
                                 <span className="rs-text">
@@ -124,6 +145,20 @@ export default function Resources() {
     const [showPicker, setShowPicker] = useState(false);
     const [contact, setContact] = useState(null); // { title, contact }
     const q = query.trim().toLowerCase();
+
+    // Remember where the user was on this page. When they open a sub-page and
+    // come back, restore the scroll position instead of jumping to the top.
+    useLayoutEffect(() => {
+        let saved = 0;
+        try { saved = parseInt(sessionStorage.getItem('rs-scroll') || '0', 10) || 0; } catch { /* ignore */ }
+        if (saved) window.scrollTo(0, saved);
+
+        const onScroll = () => {
+            try { sessionStorage.setItem('rs-scroll', String(Math.round(window.scrollY))); } catch { /* ignore */ }
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
 
     const openContact = (title, c) => setContact({ title, contact: c });
 
