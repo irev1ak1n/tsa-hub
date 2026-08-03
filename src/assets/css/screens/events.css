@@ -49,12 +49,12 @@
   margin-right: -2px;
   border: 0;
   background: transparent;
-  color: var(--ink);
+  color: #ffffff;
   cursor: pointer;
-  opacity: 0.9;
+  opacity: 1;
   transition: opacity 0.12s ease;
 }
-.ev-filter-btn:hover { opacity: 1; background: transparent; }
+.ev-filter-btn:hover { opacity: 0.85; background: transparent; }
 .ev-filter-btn:focus-visible { outline: 2px solid var(--ig-blue); outline-offset: 2px; border-radius: 8px; }
 
 /* filter PNG icons: white for dark appearance, black for light appearance */
@@ -443,3 +443,108 @@ body.light .ev-filter-ico--light { display: block; }
 }
 .ev-search-btn:hover { color: var(--ink); }
 .ev-search-btn:focus-visible { outline: 2px solid var(--ig-blue); outline-offset: 2px; border-radius: 6px; }
+
+/* ============================================================================
+   Events search: clear button, trigger, recent searches, hint
+   ============================================================================ */
+
+/* clear (x) button inside the search bar */
+.ev-search-clear {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface-3, var(--line));
+  color: var(--muted);
+  cursor: pointer;
+}
+.ev-search-clear:hover { color: var(--ink); }
+
+/* the search bar on the Events page acts as a button (opens the search page) */
+.ev-search-trigger {
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+.ev-search-trigger:hover,
+.ev-search-trigger:focus,
+.ev-search-trigger:visited { text-decoration: none; color: inherit; }
+.ev-search-placeholder {
+  flex: 1;
+  min-width: 0;
+  color: var(--muted);
+  font-family: var(--font-system);
+  font-size: 15px;
+}
+
+.ev-search-hint {
+  padding: 10px 4px;
+  font-family: var(--font-system);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--muted);
+}
+
+/* recent searches list */
+.ev-recent { margin-top: 4px; }
+.ev-recent-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px 8px;
+}
+.ev-recent-label {
+  font-family: var(--font-system);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.ev-recent-clear {
+  border: 0;
+  background: none;
+  color: var(--ig-blue);
+  font-family: var(--font-system);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ev-recent-clear:hover { text-decoration: underline; }
+.ev-recent-list { display: flex; flex-direction: column; }
+.ev-recent-item { display: flex; align-items: center; gap: 4px; }
+.ev-recent-term {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-system);
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 8px;
+}
+.ev-recent-term:hover { background: var(--surface-2); }
+.ev-recent-term svg { color: var(--muted); flex-shrink: 0; }
+.ev-recent-term span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ev-recent-remove {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.ev-recent-remove:hover { background: var(--surface-2); color: var(--ink); }

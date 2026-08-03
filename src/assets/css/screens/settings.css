@@ -40,13 +40,32 @@
     margin-top: 0;
 }
 
+/* ---- section card: bigger, roomier, thicker border ---- */
 .set-card {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
+    background: #171717;
+    border: 3px solid #404040;
+    border-radius: 18px;
     overflow: hidden;
+    padding: 26px 26px 30px;
+    margin-bottom: 22px; /* space between sections (no divider line) */
+}
+.set-card:last-of-type {
+    margin-bottom: 0;
 }
 
+/* section heading INSIDE the card (uppercase, weight 600) */
+.set-card-title {
+    font-family: var(--font-system);
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 28px;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0 0 18px;
+}
+
+/* divider lines only WITHIN a section (between rows) */
 .set-row {
     display: flex;
     align-items: center;
@@ -55,17 +74,24 @@
     text-align: left;
     background: none;
     border: 0;
-    border-bottom: 1px solid var(--line);
-    padding: 14px 16px;
+    border-bottom: 1px solid #404040;
+    padding: 16px 0;
     cursor: pointer;
     color: var(--ink);
     font-family: var(--font-system);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
 }
 .set-row:last-child {
     border-bottom: 0;
+    padding-bottom: 0;
+}
+.set-row:first-of-type {
+    padding-top: 0;
 }
 .set-row:hover {
-    background: var(--surface-2);
+    background: transparent;
 }
 
 .set-ico {
@@ -77,28 +103,34 @@
 .set-label {
     flex: 1;
     min-width: 0;
-    font-size: 15px;
-    line-height: 20px;
+    font-family: var(--font-system);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
     color: var(--ig-ink);
     display: flex;
     flex-direction: column;
     gap: 2px;
 }
 .set-sub {
-    font-size: 12px;
-    line-height: 16px;
-    color: var(--muted);
+    font-family: var(--font-system);
     font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--muted);
 }
 
 .set-value {
     font-size: 14px;
+    line-height: 20px;
     color: var(--muted);
 }
 
 .set-soon {
-    font-size: 11px;
+    font-family: var(--font-system);
     font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
     color: var(--ig-link);
     background: var(--tint);
     border: 1px solid var(--tint-line);
@@ -118,6 +150,72 @@
     background: none;
 }
 
+/* ---- Appearance: small uppercase sublabel above the theme value ---- */
+.set-uplabel {
+    font-family: var(--font-system);
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+.set-theme-value {
+    font-family: var(--font-system);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--ig-ink);
+}
+
+/* ---- theme toggle switch (pill + sliding knob w/ icon) ---- */
+.set-theme-switch {
+    position: relative;
+    flex-shrink: 0;
+    width: 60px;
+    height: 32px;
+    border: 0;
+    border-radius: 999px;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.18s ease;
+}
+.set-theme-switch.is-dark {
+    background: #2a2a2a;
+    border: 1px solid #404040;
+}
+.set-theme-switch.is-light {
+    background: #d9d9de;
+    border: 1px solid #c4c4cc;
+}
+.set-theme-knob {
+    position: absolute;
+    top: 50%;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-50%);
+    transition: left 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+.set-theme-switch.is-dark .set-theme-knob {
+    left: 31px;
+    background: #f2c94c;
+    color: #171717;
+}
+.set-theme-switch.is-light .set-theme-knob {
+    left: 3px;
+    background: #ffffff;
+    color: #e8944a;
+}
+.set-theme-switch:focus-visible {
+    outline: 2px solid var(--ig-blue);
+    outline-offset: 2px;
+}
+
+/* legacy checkbox switch (kept for any other toggles) */
 .set-switch {
     position: relative;
     flex-shrink: 0;

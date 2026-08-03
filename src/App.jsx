@@ -3,6 +3,7 @@ import { AppProvider } from './context/AppContext.jsx';
 import Layout from './components/Layout.jsx';
 import Dashboard from './screens/Dashboard.jsx';
 import Events from './screens/events/Events.jsx';
+import EventSearchPage from './screens/events/EventSearchPage.jsx';
 import EventDetail from './screens/events/EventDetail.jsx';
 import Recommender from './screens/events/Recommender.jsx';
 import Resources from './screens/resources/Resources.jsx';
@@ -39,6 +40,7 @@ export default function App() {
                         <Route path="/" element={<Dashboard />} />
 
                         <Route path="/events" element={<Events />} />
+                        <Route path="/events/search" element={<EventSearchPage />} />
                         <Route path="/events/:id" element={<EventDetail />} />
                         <Route path="/recommend" element={<Recommender />} />
 
