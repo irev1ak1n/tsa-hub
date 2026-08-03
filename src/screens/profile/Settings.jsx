@@ -90,11 +90,11 @@ export default function Settings() {
             </div>
 
             {/* Content & display */}
-            <div className="set-card">
-                <div className="set-card-title">Content &amp; display</div>
-                <Row icon="globe" label="Display language" value="English" soon onClick={() => soon("Language options aren't available yet.")} />
-                <Row icon="accessibility" label="Accessibility" soon onClick={() => soon("Accessibility settings aren't available yet.")} />
-            </div>
+            {/*<div className="set-card">*/}
+            {/*    <div className="set-card-title">Content &amp; display</div>*/}
+            {/*    <Row icon="globe" label="Display language" value="English" soon onClick={() => soon("Language options aren't available yet.")} />*/}
+            {/*    <Row icon="accessibility" label="Accessibility" soon onClick={() => soon("Accessibility settings aren't available yet.")} />*/}
+            {/*</div>*/}
 
             {/* Support */}
             <div className="set-card">

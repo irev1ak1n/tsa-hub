@@ -609,7 +609,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
 .aw-page h1 { color: #ffffff; }
 .aw-page .aw-heading { color: #CC4A3E; }
 /* brighter, more saturated blue for section titles on program pages */
-.aw-page .rk-scholar-title { color: #6B8AFF; }
+.aw-page .rk-scholar-title { color: #ffffff; }
 .aw-sub {
     font-family: var(--font-system);
     font-size: 14px;
