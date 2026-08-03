@@ -225,16 +225,18 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     gap: 8px;
     margin-bottom: 14px;
     margin-left: -5px;
-    padding: 6px 10px 6px 6px;
-    border-radius: 8px;
-    color: rgba(255, 255, 255, 0.75);
+    padding: 6px 6px 6px 0;
+    border: 0;
+    background: none;
+    color: #ffffff;
     text-decoration: none;
     font-family: var(--font-system);
     font-size: 15px;
     font-weight: 600;
-    transition: background .12s ease, opacity .12s ease;
+    cursor: pointer;
+    transition: opacity .12s ease;
 }
-.rs-back:hover { background: var(--surface-2); }
+.rs-back:hover { background: none; opacity: 0.8; }
 .rs-back:focus-visible { outline: 2px solid var(--ig-blue); outline-offset: 2px; }
 .rs-back-arrow { display: block; }
 
@@ -607,7 +609,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
 .aw-page h1 { color: #ffffff; }
 .aw-page .aw-heading { color: #CC4A3E; }
 /* brighter, more saturated blue for section titles on program pages */
-.aw-page .rk-scholar-title { color: #ffffff; }
+.aw-page .rk-scholar-title { color: #6B8AFF; }
 .aw-sub {
     font-family: var(--font-system);
     font-size: 14px;
@@ -1067,7 +1069,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
 .cf2026-attrib-role {
     font-family: var(--font-system);
     font-size: 13px;
-    color: var(--muted)#6B8AFF
+    color: var(--muted);
 }
 
 /* ============================================================================
@@ -1184,5 +1186,99 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     padding: 16px 10px;
     font-family: var(--font-system);
     font-size: 14px;
+    color: var(--muted);
+}
+
+/* ============================================================================
+   Recent searches (shown under the Resources search bar when it's empty)
+   ============================================================================ */
+.rs-recent {
+    margin: -8px 0 18px;
+}
+.rs-recent-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px 8px;
+}
+.rs-recent-label {
+    font-family: var(--font-system);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+}
+.rs-recent-clear {
+    border: 0;
+    background: none;
+    color: var(--ig-link);
+    font-family: var(--font-system);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.rs-recent-clear:hover { text-decoration: underline; }
+
+.rs-recent-list { display: flex; flex-direction: column; }
+.rs-recent-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.rs-recent-term {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 4px;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-system);
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 8px;
+}
+.rs-recent-term:hover { background: var(--surface-2); }
+.rs-recent-term svg { color: var(--muted); flex-shrink: 0; }
+.rs-recent-term span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.rs-recent-remove {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+}
+.rs-recent-remove:hover { background: var(--surface-2); color: var(--ink); }
+
+/* ---- Resources search bar as a trigger (opens the search page) ---- */
+.rs-search-trigger {
+    text-decoration: none;
+    cursor: pointer;
+}
+.rs-search-placeholder {
+    color: var(--muted);
+    font-family: var(--font-system);
+    font-size: 14px;
+}
+
+/* ---- dedicated search page ---- */
+.rs-search-page { margin-bottom: 18px; }
+.rs-search-hint {
+    padding: 8px 4px;
+    font-family: var(--font-system);
+    font-size: 14px;
+    line-height: 20px;
     color: var(--muted);
 }

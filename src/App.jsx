@@ -6,6 +6,7 @@ import Events from './screens/events/Events.jsx';
 import EventDetail from './screens/events/EventDetail.jsx';
 import Recommender from './screens/events/Recommender.jsx';
 import Resources from './screens/resources/Resources.jsx';
+import ResourceSearch from './screens/resources/ResourceSearchPage.jsx';
 import StudentLeadership from './screens/resources/StudentLeadership.jsx';
 import LeadershipSupport from './screens/resources/LeadershipSupport.jsx';
 import Coach from './screens/Coach.jsx';
@@ -42,6 +43,7 @@ export default function App() {
                         <Route path="/recommend" element={<Recommender />} />
 
                         <Route path="/resources" element={<Resources />} />
+                        <Route path="/resources/search" element={<ResourceSearch />} />
                         <Route path="/resources/student-leadership" element={<StudentLeadership />} />
                         <Route path="/resources/leadership-support" element={<LeadershipSupport />} />
 

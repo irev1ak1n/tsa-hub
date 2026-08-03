@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Icon } from '../../components/UI.jsx';
 import { STATE_DIRECTORY_URL } from '../../data/stateTsa.js';
 
@@ -113,10 +113,20 @@ export function ContactModal({ title, contact, onClose }) {
     );
 }
 
-// Simple back link used at the top of the sub-pages.
+// Back link at the top of sub-pages. Returns to the actual previous page in
+// history (so coming from search returns to the search, coming from the 2026
+// landing returns there, etc). Falls back to `to` on a direct/deep-link visit.
 export function BackLink({ to = '/resources', label = 'Back' }) {
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const goBack = () => {
+        if (location.key && location.key !== 'default') navigate(-1);
+        else navigate(to);
+    };
+
     return (
-        <Link to={to} className="rs-back">
+        <button type="button" onClick={goBack} className="rs-back">
             <svg className="rs-back-arrow" width="21" height="21" viewBox="0 0 24 24"
                  fill="none" stroke="currentColor" strokeWidth="2.2"
                  strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -124,6 +134,6 @@ export function BackLink({ to = '/resources', label = 'Back' }) {
                 <path d="M10 6l-6 6 6 6" />
             </svg>
             <span>{label}</span>
-        </Link>
+        </button>
     );
 }
