@@ -7,7 +7,7 @@ import { COMPETITION_RULES } from '../../data/competitionRules.js';
 import { ABOUT_TSA } from '../../data/aboutTsa.js';
 import { NATIONAL_CONFERENCE } from '../../data/nationalConference.js';
 import { PROGRAMS } from '../../data/programs.js';
-import { Row, StateLinkRow, ContactModal, LEADERSHIP_ROLES } from './resourcesShared.jsx';
+import { Row, RowIcon, StateLinkRow, ContactModal, LEADERSHIP_ROLES } from './resourcesShared.jsx';
 
 import facebookIcon from '../../assets/img/social-media/facebook.png';
 import instagramIcon from '../../assets/img/social-media/instagram.png';
@@ -136,6 +136,164 @@ function NationalConferenceSection() {
     );
 }
 
+// ---------------------------------------------------------------------------
+// Search across everything on the Resources page.
+// Builds a flat index from every data source, then filters by the query.
+// ---------------------------------------------------------------------------
+
+// Extra search words per item (keyed by lowercased title), so results are
+// findable by synonyms and related terms, not just their exact title.
+const RESOURCE_KEYWORDS = {
+    // About TSA
+    'what is tsa': 'technology student association meaning overview intro about explained definition',
+    'who we are': 'mission vision motto values purpose cte career technical education',
+    'history': 'founded founding origin background past established started timeline',
+    'tsa competitions': 'events competitive events contests categories list of events',
+    'competition divisions': 'middle school high school ms hs grades division level age',
+
+    // National Conference — guides
+    '2026 national conference': 'nationals natcon national conference guide schedule 2026',
+    '2027 national conference': 'nationals natcon national conference guide schedule 2027 upcoming',
+
+    // National Conference — essentials
+    'registration and badges': 'register check in check-in badge id lanyard sign up onsite',
+    'dress code': 'attire clothing what to wear formal business competition attire shirt pants shoes tie outfit uniform',
+    'code of conduct': 'behavior conduct discipline expectations rules honor social media policy',
+    'packing checklist': 'what to bring pack luggage supplies essentials list bring items',
+    'competition requirements': 'entry requirements event prep materials deadlines what you need',
+    'travel, meals and budget': 'travel meals food budget money cost hotel flights transportation expenses dining per diem',
+    'safety and emergencies': 'safety emergency medical health security first aid evacuation help',
+    'results and awards': 'results awards winners scoring medals trophy placement ceremony ranking scores',
+
+    // Competition Rules categories
+    'competition eligibility': 'eligible membership affiliation who can compete grade division team size rules',
+    'entry requirements': 'entries how many events sign up register requirements limits',
+    'work and content rules': 'work content plagiarism originality copyright materials submission rules',
+    'schedule conflicts and emergencies': 'schedule conflict overlap timing emergency missed event rules',
+    'how judging works': 'judging judges rubric scoring evaluation criteria points how scored',
+    'violations and advancement': 'violation penalty disqualification dq advancement move on next round rules',
+
+    // Programs
+    'forward to fifty (f2f)': 'f2f growth membership growth 50 fiftieth anniversary recognition chapter',
+    'awards and scholarships': 'scholarship award money financial aid nths grants college funding tuition',
+    'leadership program': 'leadership officer skills 21st century skills voices podcast development training',
+    'national service project': 'service community service red cross volunteer charity giving donate nsp',
+    'tsa achievement program, pathways to excellence': 'achievement pathways excellence bronze silver gold pins recognition levels',
+
+    // National TSA + store + leadership
+    'official tsa website': 'tsaweb national site homepage main website official',
+    'official tsa instagram': 'social media instagram ig socials',
+    'official tsa facebook': 'social media facebook fb socials',
+    'official tsa youtube': 'social media youtube videos channel socials',
+    'official tsa store': 'store shop merch merchandise apparel clothing gear buy purchase attire',
+    'student leadership': 'officers student officers state officers national officers leadership team',
+    'tsa leadership & support': 'advisor adviser support contacts board of directors staff national office help',
+};
+
+function keywordsFor(title) {
+    return RESOURCE_KEYWORDS[String(title || '').trim().toLowerCase()] || '';
+}
+
+function buildResourceIndex(stateInfo) {
+    const items = [];
+
+    ABOUT_TSA.forEach((p) =>
+        items.push({ group: 'About TSA', title: p.title, icon: p.icon, to: `/resources/about/${p.id}` }));
+
+    NATIONAL_CONFERENCE.items.forEach((item) => {
+        if (item.type === 'link') {
+            items.push({ group: NATIONAL_CONFERENCE.title, title: item.title, icon: item.icon, to: item.route });
+        } else {
+            (item.children || []).forEach((c) =>
+                items.push({ group: item.title, title: c.title, icon: 'file-text', to: c.route }));
+        }
+    });
+
+    COMPETITION_RULES.forEach((cat) => {
+        items.push({
+            group: 'Competition Rules', title: cat.title, subtitle: cat.description,
+            icon: cat.icon, to: `/resources/competition-rules/${cat.id}`,
+        });
+        (cat.topics || []).forEach((t) =>
+            items.push({
+                group: cat.title, title: t.title, subtitle: t.description,
+                icon: 'file-text', to: `/resources/competition-rules/${cat.id}/${t.id}`,
+            }));
+    });
+
+    PROGRAMS.forEach((p) =>
+        items.push({ group: 'Programs & Initiatives', title: p.title, icon: p.icon, to: `/resources/programs/${p.id}` }));
+
+    // Your state's links that lead somewhere (website + socials + officer team).
+    if (stateInfo) {
+        (stateInfo.links || []).filter((l) => l.url).forEach((l) =>
+            items.push({ group: stateInfo.name || 'Your State', title: l.title, subtitle: l.desc, icon: l.icon, img: l.img, href: l.url }));
+    }
+
+    NATIONAL_TSA.forEach((r) =>
+        items.push({
+            group: 'National TSA', title: r.title, subtitle: r.desc,
+            icon: r.icon, img: r.img, svg: r.svg, iconColor: r.iconColor, href: r.url,
+        }));
+
+    items.push({
+        group: 'TSA Store', title: 'Official TSA Store',
+        subtitle: 'Apparel, competition attire, accessories, and merchandise.',
+        img: storeIcon, href: 'https://tsastore.mybrightsites.com/',
+    });
+
+    LEADERSHIP_NAV.forEach((n) =>
+        items.push({ group: 'Leadership & Contacts', title: n.title, subtitle: n.desc, icon: n.icon, img: n.img, to: n.to }));
+
+    return items;
+}
+
+function matchesResource(item, tokens) {
+    const hay = `${item.title} ${item.subtitle || ''} ${item.group} ${keywordsFor(item.title)}`.toLowerCase();
+    return tokens.every((t) => hay.includes(t));
+}
+
+function ResultRow({ item }) {
+    const inner = (
+        <>
+            <RowIcon icon={item.icon} img={item.img} svg={item.svg} color={item.iconColor} />
+            <span className="rs-text">
+                <span className="rs-title">{item.title}</span>
+                <span className="rs-desc">{item.group}</span>
+            </span>
+            <Icon name="chevron-right" size={18} />
+        </>
+    );
+    if (item.to) return <Link to={item.to} className="rs-row">{inner}</Link>;
+    if (item.href) return <a className="rs-row" href={item.href} target="_blank" rel="noreferrer">{inner}</a>;
+    return <span className="rs-row is-disabled" aria-disabled="true">{inner}</span>;
+}
+
+function SearchResults({ results, query }) {
+    return (
+        <>
+            <div className="rs-group-label">
+                {results.length} result{results.length === 1 ? '' : 's'} for &ldquo;{query.trim()}&rdquo;
+            </div>
+            {results.length > 0 ? (
+                <div className="rs-card">
+                    {results.map((item, i) => (
+                        <ResultRow key={`${item.to || item.href || item.title}-${i}`} item={item} />
+                    ))}
+                </div>
+            ) : (
+                <div className="rs-card">
+                    <span className="rs-row is-disabled" aria-disabled="true">
+                        <span className="rs-text">
+                            <span className="rs-desc">Nothing matches your search. Try a different word.</span>
+                        </span>
+                    </span>
+                </div>
+            )}
+        </>
+    );
+}
+
 export default function Resources() {
     const { prefs, setStatePref } = useApp();
     const state = prefs?.state;
@@ -166,16 +324,11 @@ export default function Resources() {
     // Advisor and officer-team links live on their dedicated leadership pages.
     const stateSocials = (stateInfo?.links || []).filter((l) => !LEADERSHIP_ROLES.has(l.role));
 
-    // Filter competition-rule categories by title/description + their topic titles.
-    const rules = q
-        ? COMPETITION_RULES.filter((cat) => {
-            const inCat = `${cat.title} ${cat.description || ''}`.toLowerCase().includes(q);
-            const inTopics = (cat.topics || []).some((t) =>
-                `${t.title} ${t.description || ''}`.toLowerCase().includes(q)
-            );
-            return inCat || inTopics;
-        })
-        : COMPETITION_RULES;
+    // Global search across everything on the page.
+    const tokens = q.split(/\s+/).filter(Boolean);
+    const results = q ? buildResourceIndex(stateInfo).filter((it) => matchesResource(it, tokens)) : [];
+
+    const rules = COMPETITION_RULES;
 
     return (
         <>
@@ -203,146 +356,152 @@ export default function Resources() {
                 )}
             </div>
 
-            {/* ABOUT TSA ------------------------------------------------------ */}
-            <div className="rs-group-label">About TSA</div>
-            <div className="rs-card">
-                {ABOUT_TSA.map((p) => (
-                    <Link key={p.id} to={`/resources/about/${p.id}`} className="rs-row">
-                        <span className="rs-ico"><Icon name={p.icon} size={20} /></span>
-                        <span className="rs-text">
+            {q ? (
+                <SearchResults results={results} query={query} />
+            ) : (
+                <>
+                    {/* ABOUT TSA ------------------------------------------------------ */}
+                    <div className="rs-group-label">About TSA</div>
+                    <div className="rs-card">
+                        {ABOUT_TSA.map((p) => (
+                            <Link key={p.id} to={`/resources/about/${p.id}`} className="rs-row">
+                                <span className="rs-ico"><Icon name={p.icon} size={20} /></span>
+                                <span className="rs-text">
                             <span className="rs-title">{p.title}</span>
                         </span>
-                        <Icon name="chevron-right" size={18} />
-                    </Link>
-                ))}
-            </div>
+                                <Icon name="chevron-right" size={18} />
+                            </Link>
+                        ))}
+                    </div>
 
-            {/* NATIONAL CONFERENCE -------------------------------------------- */}
-            <NationalConferenceSection />
+                    {/* NATIONAL CONFERENCE -------------------------------------------- */}
+                    <NationalConferenceSection />
 
-            {/* COMPETITION RULES & PREPARATION -------------------------------- */}
-            <div className="rs-group-label">Competition Rules &amp; Preparation</div>
-            {rules.length > 0 ? (
-                <div className="rs-card">
-                    {rules.map((cat) => (
-                        <Link key={cat.id} to={`/resources/competition-rules/${cat.id}`} className="rs-row">
-                            <span className="rs-ico"><Icon name={cat.icon} size={20} /></span>
-                            <span className="rs-text">
+                    {/* COMPETITION RULES & PREPARATION -------------------------------- */}
+                    <div className="rs-group-label">Competition Rules &amp; Preparation</div>
+                    {rules.length > 0 ? (
+                        <div className="rs-card">
+                            {rules.map((cat) => (
+                                <Link key={cat.id} to={`/resources/competition-rules/${cat.id}`} className="rs-row">
+                                    <span className="rs-ico"><Icon name={cat.icon} size={20} /></span>
+                                    <span className="rs-text">
                                 <span className="rs-title">{cat.title}</span>
                             </span>
-                            <Icon name="chevron-right" size={18} />
-                        </Link>
-                    ))}
-                </div>
-            ) : (
-                <div className="rs-card">
+                                    <Icon name="chevron-right" size={18} />
+                                </Link>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="rs-card">
                     <span className="rs-row is-disabled" aria-disabled="true">
                         <span className="rs-text">
                             <span className="rs-desc">No rules match "{query}".</span>
                         </span>
                     </span>
-                </div>
-            )}
+                        </div>
+                    )}
 
-            {/* PROGRAMS & INITIATIVES ----------------------------------------- */}
-            <div className="rs-group-label">Programs &amp; Initiatives</div>
-            <div className="rs-card">
-                {PROGRAMS.map((p) => (
-                    <Link key={p.id} to={`/resources/programs/${p.id}`} className="rs-row">
-                        <span className="rs-ico"><Icon name={p.icon} size={20} /></span>
-                        <span className="rs-text">
+                    {/* PROGRAMS & INITIATIVES ----------------------------------------- */}
+                    <div className="rs-group-label">Programs &amp; Initiatives</div>
+                    <div className="rs-card">
+                        {PROGRAMS.map((p) => (
+                            <Link key={p.id} to={`/resources/programs/${p.id}`} className="rs-row">
+                                <span className="rs-ico"><Icon name={p.icon} size={20} /></span>
+                                <span className="rs-text">
                             <span className="rs-title">{p.title}</span>
                         </span>
-                        <Icon name="chevron-right" size={18} />
-                    </Link>
-                ))}
-            </div>
-
-            {/* YOUR STATE ---------------------------------------------------- */}
-            <div className="rs-group-label">{state ? (stateInfo?.name || `${state} TSA`) : 'Your State'}</div>
-            <div className="rs-card">
-                {!state ? (
-                    <div className="rs-state-prompt">
-                        <p className="rs-state-prompt-text">
-                            Want to see more content for your state? Set your state and get access to more resources.
-                        </p>
-                        <button type="button" className="rs-state-btn" onClick={() => setShowPicker(true)}>
-                            <Icon name="globe" size={18} />
-                            Set your state
-                        </button>
+                                <Icon name="chevron-right" size={18} />
+                            </Link>
+                        ))}
                     </div>
-                ) : (
-                    <>
-                        {stateSocials.length > 0 ? (
-                            stateSocials.map((link) => (
-                                <StateLinkRow key={link.title} link={link} onOpenContact={openContact} />
-                            ))
-                        ) : (
+
+                    {/* YOUR STATE ---------------------------------------------------- */}
+                    <div className="rs-group-label">{state ? (stateInfo?.name || `${state} TSA`) : 'Your State'}</div>
+                    <div className="rs-card">
+                        {!state ? (
                             <div className="rs-state-prompt">
                                 <p className="rs-state-prompt-text">
-                                    We don&rsquo;t have {state} resources yet. In the meantime, browse the national
-                                    directory of state delegations.
+                                    Want to see more content for your state? Set your state and get access to more resources.
                                 </p>
-                                <a className="rs-row" href={STATE_DIRECTORY_URL} target="_blank" rel="noreferrer">
-                                    <span className="rs-ico"><Icon name="globe" size={20} /></span>
-                                    <span className="rs-text"><span className="rs-title">State Delegations Directory</span></span>
-                                    <Icon name="chevron-right" size={18} />
-                                </a>
+                                <button type="button" className="rs-state-btn" onClick={() => setShowPicker(true)}>
+                                    <Icon name="globe" size={18} />
+                                    Set your state
+                                </button>
                             </div>
+                        ) : (
+                            <>
+                                {stateSocials.length > 0 ? (
+                                    stateSocials.map((link) => (
+                                        <StateLinkRow key={link.title} link={link} onOpenContact={openContact} />
+                                    ))
+                                ) : (
+                                    <div className="rs-state-prompt">
+                                        <p className="rs-state-prompt-text">
+                                            We don&rsquo;t have {state} resources yet. In the meantime, browse the national
+                                            directory of state delegations.
+                                        </p>
+                                        <a className="rs-row" href={STATE_DIRECTORY_URL} target="_blank" rel="noreferrer">
+                                            <span className="rs-ico"><Icon name="globe" size={20} /></span>
+                                            <span className="rs-text"><span className="rs-title">State Delegations Directory</span></span>
+                                            <Icon name="chevron-right" size={18} />
+                                        </a>
+                                    </div>
+                                )}
+                                <button type="button" className="rs-change-state" onClick={() => setShowPicker(true)}>
+                                    Change state
+                                </button>
+                            </>
                         )}
-                        <button type="button" className="rs-change-state" onClick={() => setShowPicker(true)}>
-                            Change state
-                        </button>
-                    </>
-                )}
-            </div>
+                    </div>
 
-            {/* NATIONAL TSA --------------------------------------------------- */}
-            <div className="rs-group-label">National TSA</div>
-            <div className="rs-card">
-                {NATIONAL_TSA.map((row) => (
-                    <Row
-                        key={row.title}
-                        icon={row.icon}
-                        img={row.img}
-                        svg={row.svg}
-                        iconColor={row.iconColor}
-                        title={row.title}
-                        desc={row.desc}
-                        href={row.url}
-                    />
-                ))}
-            </div>
+                    {/* NATIONAL TSA --------------------------------------------------- */}
+                    <div className="rs-group-label">National TSA</div>
+                    <div className="rs-card">
+                        {NATIONAL_TSA.map((row) => (
+                            <Row
+                                key={row.title}
+                                icon={row.icon}
+                                img={row.img}
+                                svg={row.svg}
+                                iconColor={row.iconColor}
+                                title={row.title}
+                                desc={row.desc}
+                                href={row.url}
+                            />
+                        ))}
+                    </div>
 
-            {/* TSA STORE ------------------------------------------------------ */}
-            <div className="rs-group-label">TSA Store</div>
-            <div className="rs-card">
-                <Row
-                    img={storeIcon}
-                    title="Official TSA Store"
-                    desc="Shop official TSA apparel, competition attire, accessories, and merchandise."
-                    href="https://tsastore.mybrightsites.com/"
-                />
-            </div>
+                    {/* TSA STORE ------------------------------------------------------ */}
+                    <div className="rs-group-label">TSA Store</div>
+                    <div className="rs-card">
+                        <Row
+                            img={storeIcon}
+                            title="Official TSA Store"
+                            desc="Shop official TSA apparel, competition attire, accessories, and merchandise."
+                            href="https://tsastore.mybrightsites.com/"
+                        />
+                    </div>
 
-            {/* LEADERSHIP & CONTACTS (two nav cards -> dedicated pages) ------- */}
-            <div className="rs-group-label">Leadership &amp; Contacts</div>
-            <div className="rs-card">
-                {LEADERSHIP_NAV.map((item) => (
-                    <Link key={item.to} to={item.to} className="rs-row">
+                    {/* LEADERSHIP & CONTACTS (two nav cards -> dedicated pages) ------- */}
+                    <div className="rs-group-label">Leadership &amp; Contacts</div>
+                    <div className="rs-card">
+                        {LEADERSHIP_NAV.map((item) => (
+                            <Link key={item.to} to={item.to} className="rs-row">
                         <span className="rs-ico">
                             {item.img
                                 ? <img src={item.img} alt="" width={20} height={20} className="rs-ico-img" />
                                 : <Icon name={item.icon} size={20} />}
                         </span>
-                        <span className="rs-text">
+                                <span className="rs-text">
                             <span className="rs-title">{item.title}</span>
                             <span className="rs-desc">{item.desc}</span>
                         </span>
-                        <Icon name="chevron-right" size={18} />
-                    </Link>
-                ))}
-            </div>
+                                <Icon name="chevron-right" size={18} />
+                            </Link>
+                        ))}
+                    </div>
+                </>
+            )}
 
             {showPicker && (
                 <StatePicker

@@ -57,7 +57,7 @@ export default function Settings() {
     return (
         <>
             <div className="section">
-                <div className="rs-eyebrow">Settings</div>
+                <div className="rs-eyebrow">SYSTEM & STYLE</div>
                 <h1 className="cal-h1">Settings</h1>
             </div>
 
