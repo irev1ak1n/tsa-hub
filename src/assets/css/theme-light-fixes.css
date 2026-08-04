@@ -280,3 +280,14 @@ html[data-theme="light"] .cal-event {
     background: #ffffff;
     border-color: #d0d0da;
 }
+
+
+/* ---------------------------------------------------------------------------
+   White MONOCHROME PNG icons (store.png, tsa-leadership.png) are invisible on
+   the light background. Darken ONLY those, marked with .rs-ico-img--mono.
+   Colored brand icons (Instagram, Facebook, YouTube) keep .rs-ico-img alone
+   and are left untouched.
+   --------------------------------------------------------------------------- */
+html[data-theme="light"] .rs-ico-img--mono {
+    filter: invert(1) brightness(0.15);
+}

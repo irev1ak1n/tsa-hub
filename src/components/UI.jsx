@@ -83,6 +83,57 @@ export function SlidersIcon({ size = 22 }) {
     );
 }
 
+/* FILLED group-of-people icon (TSA leadership / board / staff).
+   Filled so it reads as a solid glyph like the reference; uses currentColor
+   so it themes with light/dark. Kept separate from <Icon> for the same
+   fill="none" reason as SlidersIcon. */
+export function UsersFilledIcon({ size = 22 }) {
+    return (
+        <svg
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden="true"
+        >
+            {/* back-left head */}
+            <circle cx="6.5" cy="8" r="2.4" />
+            {/* back-right head */}
+            <circle cx="17.5" cy="8" r="2.4" />
+            {/* front center head (larger) */}
+            <circle cx="12" cy="7" r="3" />
+            {/* back-left body */}
+            <path d="M2 18.2c0-2.2 1.9-3.7 4.5-3.7 1 0 1.9.2 2.6.6-1 .9-1.6 2.1-1.7 3.6H2.4c-.3 0-.4-.2-.4-.5z" />
+            {/* back-right body */}
+            <path d="M22 18.2c0-2.2-1.9-3.7-4.5-3.7-1 0-1.9.2-2.6.6 1 .9 1.6 2.1 1.7 3.6h5c.3 0 .4-.2.4-.5z" />
+            {/* front center body */}
+            <path d="M12 13c3 0 5 1.8 5 4.3 0 .4-.2.7-.6.7H7.6c-.4 0-.6-.3-.6-.7C7 14.8 9 13 12 13z" />
+        </svg>
+    );
+}
+
+/* FILLED storefront icon (Official TSA Store). */
+export function StoreFilledIcon({ size = 22 }) {
+    return (
+        <svg
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden="true"
+        >
+            {/* awning strip */}
+            <rect x="3.5" y="3.5" width="17" height="3.2" rx="1.1" />
+            {/* awning valance / roof */}
+            <path d="M3 7h18l1.4 4.2a1 1 0 0 1-1 1.3 2.2 2.2 0 0 1-2-1.2 2.2 2.2 0 0 1-2 1.2 2.2 2.2 0 0 1-2-1.2 2.2 2.2 0 0 1-2 1.2 2.2 2.2 0 0 1-2-1.2 2.2 2.2 0 0 1-2 1.2 2.2 2.2 0 0 1-2-1.2 2.2 2.2 0 0 1-2 1.2 1 1 0 0 1-1-1.3L3 7z" />
+            {/* store body with a doorway cut out */}
+            <path d="M4.5 13.2c.5 0 1-.1 1.4-.3V20a1 1 0 0 0 1 1h4v-5h3v5h4a1 1 0 0 0 1-1v-7.1c.4.2.9.3 1.4.3v.0M5.9 12.9V20h4v-5.5c0-.3.2-.5.5-.5h3c.3 0 .5.2.5.5V20h4v-7.1" />
+            {/* left window box */}
+            <rect x="6.8" y="15.4" width="3.4" height="3.2" rx=".4" fill="none" stroke="currentColor" strokeWidth="1.4" />
+        </svg>
+    );
+}
+
 export function TabBadge({ count }) {
     if (!count || count < 1) return null;
     return (

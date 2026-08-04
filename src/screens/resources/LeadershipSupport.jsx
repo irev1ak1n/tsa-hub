@@ -54,6 +54,7 @@ export default function LeadershipSupport() {
                 />
                 <Row
                     img={tsaLeadership}
+                    mono
                     title="Board of Directors"
                     desc="Learn about the board that guides TSA&rsquo;s direction."
                     href="https://tsaweb.org/about/tsa-inc.-board-of-directors"
@@ -72,6 +73,7 @@ export default function LeadershipSupport() {
                 />
                 <Row
                     img={tsaLeadership}
+                    mono
                     title="Contact National TSA"
                     desc="Reach the national office with general questions."
                     onClick={() => openContact('Contact National TSA', NATIONAL_CONTACT)}

@@ -16,13 +16,25 @@ export const NATIONAL_CONTACT = {
 // Roles that belong in the leadership pages (not "{State} TSA").
 export const LEADERSHIP_ROLES = new Set(['officer-team', 'advisor']);
 
-// Renders an image icon (imported PNG/SVG), an inline SVG string, or a named
-// <Icon>. `color` optionally tints the named <Icon>.
-export function RowIcon({ icon, img, svg, color }) {
+// Renders a ready React icon element (node), an image icon (imported PNG/SVG),
+// an inline SVG string, or a named <Icon>. `color` optionally tints the named
+// <Icon>. `node` wins first so callers can pass filled SVG components.
+// `mono` marks a white monochrome PNG so light-theme CSS can darken it
+// (colored brand logos like Instagram/Facebook should NOT pass mono).
+export function RowIcon({ node, icon, img, svg, color, mono }) {
+    if (node) {
+        return <span className="rs-ico">{node}</span>;
+    }
     if (img) {
         return (
             <span className="rs-ico">
-                <img src={img} alt="" width={20} height={20} className="rs-ico-img" />
+                <img
+                    src={img}
+                    alt=""
+                    width={20}
+                    height={20}
+                    className={`rs-ico-img${mono ? ' rs-ico-img--mono' : ''}`}
+                />
             </span>
         );
     }
@@ -44,10 +56,10 @@ export function RowIcon({ icon, img, svg, color }) {
 // A row that links externally (href), runs an action (onClick, e.g. opening a
 // contact modal), or is disabled. Keyboard + focus come free from <a>/<button>.
 // A row is NEVER rendered clickable with an empty destination.
-export function Row({ icon, img, svg, iconColor, title, desc, href, onClick }) {
+export function Row({ node, icon, img, svg, iconColor, mono, title, desc, href, onClick }) {
     const inner = (
         <>
-            <RowIcon icon={icon} img={img} svg={svg} color={iconColor} />
+            <RowIcon node={node} icon={icon} img={img} svg={svg} color={iconColor} mono={mono} />
             <span className="rs-text">
                 <span className="rs-title">{title}</span>
                 {desc && <span className="rs-desc">{desc}</span>}
@@ -65,10 +77,12 @@ export function Row({ icon, img, svg, iconColor, title, desc, href, onClick }) {
 export function StateLinkRow({ link, onOpenContact }) {
     return (
         <Row
+            node={link.node}
             icon={link.icon}
             img={link.img}
             svg={link.svg}
             iconColor={link.iconColor}
+            mono={link.mono}
             title={link.title}
             desc={link.desc}
             href={link.contact ? undefined : link.url}

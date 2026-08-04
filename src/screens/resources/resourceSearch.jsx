@@ -28,7 +28,7 @@ export const NATIONAL_TSA = [
 // The two leadership navigation cards (each links to its own dedicated page).
 export const LEADERSHIP_NAV = [
     { icon: 'help', title: 'Student Leadership', desc: 'Meet state and national student officers.', to: '/resources/student-leadership' },
-    { img: tsaLeadership, title: 'TSA Leadership & Support', desc: 'Find advisors, national leaders, and official contacts.', to: '/resources/leadership-support' },
+    { img: tsaLeadership, mono: true, title: 'TSA Leadership & Support', desc: 'Find advisors, national leaders, and official contacts.', to: '/resources/leadership-support' },
 ];
 
 // Extra search words per item (keyed by lowercased title).
@@ -99,16 +99,16 @@ export function buildResourceIndex(stateInfo) {
 
     if (stateInfo) {
         (stateInfo.links || []).filter((l) => l.url).forEach((l) =>
-            items.push({ group: stateInfo.name || 'Your State', title: l.title, subtitle: l.desc, icon: l.icon, img: l.img, href: l.url }));
+            items.push({ group: stateInfo.name || 'Your State', title: l.title, subtitle: l.desc, icon: l.icon, img: l.img, mono: l.mono, href: l.url }));
     }
 
     NATIONAL_TSA.forEach((r) =>
         items.push({ group: 'National TSA', title: r.title, subtitle: r.desc, icon: r.icon, img: r.img, svg: r.svg, iconColor: r.iconColor, href: r.url }));
 
-    items.push({ group: 'TSA Store', title: 'Official TSA Store', subtitle: 'Apparel, competition attire, accessories, and merchandise.', img: storeIcon, href: 'https://tsastore.mybrightsites.com/' });
+    items.push({ group: 'TSA Store', title: 'Official TSA Store', subtitle: 'Apparel, competition attire, accessories, and merchandise.', img: storeIcon, mono: true, href: 'https://tsastore.mybrightsites.com/' });
 
     LEADERSHIP_NAV.forEach((n) =>
-        items.push({ group: 'Leadership & Contacts', title: n.title, subtitle: n.desc, icon: n.icon, img: n.img, to: n.to }));
+        items.push({ group: 'Leadership & Contacts', title: n.title, subtitle: n.desc, icon: n.icon, img: n.img, mono: n.mono, to: n.to }));
 
     return items;
 }
@@ -121,7 +121,7 @@ export function matchesResource(item, tokens) {
 function ResultRow({ item, onPick }) {
     const inner = (
         <>
-            <RowIcon icon={item.icon} img={item.img} svg={item.svg} color={item.iconColor} />
+            <RowIcon icon={item.icon} img={item.img} svg={item.svg} color={item.iconColor} mono={item.mono} />
             <span className="rs-text">
                 <span className="rs-title">{item.title}</span>
                 <span className="rs-desc">{item.group}</span>
