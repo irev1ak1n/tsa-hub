@@ -242,22 +242,41 @@ html[data-theme="light"] .ev-filter-btn {
 }
 
 /* ---------------------------------------------------------------------------
-   Calendar (class names inferred — see note if still white)
+   Calendar (real classes from calendar.css)
    --------------------------------------------------------------------------- */
-html[data-theme="light"] .cal-title,
-html[data-theme="light"] .cal-month,
+html[data-theme="light"] .cal-h1,
+html[data-theme="light"] .cal-cell,
+html[data-theme="light"] .cal-cell-num,
 html[data-theme="light"] .cal-today-btn,
 html[data-theme="light"] .cal-nav-btn,
-html[data-theme="light"] .cal-day,
-html[data-theme="light"] .cal-date,
-html[data-theme="light"] .cal-cell {
+html[data-theme="light"] .cal-day-label,
+html[data-theme="light"] .cal-event-title {
     color: #111111;
 }
 html[data-theme="light"] .cal-weekday,
-html[data-theme="light"] .cal-dow {
+html[data-theme="light"] .cal-empty {
     color: #4a4a55;
 }
-html[data-theme="light"] .cal-day.is-muted,
-html[data-theme="light"] .cal-day.muted {
-    color: #a0a0ac;
+/* days outside the current month: readable mid-grey instead of faint white */
+html[data-theme="light"] .cal-cell.is-outside .cal-cell-num {
+    color: rgba(0, 0, 0, 0.32);
+}
+/* nav buttons / today pill borders + hover on light */
+html[data-theme="light"] .cal-nav-btn,
+html[data-theme="light"] .cal-today-btn {
+    border-color: #d0d0da;
+}
+html[data-theme="light"] .cal-nav-btn:hover,
+html[data-theme="light"] .cal-today-btn:hover,
+html[data-theme="light"] .cal-cell:hover {
+    background: #ececf3;
+}
+/* today ring + selected fill: keep as-is (blue works on light too) */
+html[data-theme="light"] .cal-cell.is-selected .cal-cell-num {
+    color: #ffffff;
+}
+/* event card on light */
+html[data-theme="light"] .cal-event {
+    background: #ffffff;
+    border-color: #d0d0da;
 }
