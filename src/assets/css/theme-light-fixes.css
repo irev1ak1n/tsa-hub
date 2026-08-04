@@ -1,0 +1,263 @@
+/* ============================================================================
+   LIGHT THEME — visibility overrides.
+   Approach A: the app is themed via tokens, but many screens hardcode white /
+   near-white text (#ffffff, #F6F6F6) that becomes invisible on the light bg.
+   These rules apply ONLY under html[data-theme="light"] and repaint that text
+   dark. Class names here are taken from the real settings.css / resources.css.
+   Load this file LAST (after settings.css and resources.css) so it wins.
+   ============================================================================ */
+
+/* ==== shared dark text + muted text helpers (values) ========================
+   text:   #111111
+   muted:  #4a4a55
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   Eyebrows / red accents (SYSTEM & STYLE, TSA GUIDE, section numbers)
+   Dark mode uses pinkish #FF5A6E / #FF3B52 — make them a deeper red on light.
+   --------------------------------------------------------------------------- */
+html[data-theme="light"] .rs-eyebrow,
+html[data-theme="light"] .cf26-preview-eyebrow {
+    color: #D01023;
+}
+html[data-theme="light"] .cf26-toc-num,
+html[data-theme="light"] .cf26-num {
+    color: #C20E22;
+}
+
+/* ---------------------------------------------------------------------------
+   Page titles ( #ffffff -> dark )
+   --------------------------------------------------------------------------- */
+html[data-theme="light"] .rs-h1,
+html[data-theme="light"] .aw-page h1,
+html[data-theme="light"] .cal-h1,
+html[data-theme="light"] .doc-h1,
+html[data-theme="light"] .set-title {
+    color: #111111;
+}
+
+/* ---------------------------------------------------------------------------
+   Resources list: row titles, descriptions, group labels, icons, back link
+   --------------------------------------------------------------------------- */
+html[data-theme="light"] .rs-title,
+html[data-theme="light"] .rs-subrow .rs-sub-title {
+    color: #111111;
+}
+html[data-theme="light"] .rs-desc,
+html[data-theme="light"] .rs-note,
+html[data-theme="light"] .rs-sub,
+html[data-theme="light"] .rs-group-label {
+    color: #4a4a55;
+}
+html[data-theme="light"] .rs-ico,
+html[data-theme="light"] .rs-subrow .rs-sub-ico {
+    color: #111111;
+}
+html[data-theme="light"] .rs-row > svg,
+html[data-theme="light"] .rs-subrow > svg,
+html[data-theme="light"] .rs-acc-chevron {
+    color: rgba(0, 0, 0, 0.45);
+}
+html[data-theme="light"] .rs-back {
+    color: #111111;
+}
+html[data-theme="light"] .rs-row:hover,
+html[data-theme="light"] .rs-subrow:hover,
+html[data-theme="light"] .rs-acc-btn:hover {
+    background: #ececf3;
+}
+html[data-theme="light"] .rs-search-input,
+html[data-theme="light"] .rs-search-placeholder {
+    color: #4a4a55;
+}
+html[data-theme="light"] .rs-search {
+    background: #ececf3;
+    border-color: #d0d0da;
+}
+
+/* ---------------------------------------------------------------------------
+   Competition Rules topic pages (.rk-*)
+   --------------------------------------------------------------------------- */
+html[data-theme="light"] .rk-block-title,
+html[data-theme="light"] .rk-group-title,
+html[data-theme="light"] .rk-point-text,
+html[data-theme="light"] .rk-point-num,
+html[data-theme="light"] .rk-intro,
+html[data-theme="light"] .rk-list-item,
+html[data-theme="light"] .rk-group-item,
+html[data-theme="light"] .rk-source-section,
+html[data-theme="light"] .rk-source-name,
+html[data-theme="light"] .rk-callout-text {
+    color: #111111;
+}
+html[data-theme="light"] .rk-block-body,
+html[data-theme="light"] .rk-group-intro,
+html[data-theme="light"] .rk-footer,
+html[data-theme="light"] .rk-source-label,
+html[data-theme="light"] .rk-source-sub,
+html[data-theme="light"] .rk-sub-num {
+    color: #4a4a55;
+}
+html[data-theme="light"] .rk-source {
+    background: #ffffff;
+    border-color: #d0d0da;
+}
+html[data-theme="light"] .rk-chip {
+    color: #4a4a55;
+    background: #ececf3;
+    border-color: #d0d0da;
+}
+
+/* ---------------------------------------------------------------------------
+   Program pages (.aw-*) and scholarship blocks — were forced #ffffff
+   --------------------------------------------------------------------------- */
+html[data-theme="light"] .aw-sub,
+html[data-theme="light"] .aw-intro,
+html[data-theme="light"] .aw-note,
+html[data-theme="light"] .aw-page .rk-scholar-text {
+    color: #1a1a1f;
+}
+html[data-theme="light"] .aw-page .rk-scholar-title {
+    color: #2f49c9; /* keep a blue accent but readable on white */
+}
+html[data-theme="light"] .aw-page .aw-heading {
+    color: #b23a2f;
+}
+
+/* ---------------------------------------------------------------------------
+   About-TSA article helper blocks (.cf-item-*)
+   --------------------------------------------------------------------------- */
+html[data-theme="light"] .cf-item-label {
+    color: #111111;
+}
+
+/* ---------------------------------------------------------------------------
+   2026 National Conference guide (.cf26-*)
+   --------------------------------------------------------------------------- */
+html[data-theme="light"] .cf26-meta,
+html[data-theme="light"] .cf26-toc-title,
+html[data-theme="light"] .cf26-officer-name,
+html[data-theme="light"] .cf26-preview-title {
+    color: #111111;
+}
+html[data-theme="light"] .cf26-title {
+    color: #2f49c9;
+}
+html[data-theme="light"] .cf26-session-meta,
+html[data-theme="light"] .cf26-officer-sub,
+html[data-theme="light"] .cf26-preview-meta,
+html[data-theme="light"] .cf26-sub-label {
+    color: #4a4a55;
+}
+html[data-theme="light"] .cf26-toc-row > svg {
+    color: rgba(0, 0, 0, 0.45);
+}
+html[data-theme="light"] .cf26-toc-row:hover,
+html[data-theme="light"] .cf26-back-toc:hover {
+    background: #ececf3;
+}
+html[data-theme="light"] .cf26-officer {
+    background: #ffffff;
+    border-color: #d0d0da;
+}
+/* floating "Contents" button + sheet stay legible on light */
+html[data-theme="light"] .cf26-fab {
+    background: #ffffff;
+    color: #111111;
+    border-color: #d0d0da;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+}
+
+/* ---------------------------------------------------------------------------
+   2026 shared topic pages (.cf2026-*)
+   --------------------------------------------------------------------------- */
+html[data-theme="light"] .cf2026-line,
+html[data-theme="light"] .cf2026-item-label,
+html[data-theme="light"] .cf2026-item-text,
+html[data-theme="light"] .cf2026-item-contact,
+html[data-theme="light"] .cf2026-contact-val {
+    color: #111111;
+}
+html[data-theme="light"] .cf2026-item-meta,
+html[data-theme="light"] .cf2026-contact-label,
+html[data-theme="light"] .cf2026-attrib-role,
+html[data-theme="light"] .cf2026-item-contact .cf2026-contact-label {
+    color: #4a4a55;
+}
+
+/* ---------------------------------------------------------------------------
+   Settings (white cards) — keep text dark
+   --------------------------------------------------------------------------- */
+html[data-theme="light"] .set-card-title,
+html[data-theme="light"] .set-label,
+html[data-theme="light"] .set-theme-value,
+html[data-theme="light"] .set-row {
+    color: #111111;
+}
+html[data-theme="light"] .set-sub,
+html[data-theme="light"] .set-uplabel,
+html[data-theme="light"] .set-ico {
+    color: #4a4a55;
+}
+
+/* ---------------------------------------------------------------------------
+   Doc pages (Privacy / Terms)
+   --------------------------------------------------------------------------- */
+html[data-theme="light"] .doc-lead,
+html[data-theme="light"] .doc-h2 {
+    color: #111111;
+}
+html[data-theme="light"] .doc-p,
+html[data-theme="light"] .doc-updated,
+html[data-theme="light"] .doc-note {
+    color: #4a4a55;
+}
+
+/* ---------------------------------------------------------------------------
+   Events filters + search
+   --------------------------------------------------------------------------- */
+html[data-theme="light"] .ev-chip {
+    color: #111111;
+    border-color: #d0d0da;
+    background: #ffffff;
+}
+html[data-theme="light"] .ev-chip.on {
+    color: #ffffff;
+    background: #111111;
+    border-color: #111111;
+}
+html[data-theme="light"] .ev-chip-add {
+    color: #111111;
+    border-color: #d0d0da;
+}
+html[data-theme="light"] .ev-search-input {
+    color: #111111;
+}
+html[data-theme="light"] .ev-search {
+    background: #ececf3;
+    border-color: #d0d0da;
+}
+html[data-theme="light"] .ev-filter-btn {
+    color: #111111;
+}
+
+/* ---------------------------------------------------------------------------
+   Calendar (class names inferred — see note if still white)
+   --------------------------------------------------------------------------- */
+html[data-theme="light"] .cal-title,
+html[data-theme="light"] .cal-month,
+html[data-theme="light"] .cal-today-btn,
+html[data-theme="light"] .cal-nav-btn,
+html[data-theme="light"] .cal-day,
+html[data-theme="light"] .cal-date,
+html[data-theme="light"] .cal-cell {
+    color: #111111;
+}
+html[data-theme="light"] .cal-weekday,
+html[data-theme="light"] .cal-dow {
+    color: #4a4a55;
+}
+html[data-theme="light"] .cal-day.is-muted,
+html[data-theme="light"] .cal-day.muted {
+    color: #a0a0ac;
+}

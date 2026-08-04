@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useApp } from '../../context/AppContext.jsx';
 import { Icon } from '../../components/UI.jsx';
 
 function Row({ icon, label, value, onEdit, soon, onClick }) {
@@ -30,8 +31,7 @@ function Row({ icon, label, value, onEdit, soon, onClick }) {
     );
 }
 
-// Appearance theme row: shows a Dark/Light toggle. The toggle flips visually
-// but real theming isn't wired up yet, so tapping it surfaces a "Soon" notice.
+// Appearance theme row: a real Dark/Light toggle wired to app state.
 function ThemeRow({ dark, onToggle }) {
     return (
         <div className="set-row set-toggle-row">
@@ -57,16 +57,14 @@ function ThemeRow({ dark, onToggle }) {
 
 export default function Settings() {
     const navigate = useNavigate();
+    const { theme, toggleTheme } = useApp();
     const [note, setNote] = useState('');
-    const [dark, setDark] = useState(true); // visual only for now
+
+    const dark = theme !== 'light';
 
     function soon(msg) {
         setNote(msg);
         setTimeout(() => setNote(''), 2200);
-    }
-    function toggleTheme() {
-        setDark((d) => !d); // flip the switch visually
-        soon("Light theme isn't available yet.");
     }
 
     return (
@@ -88,13 +86,6 @@ export default function Settings() {
                 <div className="set-card-title">Appearance</div>
                 <ThemeRow dark={dark} onToggle={toggleTheme} />
             </div>
-
-            {/* Content & display */}
-            {/*<div className="set-card">*/}
-            {/*    <div className="set-card-title">Content &amp; display</div>*/}
-            {/*    <Row icon="globe" label="Display language" value="English" soon onClick={() => soon("Language options aren't available yet.")} />*/}
-            {/*    <Row icon="accessibility" label="Accessibility" soon onClick={() => soon("Accessibility settings aren't available yet.")} />*/}
-            {/*</div>*/}
 
             {/* Support */}
             <div className="set-card">

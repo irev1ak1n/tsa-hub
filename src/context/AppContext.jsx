@@ -6,8 +6,10 @@ const KEY = 'tsa-hub-state-v1';
 
 // No accounts. Everything lives locally on the device.
 // `prefs` holds the small set of user-chosen preferences (name, state, ...).
+// `theme` is 'dark' | 'light' and is applied to <html data-theme>.
 const EMPTY = {
   prefs: { name: '', state: '' },
+  theme: 'dark',
   myEvents: [],
   tasks: [],
   checklists: {},
@@ -23,7 +25,12 @@ function load() {
     if (!raw) return EMPTY;
     const saved = JSON.parse(raw);
     // Merge, and make sure prefs always has its default shape.
-    return { ...EMPTY, ...saved, prefs: { ...EMPTY.prefs, ...(saved.prefs || {}) } };
+    return {
+      ...EMPTY,
+      ...saved,
+      theme: saved.theme === 'light' ? 'light' : 'dark',
+      prefs: { ...EMPTY.prefs, ...(saved.prefs || {}) },
+    };
   } catch {
     return EMPTY;
   }
@@ -42,6 +49,11 @@ export function AppProvider({ children }) {
     } catch {
     }
   }, [state]);
+
+  // Apply the chosen theme to the document root so token overrides kick in.
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', state.theme || 'dark');
+  }, [state.theme]);
 
   const uid = () => Math.random().toString(36).slice(2, 9);
 
@@ -71,6 +83,14 @@ export function AppProvider({ children }) {
     },
     setStatePref(stateName) {
       setState((s) => ({ ...s, prefs: { ...s.prefs, state: stateName } }));
+    },
+
+    // ---- theme ----
+    setTheme(theme) {
+      setState((s) => ({ ...s, theme: theme === 'light' ? 'light' : 'dark' }));
+    },
+    toggleTheme() {
+      setState((s) => ({ ...s, theme: s.theme === 'light' ? 'dark' : 'light' }));
     },
 
     // ---- my events / checklists ----
