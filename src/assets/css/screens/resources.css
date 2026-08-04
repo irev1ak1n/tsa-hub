@@ -138,13 +138,10 @@
     max-width: 380px;
     /* dark translucent glass; page behind is blurred by the backdrop */
     background: rgba(10, 10, 12, .55);
-    /* thin, soft warm-orange border */
-    border: 1px solid rgba(232, 148, 74, .28);
+    /* neutral grey border, thicker */
+    border: 2px solid #404040;
     border-radius: 18px;
-    /* very gentle warm glow + soft depth shadow */
-    box-shadow:
-            0 0 50px rgba(232, 148, 74, .08),
-            0 20px 60px rgba(0, 0, 0, .5);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
     animation: rs-pop .14s ease;
 }
 @keyframes rs-pop { from { transform: scale(.97); opacity: .6; } to { transform: scale(1); opacity: 1; } }
@@ -154,7 +151,7 @@
     justify-content: space-between;
     gap: 10px;
     padding: 16px 18px;
-    border-bottom: 1px solid rgba(232, 148, 74, .15);
+    border-bottom: 1px solid #404040;
 }
 .rs-modal-head h3 {
     margin: 0;

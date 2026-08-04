@@ -281,7 +281,6 @@ html[data-theme="light"] .cal-event {
     border-color: #d0d0da;
 }
 
-
 /* ---------------------------------------------------------------------------
    White MONOCHROME PNG icons (store.png, tsa-leadership.png) are invisible on
    the light background. Darken ONLY those, marked with .rs-ico-img--mono.
@@ -294,22 +293,18 @@ html[data-theme="light"] .rs-ico-img--mono {
 
 /* ---------------------------------------------------------------------------
    Contact / state-picker modal in light theme.
-   The modal is hardcoded dark in resources.css (dark glass, light text).
-   Repaint it for light: light glass, dark text, light dividers. The warm
-   orange border + blur backdrop stay (they read fine on light too).
+   Light glass, dark text, neutral grey #404040 border (thicker), no orange.
    --------------------------------------------------------------------------- */
 html[data-theme="light"] .rs-modal {
     background: rgba(255, 255, 255, 0.75);
-    border-color: rgba(232, 148, 74, 0.35);
-    box-shadow:
-            0 0 50px rgba(232, 148, 74, 0.10),
-            0 20px 60px rgba(0, 0, 0, 0.18);
+    border: 2px solid #404040;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
 }
 html[data-theme="light"] .rs-modal-backdrop {
     background: rgba(0, 0, 0, 0.25);
 }
 html[data-theme="light"] .rs-modal-head {
-    border-bottom-color: rgba(232, 148, 74, 0.22);
+    border-bottom-color: #404040;
 }
 html[data-theme="light"] .rs-modal-head h3,
 html[data-theme="light"] .rs-contact-name,

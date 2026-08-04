@@ -1,0 +1,67 @@
+/* ============================================================================
+   Feedback modal — textarea + actions. Reuses the shared .rs-modal shell
+   (backdrop, blur, border) from resources.css. Add this to your global CSS.
+   ============================================================================ */
+
+.fb-hint {
+    font-family: var(--font-system);
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--muted);
+    margin: 0 0 12px;
+}
+
+.fb-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+    min-height: 110px;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    background: #171717;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-family: var(--font-system);
+    font-size: 15px;
+    line-height: 21px;
+    outline: none;
+}
+.fb-textarea::placeholder { color: var(--muted); }
+.fb-textarea:focus {
+    border-color: color-mix(in srgb, var(--ig-blue) 45%, var(--line));
+}
+.fb-textarea:disabled { opacity: .6; }
+
+.fb-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.fb-error {
+    font-family: var(--font-system);
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--red-400, #ff5a6e);
+    margin: 10px 0 0;
+}
+
+.fb-thanks {
+    font-family: var(--font-system);
+    font-size: 15px;
+    line-height: 22px;
+    color: var(--ink);
+    margin: 4px 0;
+}
+
+/* ---- light theme overrides (put these in theme-light-fixes.css instead
+        if you keep light overrides in one place) ---- */
+html[data-theme="light"] .fb-hint { color: #4a4a55; }
+html[data-theme="light"] .fb-thanks { color: #111111; }
+html[data-theme="light"] .fb-textarea {
+    background: #ffffff;
+    border-color: #d0d0da;
+    color: #111111;
+}
+html[data-theme="light"] .fb-textarea::placeholder { color: #8a8a95; }
