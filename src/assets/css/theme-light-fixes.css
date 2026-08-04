@@ -291,3 +291,54 @@ html[data-theme="light"] .cal-event {
 html[data-theme="light"] .rs-ico-img--mono {
     filter: invert(1) brightness(0.15);
 }
+
+/* ---------------------------------------------------------------------------
+   Contact / state-picker modal in light theme.
+   The modal is hardcoded dark in resources.css (dark glass, light text).
+   Repaint it for light: light glass, dark text, light dividers. The warm
+   orange border + blur backdrop stay (they read fine on light too).
+   --------------------------------------------------------------------------- */
+html[data-theme="light"] .rs-modal {
+    background: rgba(255, 255, 255, 0.75);
+    border-color: rgba(232, 148, 74, 0.35);
+    box-shadow:
+            0 0 50px rgba(232, 148, 74, 0.10),
+            0 20px 60px rgba(0, 0, 0, 0.18);
+}
+html[data-theme="light"] .rs-modal-backdrop {
+    background: rgba(0, 0, 0, 0.25);
+}
+html[data-theme="light"] .rs-modal-head {
+    border-bottom-color: rgba(232, 148, 74, 0.22);
+}
+html[data-theme="light"] .rs-modal-head h3,
+html[data-theme="light"] .rs-contact-name,
+html[data-theme="light"] .rs-contact-line {
+    color: #111111;
+}
+html[data-theme="light"] .rs-contact-line svg {
+    color: #6a6a75;
+}
+html[data-theme="light"] .rs-modal-close {
+    color: #6a6a75;
+}
+html[data-theme="light"] .rs-modal-close:hover {
+    background: #ececf3;
+    color: #111111;
+}
+
+/* state-picker modal internals */
+html[data-theme="light"] .rs-state-search {
+    background: #ececf3;
+    border-color: #d0d0da;
+}
+html[data-theme="light"] .rs-state-search-input,
+html[data-theme="light"] .rs-state-option {
+    color: #111111;
+}
+html[data-theme="light"] .rs-state-option:hover {
+    background: #ececf3;
+}
+html[data-theme="light"] .rs-state-empty {
+    color: #4a4a55;
+}
