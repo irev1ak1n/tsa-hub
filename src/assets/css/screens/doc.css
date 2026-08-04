@@ -1,58 +1,76 @@
-/* Long-form document pages (privacy policy, terms). ADD to index.css:
-   @import './doc.css';  */
+/* ============================================================================
+   Static document pages — Privacy Policy, Terms and Policies.
+   Dark #171717 surface, same two text colors used on Settings sections.
+   ============================================================================ */
 
-.doc {
-    max-width: 640px;
-    padding-bottom: 24px;
+.doc-page {
+    /* full #171717 background across the whole page, no card framing */
+    background: #171717;
+    border: 0;
+    border-radius: 0;
+    padding: 24px 20px 40px;
+    /* stretch the fill past the page container's side padding so no darker
+       background shows at the edges. If your layout uses a different content
+       padding, adjust the 20px values below to match it (or increase them). */
+    margin: -20px -20px 0;
+    min-height: 100vh;
 }
 
-.doc-meta {
+/* back link reuses the shared .rs-back styles from resources.css */
+
+.doc-h1 {
+    font-family: var(--font-display);
+    color: #ffffff;
+    margin: 0 0 6px;
+}
+
+.doc-updated {
     font-family: var(--font-system);
-    font-size: 12px;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 18px;
     color: var(--muted);
-    margin: 0 0 16px;
+    margin: 0;
+}
+
+.doc-body {
+    margin-top: 18px;
 }
 
 .doc-lead {
-    font-family: var(--font-body);
-    font-size: 15px;
-    line-height: 22px;
-    color: var(--ink);
+    font-family: var(--font-system);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    color: #ffffff;
     margin: 0 0 22px;
 }
 
-.doc h2 {
+.doc-h2 {
     font-family: var(--font-system);
-    font-weight: 700;
+    font-weight: 600;
     font-size: 16px;
-    line-height: 21px;
-    color: var(--ig-ink);
-    text-transform: none;
-    letter-spacing: normal;
+    line-height: 22px;
+    color: #ffffff;
     margin: 22px 0 8px;
 }
 
-.doc p {
-    font-family: var(--font-body);
+.doc-p {
+    font-family: var(--font-system);
+    font-weight: 400;
     font-size: 14px;
-    line-height: 21px;
+    line-height: 22px;
     color: var(--muted);
-    margin: 0 0 10px;
+    margin: 0 0 4px;
 }
 
-.doc ul {
-    margin: 0 0 12px;
-    padding-left: 20px;
-}
-
-.doc li {
-    font-family: var(--font-body);
-    font-size: 14px;
-    line-height: 21px;
+.doc-note {
+    font-family: var(--font-system);
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 20px;
     color: var(--muted);
-    margin-bottom: 4px;
-}
-
-.doc a.link {
-    color: var(--ig-link);
+    margin: 24px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid #404040;
 }

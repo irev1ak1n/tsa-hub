@@ -108,7 +108,7 @@ export default function Settings() {
             <div className="set-card">
                 <div className="set-card-title">About</div>
                 <Row icon="shield" label="Privacy Policy" onClick={() => navigate('/privacy')} />
-                <Row icon="file-text" label="Terms and Policies" soon onClick={() => soon("Terms and Policies aren't available yet.")} />
+                <Row icon="file-text" label="Terms and Policies" onClick={() => navigate('/terms')} />
             </div>
 
             <p className="small muted set-version">TSA Hub v0.1.0</p>

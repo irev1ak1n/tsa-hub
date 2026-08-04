@@ -10,8 +10,12 @@ import Resources from './screens/resources/Resources.jsx';
 import ResourceSearch from './screens/resources/ResourceSearchPage.jsx';
 import StudentLeadership from './screens/resources/StudentLeadership.jsx';
 import LeadershipSupport from './screens/resources/LeadershipSupport.jsx';
+
 import Coach from './screens/Coach.jsx';
+
 import Settings from './screens/profile/Settings.jsx';
+import PrivacyPolicy from './screens/profile/PrivacyPolicy.jsx';
+import Terms from './screens/profile/Terms.jsx';
 
 import CompetitionRuleCategory from './screens/CompetitionRuleCategory.jsx';
 import CompetitionRuleTopic from './screens/CompetitionRuleTopic.jsx';
@@ -54,6 +58,8 @@ export default function App() {
                         <Route path="/calendar" element={<Calendar />} />
 
                         <Route path="/settings" element={<Settings />} />
+                        <Route path="/privacy" element={<PrivacyPolicy />} />
+                        <Route path="/terms" element={<Terms />} />
 
                         <Route path="/resources/competition-rules/:cat" element={<CompetitionRuleCategory />} />
                         <Route path="/resources/competition-rules/:cat/:topic" element={<CompetitionRuleTopic />} />

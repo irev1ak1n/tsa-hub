@@ -161,7 +161,7 @@ export default function Resources() {
             <NationalConferenceSection />
 
             {/* COMPETITION RULES & PREPARATION -------------------------------- */}
-            <div className="rs-group-label">Competition Rules &amp; Preparation</div>
+            <div className="rs-group-label">General Rules &amp; Regulations</div>
             <div className="rs-card">
                 {rules.map((cat) => (
                     <Link key={cat.id} to={`/resources/competition-rules/${cat.id}`} className="rs-row">
