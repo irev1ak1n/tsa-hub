@@ -1,0 +1,167 @@
+/* ============================================================================
+   Competition Requirements — eligibility chart tables.
+   Bordered TSA-style chart. Accent header: red (dark) / blue (light).
+   Section headings ("2025 & 2026 ...") use the same accent.
+   ============================================================================ */
+
+.cr-table-wrap {
+    margin: 22px 0 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* heading above each table — white (dark) / blue (light) */
+.cr-table-heading {
+    font-family: var(--font-system);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    color: #ffffff;                 /* dark theme: white */
+    margin: 0 0 10px;
+}
+
+/* light-blue note strip (MS "one entry" note) */
+.cr-table-note {
+    font-family: var(--font-system);
+    font-size: 13px;
+    line-height: 19px;
+    color: var(--ink);
+    background: color-mix(in srgb, #c1121f 12%, var(--surface));
+    border: 1px solid color-mix(in srgb, #c1121f 30%, var(--line));
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    margin: 0 0 10px;
+}
+
+.cr-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-system);
+    font-size: 13px;
+    line-height: 19px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* header row — red in dark theme */
+.cr-table thead th {
+    text-align: left;
+    font-weight: 700;
+    color: #ffffff;
+    background: #c1121f;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--line);
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    white-space: nowrap;
+}
+.cr-table thead th:last-child { border-right: 0; }
+.cr-table thead th:first-child { width: 40%; }
+
+/* both columns: white text in dark theme */
+.cr-table td {
+    padding: 10px 14px;
+    color: #ffffff;
+    border-bottom: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    vertical-align: top;
+}
+.cr-table td:last-child { border-right: 0; }
+.cr-table tbody tr:last-child td { border-bottom: 0; }
+
+/* zebra striping */
+.cr-table tbody tr:nth-child(even) td {
+    background: var(--surface-2);
+}
+
+/* first column (competition name) a touch bolder */
+.cr-table td:first-child {
+    font-weight: 600;
+}
+
+/* ============================================================================
+   LIGHT THEME — accent becomes blue, header blue, both columns dark text
+   ============================================================================ */
+html[data-theme="light"] .cr-table-heading {
+    color: #1d4ed8;
+}
+html[data-theme="light"] .cr-table-note {
+    color: #111111;
+    background: #eef2fc;
+    border-color: #cdd7f3;
+}
+html[data-theme="light"] .cr-table thead th {
+    background: #1d4ed8;
+    color: #ffffff;
+    border-bottom-color: #d0d0da;
+    border-right-color: rgba(255, 255, 255, 0.25);
+}
+html[data-theme="light"] .cr-table,
+html[data-theme="light"] .cr-table td {
+    border-color: #d0d0da;
+}
+/* both columns dark in light theme */
+html[data-theme="light"] .cr-table td {
+    color: #1a1a1f;
+}
+html[data-theme="light"] .cr-table td:first-child {
+    color: #111111;
+}
+html[data-theme="light"] .cr-table tbody tr:nth-child(even) td {
+    background: #f2f2f7;
+}
+
+/* ---------------------------------------------------------------------------
+   Footnote under a table (e.g. "*Events that require state advisor approval.")
+   --------------------------------------------------------------------------- */
+.cr-footnote {
+    font-family: var(--font-system);
+    font-size: 12px;
+    line-height: 17px;
+    font-style: italic;
+    color: var(--muted);
+    margin: 8px 2px 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Explanatory notes block below all tables (PDF documents / URL link / ...)
+   --------------------------------------------------------------------------- */
+.cr-notes {
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.cr-note {
+    margin: 0;
+    font-family: var(--font-system);
+    font-size: 13px;
+    line-height: 19px;
+    color: var(--muted);
+}
+.cr-note-label {
+    font-weight: 700;
+    color: var(--ink);
+}
+html[data-theme="light"] .cr-note { color: #4a4a55; }
+html[data-theme="light"] .cr-note-label { color: #111111; }
+html[data-theme="light"] .cr-footnote { color: #6a6a75; }
+
+/* ---------------------------------------------------------------------------
+   Inline link rows inside a text section (stacked, like the source doc)
+   --------------------------------------------------------------------------- */
+.cr-links {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 8px 0 0;
+}
+.cr-link-row {
+    font-family: var(--font-system);
+    font-size: 14px;
+    line-height: 20px;
+    text-decoration: underline;
+}

@@ -13,5 +13,6 @@
 @import '../screens/doc.css';
 @import '../screens/recommender.css';
 @import '../screens/calendar.css';
-@import '../theme-light-fixes.css';
 @import '../feedback-modal.css';
+@import '../competition-requirements.css';
+@import '../theme-light-fixes.css';

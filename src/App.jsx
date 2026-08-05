@@ -8,14 +8,12 @@ import EventDetail from './screens/events/EventDetail.jsx';
 import Recommender from './screens/events/Recommender.jsx';
 import Resources from './screens/resources/Resources.jsx';
 import ResourceSearch from './screens/resources/ResourceSearchPage.jsx';
+import CompetitionRequirementPage from './screens/resources/CompetitionRequirementPage.jsx';
 import StudentLeadership from './screens/resources/StudentLeadership.jsx';
 import LeadershipSupport from './screens/resources/LeadershipSupport.jsx';
-
 import Coach from './screens/Coach.jsx';
-
 import Settings from './screens/profile/Settings.jsx';
 import PrivacyPolicy from './screens/profile/PrivacyPolicy.jsx';
-import Terms from './screens/profile/Terms.jsx';
 
 import CompetitionRuleCategory from './screens/CompetitionRuleCategory.jsx';
 import CompetitionRuleTopic from './screens/CompetitionRuleTopic.jsx';
@@ -59,10 +57,11 @@ export default function App() {
 
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/privacy" element={<PrivacyPolicy />} />
-                        <Route path="/terms" element={<Terms />} />
 
                         <Route path="/resources/competition-rules/:cat" element={<CompetitionRuleCategory />} />
                         <Route path="/resources/competition-rules/:cat/:topic" element={<CompetitionRuleTopic />} />
+
+                        <Route path="/resources/competition-requirements/:id" element={<CompetitionRequirementPage />} />
 
                         <Route path="/resources/programs/forward-to-fifty" element={<ForwardToFifty />} />
                         <Route path="/resources/programs/awards-scholarships" element={<AwardsScholarships />} />

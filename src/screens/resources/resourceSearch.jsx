@@ -4,6 +4,7 @@ import { RowIcon } from './resourcesShared.jsx';
 import { ABOUT_TSA } from '../../data/aboutTsa.js';
 import { NATIONAL_CONFERENCE } from '../../data/nationalConference.js';
 import { COMPETITION_RULES } from '../../data/competitionRules.js';
+import { COMPETITION_REQUIREMENTS } from '../../data/competitionRequirements.js';
 import { PROGRAMS } from '../../data/programs.js';
 
 import instagramIcon from '../../assets/img/social-media/instagram.png';
@@ -28,7 +29,7 @@ export const NATIONAL_TSA = [
 // The two leadership navigation cards (each links to its own dedicated page).
 export const LEADERSHIP_NAV = [
     { icon: 'help', title: 'Student Leadership', desc: 'Meet state and national student officers.', to: '/resources/student-leadership' },
-    { img: tsaLeadership, mono: true, title: 'TSA Leadership & Support', desc: 'Find advisors, national leaders, and official contacts.', to: '/resources/leadership-support' },
+    { img: tsaLeadership, title: 'TSA Leadership & Support', desc: 'Find advisors, national leaders, and official contacts.', to: '/resources/leadership-support' },
 ];
 
 // Extra search words per item (keyed by lowercased title).
@@ -97,18 +98,21 @@ export function buildResourceIndex(stateInfo) {
     PROGRAMS.forEach((p) =>
         items.push({ group: 'Programs & Initiatives', title: p.title, icon: p.icon, to: `/resources/programs/${p.id}` }));
 
+    COMPETITION_REQUIREMENTS.forEach((r) =>
+        items.push({ group: 'Competition Requirements & Updates', title: r.title, icon: r.icon, to: `/resources/competition-requirements/${r.id}` }));
+
     if (stateInfo) {
         (stateInfo.links || []).filter((l) => l.url).forEach((l) =>
-            items.push({ group: stateInfo.name || 'Your State', title: l.title, subtitle: l.desc, icon: l.icon, img: l.img, mono: l.mono, href: l.url }));
+            items.push({ group: stateInfo.name || 'Your State', title: l.title, subtitle: l.desc, icon: l.icon, img: l.img, href: l.url }));
     }
 
     NATIONAL_TSA.forEach((r) =>
         items.push({ group: 'National TSA', title: r.title, subtitle: r.desc, icon: r.icon, img: r.img, svg: r.svg, iconColor: r.iconColor, href: r.url }));
 
-    items.push({ group: 'TSA Store', title: 'Official TSA Store', subtitle: 'Apparel, competition attire, accessories, and merchandise.', img: storeIcon, mono: true, href: 'https://tsastore.mybrightsites.com/' });
+    items.push({ group: 'TSA Store', title: 'Official TSA Store', subtitle: 'Apparel, competition attire, accessories, and merchandise.', img: storeIcon, href: 'https://tsastore.mybrightsites.com/' });
 
     LEADERSHIP_NAV.forEach((n) =>
-        items.push({ group: 'Leadership & Contacts', title: n.title, subtitle: n.desc, icon: n.icon, img: n.img, mono: n.mono, to: n.to }));
+        items.push({ group: 'Leadership & Contacts', title: n.title, subtitle: n.desc, icon: n.icon, img: n.img, to: n.to }));
 
     return items;
 }
@@ -121,7 +125,7 @@ export function matchesResource(item, tokens) {
 function ResultRow({ item, onPick }) {
     const inner = (
         <>
-            <RowIcon icon={item.icon} img={item.img} svg={item.svg} color={item.iconColor} mono={item.mono} />
+            <RowIcon icon={item.icon} img={item.img} svg={item.svg} color={item.iconColor} />
             <span className="rs-text">
                 <span className="rs-title">{item.title}</span>
                 <span className="rs-desc">{item.group}</span>

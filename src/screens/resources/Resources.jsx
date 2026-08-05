@@ -4,6 +4,7 @@ import { useApp } from '../../context/AppContext.jsx';
 import { Icon } from '../../components/UI.jsx';
 import { getStateTsa, US_STATES, STATE_DIRECTORY_URL } from '../../data/stateTsa.js';
 import { COMPETITION_RULES } from '../../data/competitionRules.js';
+import { COMPETITION_REQUIREMENTS } from '../../data/competitionRequirements.js';
 import { ABOUT_TSA } from '../../data/aboutTsa.js';
 import { NATIONAL_CONFERENCE } from '../../data/nationalConference.js';
 import { PROGRAMS } from '../../data/programs.js';
@@ -161,13 +162,27 @@ export default function Resources() {
             <NationalConferenceSection />
 
             {/* COMPETITION RULES & PREPARATION -------------------------------- */}
-            <div className="rs-group-label">General Rules &amp; Regulations</div>
+            <div className="rs-group-label">Competition Rules &amp; Preparation</div>
             <div className="rs-card">
                 {rules.map((cat) => (
                     <Link key={cat.id} to={`/resources/competition-rules/${cat.id}`} className="rs-row">
                         <span className="rs-ico"><Icon name={cat.icon} size={20} /></span>
                         <span className="rs-text">
                             <span className="rs-title">{cat.title}</span>
+                        </span>
+                        <Icon name="chevron-right" size={18} />
+                    </Link>
+                ))}
+            </div>
+
+            {/* COMPETITION REQUIREMENTS & UPDATES ----------------------------- */}
+            <div className="rs-group-label">Competition Requirements &amp; Updates</div>
+            <div className="rs-card">
+                {COMPETITION_REQUIREMENTS.map((item) => (
+                    <Link key={item.id} to={`/resources/competition-requirements/${item.id}`} className="rs-row">
+                        <span className="rs-ico"><Icon name={item.icon} size={20} /></span>
+                        <span className="rs-text">
+                            <span className="rs-title">{item.title}</span>
                         </span>
                         <Icon name="chevron-right" size={18} />
                     </Link>
@@ -249,7 +264,6 @@ export default function Resources() {
             <div className="rs-card">
                 <Row
                     img={storeIcon}
-                    mono
                     title="Official TSA Store"
                     desc="Shop official TSA apparel, competition attire, accessories, and merchandise."
                     href="https://tsastore.mybrightsites.com/"
@@ -263,7 +277,7 @@ export default function Resources() {
                     <Link key={item.to} to={item.to} className="rs-row">
                         <span className="rs-ico">
                             {item.img
-                                ? <img src={item.img} alt="" width={20} height={20} className="rs-ico-img rs-ico-img--mono" />
+                                ? <img src={item.img} alt="" width={20} height={20} className="rs-ico-img" />
                                 : <Icon name={item.icon} size={20} />}
                         </span>
                         <span className="rs-text">
