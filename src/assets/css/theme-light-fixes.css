@@ -136,15 +136,20 @@ html[data-theme="light"] .cf-item-label {
    --------------------------------------------------------------------------- */
 html[data-theme="light"] .cf26-meta,
 html[data-theme="light"] .cf26-toc-title,
-html[data-theme="light"] .cf26-officer-name,
 html[data-theme="light"] .cf26-preview-title {
     color: #111111;
+}
+/* National officer team uses .officer-* classes (NOT cf26-officer-*) */
+html[data-theme="light"] .officer-name {
+    color: #111111;
+}
+html[data-theme="light"] .officer-role {
+    color: #4a4a55;
 }
 html[data-theme="light"] .cf26-title {
     color: #2f49c9;
 }
 html[data-theme="light"] .cf26-session-meta,
-html[data-theme="light"] .cf26-officer-sub,
 html[data-theme="light"] .cf26-preview-meta,
 html[data-theme="light"] .cf26-sub-label {
     color: #4a4a55;
@@ -156,7 +161,7 @@ html[data-theme="light"] .cf26-toc-row:hover,
 html[data-theme="light"] .cf26-back-toc:hover {
     background: #ececf3;
 }
-html[data-theme="light"] .cf26-officer {
+html[data-theme="light"] .officer {
     background: #ffffff;
     border-color: #d0d0da;
 }
