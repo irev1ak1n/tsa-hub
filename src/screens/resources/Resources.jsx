@@ -264,6 +264,7 @@ export default function Resources() {
             <div className="rs-card">
                 <Row
                     img={storeIcon}
+                    mono
                     title="Official TSA Store"
                     desc="Shop official TSA apparel, competition attire, accessories, and merchandise."
                     href="https://tsastore.mybrightsites.com/"
@@ -277,7 +278,7 @@ export default function Resources() {
                     <Link key={item.to} to={item.to} className="rs-row">
                         <span className="rs-ico">
                             {item.img
-                                ? <img src={item.img} alt="" width={20} height={20} className="rs-ico-img" />
+                                ? <img src={item.img} alt="" width={20} height={20} className="rs-ico-img rs-ico-img--mono" />
                                 : <Icon name={item.icon} size={20} />}
                         </span>
                         <span className="rs-text">
