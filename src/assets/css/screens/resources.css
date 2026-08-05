@@ -1279,3 +1279,45 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     line-height: 20px;
     color: var(--muted);
 }
+
+
+/* ============================================================================
+   Conference: National Officer Team grid (photo + name + role, 3 across)
+   ============================================================================ */
+.officer-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px 12px;
+    margin: 10px 0 6px;
+}
+.officer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.officer-photo {
+    width: 100%;
+    max-width: 104px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    margin-bottom: 8px;
+}
+.officer-name {
+    font-family: var(--font-system);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 18px;
+    color: #ffffff;
+}
+.officer-role {
+    font-family: var(--font-system);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    color: var(--muted);
+    margin-top: 2px;
+}

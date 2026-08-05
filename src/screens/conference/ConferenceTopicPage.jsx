@@ -3,6 +3,14 @@ import { useParams, Navigate } from 'react-router-dom';
 import { BackLink } from '../resources/resourcesShared.jsx';
 import { getConference2026Topic } from '../../data/conference2026.js';
 
+// National officer photos: src/screens/resources/conference/ -> assets/img/...
+const OFFICER_IMAGES = import.meta.glob('../../assets/img/national-officers-2026/*.png', { eager: true });
+const officerImg = {};
+for (const path in OFFICER_IMAGES) {
+    const file = path.split('/').pop().replace(/\.png$/i, '');
+    officerImg[file] = OFFICER_IMAGES[path].default || OFFICER_IMAGES[path];
+}
+
 // Strip non-digits for a tel: href.
 function telHref(v) {
     return 'tel:' + String(v).replace(/[^\d]/g, '');
@@ -87,6 +95,23 @@ function Section({ sec }) {
                                     <ContactValue value={it.contact.value} tel={it.contact.tel} />
                                 </div>
                             )}
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* national officer team: photo + name + role, 3 across */}
+            {sec.officers && sec.officers.length > 0 && (
+                <div className="officer-grid">
+                    {sec.officers.map((o, i) => (
+                        <div key={i} className="officer">
+                            {officerImg[o.img] ? (
+                                <img className="officer-photo" src={officerImg[o.img]} alt={o.name} />
+                            ) : (
+                                <div className="officer-photo" aria-hidden="true" />
+                            )}
+                            <div className="officer-name">{o.name}</div>
+                            <div className="officer-role">{o.role}</div>
                         </div>
                     ))}
                 </div>

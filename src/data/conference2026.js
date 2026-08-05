@@ -12,6 +12,8 @@
 //   contacts     [{ label, value, tel? }] contact rows (tel -> clickable)
 //   collapsible  true -> `list` renders as a show/hide group
 //   items        [{ label, meta?:[str], text?, list? }] labelled sub-blocks
+//   officers     [{ role, name, img }] photo grid (img = filename in
+//                assets/img/national-officers-2026/ without extension)
 //   note         muted footnote
 //   attribution  { name, role }
 // ============================================================================
@@ -22,6 +24,7 @@ export const CONFERENCE_2026_HEADER = {
     dateLabel: 'June 22\u201326, 2026',
     venue: 'Gaylord National Resort and Convention Center',
     location: 'National Harbor, Maryland',
+    theme: 'Unity Through Community',
 };
 
 // Landing-page topic rows.
@@ -55,17 +58,16 @@ export const CONFERENCE_2026 = {
                     'The 2026 National TSA Conference is the 48th National TSA Conference. It brings TSA members together for competitive events, leadership development, networking, recognition, and opportunities to explore the Washington, D.C. area.',
                     'The theme \u201CUnity Through Community\u201D represents the relationships that connect TSA members across chapters and state delegations. Attendees are encouraged to meet new people, participate in conference activities, explore STEM opportunities, and give their best effort in competition.',
                 ],
-                attribution: { name: 'Sen Yakandawala', role: '2025\u20132026 National TSA President' },
             },
             {
                 heading: 'National Officer Team',
-                items: [
-                    { label: 'President', text: 'Sen Yakandawala' },
-                    { label: 'Vice President', text: 'Lizzie Grounds' },
-                    { label: 'Secretary', text: 'Veronica Gao' },
-                    { label: 'Treasurer', text: 'Avni Patel' },
-                    { label: 'Reporter', text: 'Rebecca Mogga' },
-                    { label: 'Sergeant-at-Arms', text: 'Daniel Blackburn' },
+                officers: [
+                    { role: 'President', name: 'Sen Yakandawala', img: 'president' },
+                    { role: 'Vice President', name: 'Lizzie Grounds', img: 'vp' },
+                    { role: 'Secretary', name: 'Veronica Gao', img: 'secretary' },
+                    { role: 'Treasurer', name: 'Avni Patel', img: 'treasurer' },
+                    { role: 'Reporter', name: 'Rebecca Mogga', img: 'reporter' },
+                    { role: 'Sergeant-at-Arms', name: 'Daniel Blackburn', img: 'sergent-at-arms' },
                 ],
             },
         ],

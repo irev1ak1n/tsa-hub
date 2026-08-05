@@ -31,6 +31,23 @@ export default function Conference2026Landing() {
                     </Link>
                 ))}
             </div>
+
+            <div className="rs-group-label">Official Program</div>
+            <div className="rs-card">
+                <a
+                    className="rs-row"
+                    href="https://tsaweb.org/docs/default-source/national-conferences/2026/2026-conference-program.pdf"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    <span className="rs-ico"><Icon name="file-text" size={20} /></span>
+                    <span className="rs-text">
+                        <span className="rs-title">2026 Conference Program (PDF)</span>
+                        <span className="rs-desc">Official full conference program from tsaweb.org.</span>
+                    </span>
+                    <Icon name="chevron-right" size={18} />
+                </a>
+            </div>
         </div>
     );
 }
