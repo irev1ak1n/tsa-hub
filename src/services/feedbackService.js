@@ -1,22 +1,30 @@
 // ============================================================
-// TSA HUB — feedback submission.
-// Writes a single row to the `feedback` table. Anonymous insert
-// is allowed by an RLS policy; the anon role has INSERT only (no
-// SELECT). We therefore tell Supabase NOT to return the inserted
-// row (returning: 'minimal'), otherwise PostgREST tries to SELECT
-// it back and the missing SELECT grant causes a 403 / 42501.
+// TSA HUB — feedback + incorrect-info reports.
+// Both write a single row to the `feedback` table (differentiated
+// by the `type` column: 'feedback' | 'report'). Anonymous insert
+// is allowed by an RLS policy; the role has INSERT only (no SELECT),
+// so we pass { returning: 'minimal' } to avoid a read-back that
+// would need SELECT rights.
 // ============================================================
 
 import { supabase } from './supabase.js';
 
-export async function submitFeedback(message) {
+async function insertFeedback(message, type) {
     const text = String(message || '').trim();
     if (!text) return { ok: false, error: 'empty' };
 
     const { error } = await supabase
         .from('feedback')
-        .insert({ message: text }, { returning: 'minimal' });
+        .insert({ message: text, type }, { returning: 'minimal' });
 
     if (error) return { ok: false, error: error.message || 'failed' };
     return { ok: true };
+}
+
+export function submitFeedback(message) {
+    return insertFeedback(message, 'feedback');
+}
+
+export function submitReport(message) {
+    return insertFeedback(message, 'report');
 }
