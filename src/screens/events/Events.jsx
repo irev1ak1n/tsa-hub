@@ -4,6 +4,7 @@ import { useApp } from '../../context/AppContext.jsx';
 import { EVENTS, CATEGORIES } from '../../data/events.js';
 import { Icon, SlidersIcon } from '../../components/UI.jsx';
 import { EventGrid } from './eventsShared.jsx';
+import SupportButton from '../../components/SupportButton.jsx';
 
 export default function Events() {
     const { eventsLoading } = useApp();
@@ -84,6 +85,10 @@ export default function Events() {
             {!eventsLoading && list.length === 0 && (
                 <p className="muted" style={{ marginTop: 16 }}>No events match that filter.</p>
             )}
+
+
+            <SupportButton preset="recommender" />
         </div>
+
     );
 }

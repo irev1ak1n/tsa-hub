@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext.jsx';
 import { Icon } from '../components/UI.jsx';
+import SupportButton from '../components/SupportButton.jsx';
 
 export default function Dashboard() {
   const { prefs } = useApp();
@@ -32,6 +33,9 @@ export default function Dashboard() {
             </Link>
           </div>
         </div>
+
+        {/* Floating button — kept OUTSIDE .quick so no card styles apply to it */}
+        <SupportButton preset="coach" />
       </>
   );
 }
