@@ -425,7 +425,7 @@ export default function Recommender() {
         <>
             <div className="section">
                 <div className="rec-progress">
-                    {STEP_TITLES.map((_, i) => <span key={i} className={`rec-dot ${i <= step ? 'on' : ''}`} />)}
+                    {STEP_TITLES.map((_, i) => <span key={i} className={`rec-dot ${i <= step ? 'on' : ''}`}/>)}
                 </div>
                 <div className="eyebrow">Step {step + 1} of {STEP_COUNT}</div>
                 <h1>{STEP_TITLES[step]}</h1>
@@ -435,7 +435,8 @@ export default function Recommender() {
             {step === 0 && (
                 <>
                     <p className="muted small rec-stepsub">
-                        Put what interests you most at the top, and we’ll use your choices to find the best matches for you.
+                        Put what interests you most at the top, and we’ll use your choices to find the best matches for
+                        you.
                     </p>
                     <div
                         className={`drag-list ${draggingId ? 'is-dragging' : ''} ${committing ? 'is-committing' : ''}`}
@@ -489,10 +490,11 @@ export default function Recommender() {
             {step === 1 && (
                 <>
                     <p className="muted small rec-stepsub">
-                        Choose up to five types of projects you’d enjoy working on, starting with your favorite. Your choices will help shape your matches.
+                        Choose up to five types of projects you’d enjoy working on, starting with your favorite. Your
+                        choices will help shape your matches.
                     </p>
                     <div className="tile-grid">
-                        {STEP2_WORK_OPTIONS.map(({ id, label }) => {
+                        {STEP2_WORK_OPTIONS.map(({id, label}) => {
                             const idx = workRank.indexOf(id);
                             const on = idx !== -1;
                             const disabled = !on && workRank.length >= 5;
@@ -516,15 +518,17 @@ export default function Recommender() {
             {/* STEP 3 — careers */}
             {step === 2 && (
                 <>
-                    <p className="muted small rec-stepsub">Choose up to 3 career paths you’re most interested in. We’ll use them to show how each event connects to your future goals.</p>
+                    <p className="muted small rec-stepsub">Choose up to 3 career paths you’re most interested in. We’ll
+                        use them to show how each event connects to your future goals.</p>
                     <div className="rec-options">
                         {CAREERS.map(([id, label]) => {
                             const on = careers.includes(id);
                             const disabled = !on && careers.length >= 3;
                             return (
-                                <button key={id} className={`rec-opt ${on ? 'on' : ''}`} disabled={disabled} onClick={() => toggleCareer(id)}>
+                                <button key={id} className={`rec-opt ${on ? 'on' : ''}`} disabled={disabled}
+                                        onClick={() => toggleCareer(id)}>
                                     <span className="rec-opt-main"><span className="rec-opt-label">{label}</span></span>
-                                    {on && <Icon name="check" size={16} />}
+                                    {on && <Icon name="check" size={16}/>}
                                 </button>
                             );
                         })}
@@ -535,14 +539,15 @@ export default function Recommender() {
             {/* STEP 4 — time */}
             {step === 3 && (
                 <>
-                    <p className="muted small rec-stepsub">How much time would you feel comfortable putting in each week? We’ll keep your schedule in mind when finding matches.</p>
+                    <p className="muted small rec-stepsub">How much time would you feel comfortable putting in each
+                        week? We’ll keep your schedule in mind when finding matches.</p>
                     <div className="rec-options">
-                        {TIME_CHOICES.map(({ id, label }) => {
+                        {TIME_CHOICES.map(({id, label}) => {
                             const on = time === id;
                             return (
                                 <button key={id} className={`rec-opt ${on ? 'on' : ''}`} onClick={() => setTime(id)}>
                                     <span className="rec-opt-main"><span className="rec-opt-label">{label}</span></span>
-                                    {on && <Icon name="check" size={16} />}
+                                    {on && <Icon name="check" size={16}/>}
                                 </button>
                             );
                         })}
@@ -553,17 +558,19 @@ export default function Recommender() {
             {/* STEP 5 — team availability (eligibility only) */}
             {step === 4 && (
                 <>
-                    <p className="muted small rec-stepsub">Tell us whether you prefer working independently or with a team. This will helps us highlight suitable events and team-size requirements.</p>
+                    <p className="muted small rec-stepsub">Tell us whether you prefer working independently or with a
+                        team. This will helps us highlight suitable events and team-size requirements.</p>
                     <div className="rec-options">
-                        {TEAM_AVAILABILITY_CHOICES.map(({ id, label, desc }) => {
+                        {TEAM_AVAILABILITY_CHOICES.map(({id, label, desc}) => {
                             const on = teamAvail === id;
                             return (
-                                <button key={id} className={`rec-opt rec-opt-rich ${on ? 'on' : ''}`} onClick={() => setTeamAvail(id)}>
+                                <button key={id} className={`rec-opt rec-opt-rich ${on ? 'on' : ''}`}
+                                        onClick={() => setTeamAvail(id)}>
                                     <span className="rec-opt-main">
                                         <span className="rec-opt-label">{label}</span>
                                         {desc && <span className="rec-opt-desc">{desc}</span>}
                                     </span>
-                                    {on && <Icon name="check" size={16} />}
+                                    {on && <Icon name="check" size={16}/>}
                                 </button>
                             );
                         })}
@@ -574,13 +581,14 @@ export default function Recommender() {
             {/* STEP 6 — preferences: two-column builder (Prefer / Avoid) + budget */}
             {step === 5 && (
                 <>
-                    <p className="muted small rec-stepsub">Add anything you’d especially enjoy or rather avoid. This step is optional and only helps us fine-tune your results.</p>
+                    <p className="muted small rec-stepsub">Add anything you’d especially enjoy or rather avoid. This
+                        step is optional and only helps us fine-tune your results.</p>
 
                     <div className="pref-cols">
                         {[
-                            { col: 'prefer', title: 'Sounds Good to Me', addLabel: '+ Add something I’d enjoy' },
-                            { col: 'avoid', title: 'I’d Rather Avoid', addLabel: '+ Add something to avoid' },
-                        ].map(({ col, title, addLabel }) => {
+                            {col: 'prefer', title: 'Sounds Good to Me', addLabel: '+ Add something I’d enjoy'},
+                            {col: 'avoid', title: 'I’d Rather Avoid', addLabel: '+ Add something to avoid'},
+                        ].map(({col, title, addLabel}) => {
                             const ids = Object.entries(placement).filter(([, c]) => c === col).map(([id]) => id);
                             return (
                                 <div key={col} className={`pref-col ${col}`}>
@@ -594,11 +602,14 @@ export default function Recommender() {
                                                 <div key={id} className={`pref-chip ${col}`}>
                                                     <span className="pref-chip-emoji">{it.emoji}</span>
                                                     <span className="pref-chip-label">{it.label}</span>
-                                                    <button className="pref-chip-x" onClick={() => removePref(id)} aria-label="Remove">×</button>
+                                                    <button className="pref-chip-x" onClick={() => removePref(id)}
+                                                            aria-label="Remove">×
+                                                    </button>
                                                 </div>
                                             );
                                         })}
-                                        <button className="pref-add" onClick={() => setPrefModal(col)}>{addLabel}</button>
+                                        <button className="pref-add"
+                                                onClick={() => setPrefModal(col)}>{addLabel}</button>
                                     </div>
                                 </div>
                             );
@@ -611,7 +622,9 @@ export default function Recommender() {
                             <div className="pref-modal" onClick={(e) => e.stopPropagation()}>
                                 <div className="pref-modal-head">
                                     <h3>{prefModal === 'prefer' ? 'What would you enjoy?' : 'What would you rather avoid?'}</h3>
-                                    <button className="pref-modal-close" onClick={() => setPrefModal(null)} aria-label="Close">×</button>
+                                    <button className="pref-modal-close" onClick={() => setPrefModal(null)}
+                                            aria-label="Close">×
+                                    </button>
                                 </div>
                                 <div className="pref-modal-body">
                                     {PREF_CATALOG.map((g) => (
@@ -631,7 +644,8 @@ export default function Recommender() {
                                                             <span className="pref-chip-emoji">{it.emoji}</span>
                                                             <span className="pref-chip-label">{it.label}</span>
                                                             {inThis && <span className="pref-modal-tick">✓</span>}
-                                                            {inOther && <span className="pref-modal-moved">move here</span>}
+                                                            {inOther &&
+                                                                <span className="pref-modal-moved">move here</span>}
                                                         </button>
                                                     );
                                                 })}
@@ -646,9 +660,11 @@ export default function Recommender() {
             )}
 
             <div className="rec-nav">
-                {step > 0 ? <button className="btn ghost" onClick={back}>Back</button> : <span />}
+                {step > 0 && (
+                    <button className="btn ghost rec-back" onClick={back}>Back</button>
+                )}
                 <button className="btn primary" onClick={next} disabled={!canNext}>
-                    {step === STEP_COUNT - 1 ? 'See my matches' : 'Continue'}
+                    {step === STEP_COUNT - 1 ? 'See my matches' : 'Next'}
                 </button>
             </div>
         </>

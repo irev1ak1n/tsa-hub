@@ -1,16 +1,19 @@
+/* Step progress dots */
 .rec-progress { display: flex; gap: 6px; margin-bottom: 14px; }
 .rec-dot { height: 4px; flex: 1; border-radius: 2px; background: var(--line); }
 .rec-dot.on { background: var(--ig-blue); }
 
 .rec-stepsub { margin: 0 0 16px; }
 
+/* Option grid for careers, time and team steps */
 .rec-options { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 20px; }
 @media (min-width: 520px) { .rec-options { grid-template-columns: 1fr 1fr; } }
 
+/* One option row, matches a Settings card row */
 .rec-opt {
     display: flex; align-items: center; justify-content: space-between; gap: 8px;
-    padding: 13px 15px; border: 1px solid var(--line); border-radius: 12px;
-    background: var(--surface); color: var(--ink);
+    padding: 14px 16px; border: 1px solid var(--card-line); border-radius: 12px;
+    background: var(--set-card-bg); color: var(--ink);
     font-family: var(--font-system); font-size: 14px; text-align: left; cursor: pointer;
     transition: border-color .12s ease, background .12s ease;
 }
@@ -18,15 +21,16 @@
 .rec-opt:disabled { opacity: .4; cursor: default; }
 .rec-opt.on {
     border-color: var(--ig-blue);
-    background: color-mix(in srgb, var(--ig-blue) 12%, var(--surface));
+    background: color-mix(in srgb, var(--ig-blue) 12%, var(--set-card-bg));
     color: var(--ig-ink); font-weight: 600;
 }
 .rec-opt-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .rec-opt-desc { font-size: 12px; color: var(--muted); font-weight: 400; }
-.rec-opt-rich { padding: 14px 15px; }
+.rec-opt-rich { padding: 15px 16px; }
 
-.rec-nav { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 8px; }
+.rec-nav { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 8px; }
 
+/* Preferences step, two column builder */
 .pref-group { margin-bottom: 18px; }
 .pref-group-title {
     font-family: var(--font-system); font-weight: 600; font-size: 13px;
@@ -37,36 +41,39 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 12px;
-    margin-bottom: 8px;
+    margin-bottom: 20px;
 }
 @media (min-width: 640px) {
     .pref-cols { grid-template-columns: 1fr 1fr; }
 }
+
+/* Prefer and avoid columns use the thick Settings card frame */
 .pref-col {
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: var(--surface);
-    padding: 14px;
+    border: 3px solid var(--card-line);
+    border-radius: 18px;
+    background: var(--set-card-bg);
+    padding: 18px;
 }
 .pref-col-title {
     font-family: var(--font-system); font-weight: 700; font-size: 13px;
     margin-bottom: 12px; letter-spacing: .02em;
 }
-.pref-col.prefer .pref-col-title { color: var(--ok); }
-.pref-col.avoid .pref-col-title { color: var(--red-400); }
+.pref-col.prefer .pref-col-title { color: #ffffff; }
+.pref-col.avoid .pref-col-title { color: #ffffff; }
 .pref-col-body { display: flex; flex-direction: column; gap: 8px; }
 .pref-col-empty {
     font-family: var(--font-system); font-size: 13px; color: var(--muted);
     padding: 4px 2px 2px; opacity: .6;
 }
 
+/* A chosen preference chip */
 .pref-chip {
     display: flex; align-items: center; gap: 8px;
     padding: 9px 10px; border-radius: 10px;
-    border: 1px solid var(--line); background: var(--surface-2);
+    border: 1px solid var(--card-line); background: var(--surface-2);
 }
-.pref-chip.prefer { border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); background: color-mix(in srgb, var(--ok) 12%, var(--surface)); }
-.pref-chip.avoid  { border-color: color-mix(in srgb, var(--red-400) 45%, var(--line)); background: color-mix(in srgb, var(--red-400) 12%, var(--surface)); }
+.pref-chip.prefer { border-color: color-mix(in srgb, var(--ok) 45%, var(--card-line)); background: color-mix(in srgb, var(--ok) 12%, var(--surface)); }
+.pref-chip.avoid  { border-color: color-mix(in srgb, var(--red-400) 45%, var(--card-line)); background: color-mix(in srgb, var(--red-400) 12%, var(--surface)); }
 .pref-chip-emoji { flex: 0 0 auto; font-size: 15px; line-height: 1; }
 .pref-chip-label { flex: 1 1 auto; font-family: var(--font-system); font-size: 13px; color: var(--ig-ink); min-width: 0; }
 .pref-chip-x {
@@ -77,18 +84,22 @@
 }
 .pref-chip-x:hover { background: color-mix(in srgb, var(--muted) 18%, transparent); color: var(--ink); }
 
+/* Add button inside a column */
 .pref-add {
     display: flex; align-items: center; justify-content: center;
-    padding: 10px; border-radius: 10px;
-    border: 1px dashed var(--line); background: transparent;
+    padding: 11px; border-radius: 10px;
+    border: 1px dashed var(--card-line); background: transparent;
     color: var(--muted); font-family: var(--font-system); font-size: 13px; font-weight: 600;
     cursor: pointer; transition: border-color .12s ease, color .12s ease, background .12s ease;
 }
 .pref-add:hover { border-color: var(--ig-blue); color: var(--ig-ink); background: color-mix(in srgb, var(--ig-blue) 8%, transparent); }
 
+/* Picker modal, same shell as the shared rs modal */
 .pref-modal-backdrop {
     position: fixed; inset: 0; z-index: 100;
-    background: rgba(0, 0, 0, .6);
+    background: rgba(0, 0, 0, .4);
+    backdrop-filter: blur(16px) saturate(115%);
+    -webkit-backdrop-filter: blur(16px) saturate(115%);
     display: flex; align-items: center; justify-content: center;
     padding: 20px;
     animation: pref-fade .12s ease;
@@ -96,15 +107,18 @@
 @keyframes pref-fade { from { opacity: 0; } to { opacity: 1; } }
 .pref-modal {
     width: 100%; max-width: 460px; max-height: 80vh; overflow-y: auto;
-    background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+    background: rgba(10, 10, 12, .55);
+    border: 2px solid #404040; border-radius: 18px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
     animation: pref-pop .14s ease;
 }
 @keyframes pref-pop { from { transform: scale(.97); opacity: .6; } to { transform: scale(1); opacity: 1; } }
 .pref-modal-head {
     display: flex; align-items: center; justify-content: space-between; gap: 10px;
-    padding: 16px 18px; border-bottom: 1px solid var(--line);
-    position: sticky; top: 0; background: var(--surface);
+    padding: 16px 18px; border-bottom: 1px solid #404040;
+    position: sticky; top: 0; z-index: 2;
+    background: #14141a;
+    border-radius: 18px 18px 0 0;
 }
 .pref-modal-head h3 { margin: 0; font-family: var(--font-system); font-size: 16px; color: var(--ig-ink); }
 .pref-modal-close {
@@ -123,8 +137,8 @@
 .pref-modal-items { display: flex; flex-direction: column; gap: 6px; }
 .pref-modal-item {
     display: flex; align-items: center; gap: 10px;
-    padding: 11px 12px; border-radius: 10px;
-    border: 1px solid var(--line); background: var(--surface-2);
+    padding: 12px 13px; border-radius: 10px;
+    border: 1px solid var(--card-line); background: var(--set-card-bg);
     cursor: pointer; text-align: left; width: 100%;
     transition: border-color .12s ease, background .12s ease;
 }
@@ -135,13 +149,16 @@
 .pref-modal-moved {
     flex: 0 0 auto; font-family: var(--font-system); font-size: 11px; font-weight: 600;
     color: var(--muted); padding: 2px 8px; border-radius: 999px;
-    border: 1px solid var(--line);
+    border: 1px solid var(--card-line);
 }
 
+/* Results list */
 .rec-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 8px; }
+
+/* Result card, thick Settings card frame */
 .rec-card {
-    display: flex; gap: 14px; padding: 16px;
-    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    display: flex; gap: 14px; padding: 18px;
+    background: var(--set-card-bg); border: 3px solid var(--card-line); border-radius: 18px;
 }
 .rec-rank {
     flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
@@ -158,7 +175,8 @@
 .rec-pct.pct-low { color: var(--red-400); }
 .rec-why { font-family: var(--font-body); font-size: 13px; line-height: 19px; color: var(--muted); margin: 6px 0 8px; }
 
-.rec-practical { margin: 8px 0 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); }
+/* Inner practical box inside a result card */
+.rec-practical { margin: 8px 0 12px; padding: 10px 12px; border: 1px solid var(--card-line); border-radius: 10px; background: var(--surface-2); }
 .rec-practical-title { font-family: var(--font-system); font-weight: 600; font-size: 12px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .04em; }
 .rec-practical-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .rec-practical-list li { display: flex; align-items: center; gap: 8px; font-family: var(--font-system); font-size: 13px; color: var(--ink); }
@@ -178,9 +196,10 @@
 .rec-career strong { font-weight: 700; }
 .rec-actions { display: flex; gap: 8px; }
 
+/* Promo card, thick Settings card frame */
 .rec-promo {
     background: linear-gradient(135deg, var(--navy-600), var(--surface-2));
-    border: 1px solid var(--line); border-radius: 16px; padding: 20px; margin-bottom: 16px;
+    border: 3px solid var(--card-line); border-radius: 18px; padding: 20px; margin-bottom: 16px;
 }
 .rec-promo h2 {
     font-family: var(--font-system); font-weight: 700; font-size: 18px; color: var(--ig-ink);
@@ -188,11 +207,13 @@
 }
 .rec-promo p { font-family: var(--font-body); font-size: 14px; line-height: 20px; color: var(--muted); margin: 0 0 14px; }
 
+/* Draggable ranking list */
 .drag-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
     margin-top: 8px;
+    margin-bottom: 20px;
 }
 .drag-list.is-dragging {
     user-select: none;
@@ -209,8 +230,8 @@
     align-items: center;
     gap: 12px;
     padding: 14px 16px;
-    background: var(--surface);
-    border: 1px solid var(--line);
+    background: var(--set-card-bg);
+    border: 1px solid var(--card-line);
     border-radius: 12px;
     cursor: grab;
     user-select: none;
@@ -226,8 +247,8 @@
 .drag-item:active { cursor: grabbing; }
 
 .drag-item.grabbed {
-    border-color: color-mix(in srgb, var(--ig-blue) 55%, var(--line));
-    background: color-mix(in srgb, var(--ig-blue) 12%, var(--surface));
+    border-color: color-mix(in srgb, var(--ig-blue) 55%, var(--card-line));
+    background: color-mix(in srgb, var(--ig-blue) 12%, var(--set-card-bg));
     box-shadow: 0 10px 26px rgba(0, 0, 0, .45), 0 2px 6px rgba(0, 0, 0, .3);
 }
 
@@ -255,11 +276,12 @@
     min-width: 0;
 }
 
+/* Emoji tile grid for the work step */
 .tile-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    margin-bottom: 8px;
+    margin-bottom: 20px;
 }
 @media (min-width: 560px) {
     .tile-grid { grid-template-columns: repeat(4, 1fr); }
@@ -268,7 +290,7 @@
     position: relative;
     display: flex; flex-direction: column; align-items: center; gap: 8px;
     padding: 18px 10px; border-radius: 14px;
-    background: var(--surface); border: 1px solid var(--line);
+    background: var(--set-card-bg); border: 1px solid var(--card-line);
     cursor: pointer; text-align: center;
     transition: border-color .12s ease, background .12s ease, transform .06s ease;
 }
@@ -276,7 +298,7 @@
 .tile:disabled { opacity: .4; cursor: default; }
 .tile.on {
     border-color: var(--ig-blue);
-    background: color-mix(in srgb, var(--ig-blue) 14%, var(--surface));
+    background: color-mix(in srgb, var(--ig-blue) 14%, var(--set-card-bg));
 }
 .tile-emoji { font-size: 30px; line-height: 1; }
 .tile-label {
@@ -292,6 +314,7 @@
     display: flex; align-items: center; justify-content: center;
 }
 
+/* Results header row with the action buttons */
 .rec-results-head {
     display: flex;
     align-items: flex-start;
@@ -313,6 +336,7 @@
     .rec-results-actions .btn { flex: 1 1 auto; text-align: center; justify-content: center; }
 }
 
+/* Small square icon button with a hover tooltip */
 .icon-btn {
     position: relative;
     display: inline-flex;
@@ -321,7 +345,7 @@
     width: 40px;
     height: 40px;
     border-radius: 10px;
-    border: 1px solid var(--line);
+    border: 1px solid var(--card-line);
     background: var(--surface-2);
     color: var(--ink);
     cursor: pointer;
@@ -330,7 +354,7 @@
 }
 .icon-btn:hover {
     background: color-mix(in srgb, var(--ig-blue) 12%, var(--surface-2));
-    border-color: color-mix(in srgb, var(--ig-blue) 45%, var(--line));
+    border-color: color-mix(in srgb, var(--ig-blue) 45%, var(--card-line));
     color: var(--ig-ink);
 }
 
@@ -372,4 +396,113 @@
 .icon-btn:hover::before {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+}
+
+/* Light theme, white surfaces with grey borders like Settings and the feedback modal */
+html[data-theme="light"] .rec-opt,
+html[data-theme="light"] .drag-item,
+html[data-theme="light"] .tile {
+    background: #ffffff;
+    border-color: #d0d0da;
+}
+
+html[data-theme="light"] .pref-col,
+html[data-theme="light"] .rec-card {
+    background: #ffffff;
+    border-color: #d0d0da;
+}
+
+html[data-theme="light"] .pref-chip,
+html[data-theme="light"] .pref-modal-item,
+html[data-theme="light"] .rec-practical,
+html[data-theme="light"] .icon-btn {
+    border-color: #d0d0da;
+}
+
+html[data-theme="light"] .pref-add,
+html[data-theme="light"] .pref-modal-moved {
+    border-color: #d0d0da;
+}
+
+html[data-theme="light"] .pref-col.prefer .pref-col-title,
+html[data-theme="light"] .pref-col.avoid .pref-col-title {
+    color: #111111;
+}
+
+html[data-theme="light"] .pref-modal-item {
+    background: #ffffff;
+}
+
+html[data-theme="light"] .pref-modal {
+    background: rgba(255, 255, 255, 0.75);
+    border-color: #404040;
+}
+html[data-theme="light"] .pref-modal-head {
+    background: #ffffff;
+    border-bottom-color: #404040;
+}
+
+/* Nav buttons on the questionnaire, styled to fit the theme.
+   Scoped to rec nav so global button styles stay untouched. */
+.rec-nav .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-family: var(--font-system);
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background .12s ease, border-color .12s ease, filter .12s ease, opacity .12s ease;
+}
+
+/* Back button, dark translucent fill like the modal surface */
+.rec-nav .btn.ghost {
+    background: rgba(10, 10, 12, .55);
+    border: 1px solid #404040;
+    color: #ffffff;
+}
+
+.rec-nav .btn.ghost:hover {
+    background: rgba(20, 20, 24, .7);
+    border-color: #4d4d4d;
+}
+
+/* Next and See my matches button, same style as Back */
+.rec-nav .btn.primary {
+    background: rgba(10, 10, 12, .55);
+    border: 1px solid #404040;
+    color: #ffffff;
+}
+
+.rec-nav .btn.primary:hover:not(:disabled) {
+    background: rgba(20, 20, 24, .7);
+    border-color: #4d4d4d;
+}
+
+.rec-nav .btn.primary:disabled {
+    opacity: .5;
+    cursor: default;
+}
+
+/* Light theme, both buttons use a soft translucent fill like the light modal */
+html[data-theme="light"] .rec-nav .btn.ghost {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: #404040;
+    color: #111111;
+}
+
+html[data-theme="light"] .rec-nav .btn.ghost:hover {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+html[data-theme="light"] .rec-nav .btn.primary {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: #404040;
+    color: #111111;
+}
+
+html[data-theme="light"] .rec-nav .btn.primary:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.85);
 }
