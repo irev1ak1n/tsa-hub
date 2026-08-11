@@ -1,9 +1,5 @@
-/* ============================================================================
-   TSA Guide (Resources) page styles.
-   Existing .rs-* classes kept as-is; new blocks added for the assistant card,
-   suggested-question buttons, and the Quick Answers grid. Dark theme,
-   tap-friendly, keyboard-accessible.
-   ============================================================================ */
+/* TSA Guide resources page.
+   Dark theme, tap friendly and keyboard accessible. */
 
 .rs-group-label {
     font-family: var(--font-system);
@@ -14,6 +10,7 @@
     padding: 0 4px 8px;
     margin-top: 18px;
 }
+
 .rs-group-label:first-of-type {
     margin-top: 0;
 }
@@ -28,7 +25,8 @@
     margin-bottom: 4px;
     border-bottom: 1px solid var(--line);
 }
-/* no divider under the very last card on the page */
+
+/* no divider under the last card */
 .rs-card:last-of-type {
     border-bottom: 0;
 }
@@ -50,10 +48,12 @@
     border-radius: 10px;
     transition: background 0.12s ease;
 }
+
 .rs-row:hover {
     background: var(--surface-2);
 }
-/* trailing chevron: calmer tone (leading icon stays in .rs-ico) */
+
+/* trailing chevron in a calmer tone */
 .rs-row > svg {
     color: rgba(255, 255, 255, 0.55);
     flex-shrink: 0;
@@ -100,16 +100,17 @@
     outline-offset: 2px;
 }
 
-/* ---- disabled row (link with no destination yet) ---- */
+/* disabled row, a link with no destination yet */
 .rs-row.is-disabled {
     opacity: .55;
     cursor: default;
 }
+
 .rs-row.is-disabled:hover {
     background: transparent;
 }
 
-/* image icon (downloaded brand logo) sits at the same size as line icons */
+/* brand logo image sized like the line icons */
 .rs-ico-img {
     display: block;
     width: 20px;
@@ -118,7 +119,7 @@
     border-radius: 4px;
 }
 
-/* ---- contact modal (State Advisor, etc.) ---- */
+/* contact modal, such as the state advisor */
 .rs-modal-backdrop {
     position: fixed;
     inset: 0;
@@ -132,19 +133,23 @@
     padding: 20px;
     animation: rs-fade .12s ease;
 }
+
 @keyframes rs-fade { from { opacity: 0; } to { opacity: 1; } }
+
 .rs-modal {
     width: 100%;
     max-width: 380px;
-    /* dark translucent glass; page behind is blurred by the backdrop */
+    /* dark glass, the page behind is blurred by the backdrop */
     background: rgba(10, 10, 12, .55);
-    /* neutral grey border, thicker */
+    /* thicker neutral grey border */
     border: 2px solid #404040;
     border-radius: 18px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
     animation: rs-pop .14s ease;
 }
+
 @keyframes rs-pop { from { transform: scale(.97); opacity: .6; } to { transform: scale(1); opacity: 1; } }
+
 .rs-modal-head {
     display: flex;
     align-items: center;
@@ -153,12 +158,14 @@
     padding: 16px 18px;
     border-bottom: 1px solid #404040;
 }
+
 .rs-modal-head h3 {
     margin: 0;
     font-family: var(--font-system);
     font-size: 16px;
     color: var(--ig-ink);
 }
+
 .rs-modal-close {
     width: 30px;
     height: 30px;
@@ -172,19 +179,23 @@
     align-items: center;
     justify-content: center;
 }
+
 .rs-modal-close:hover { background: var(--surface-2); color: var(--ink); }
+
 .rs-modal-body {
     padding: 16px 18px 18px;
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
+
 .rs-contact-name {
     font-family: var(--font-system);
     font-size: 16px;
     font-weight: 600;
     color: var(--ig-ink);
 }
+
 .rs-contact-line {
     display: flex;
     align-items: center;
@@ -194,10 +205,12 @@
     color: var(--ink);
     text-decoration: none;
 }
+
 a.rs-contact-line:hover { color: var(--ig-blue); }
+
 .rs-contact-line svg { color: var(--muted); flex-shrink: 0; }
 
-/* ---- sub-dividers inside a card (e.g. State / National groups) ---- */
+/* sub dividers inside a card, like state and national groups */
 .rs-subhead {
     font-family: var(--font-system);
     font-weight: 600;
@@ -208,14 +221,16 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     padding: 14px 16px 8px;
     border-bottom: 1px solid var(--line);
 }
-/* a group divider that isn't the first row gets a slightly stronger top edge */
+
+/* a group divider that is not the first row gets a stronger top edge */
 .rs-subhead + .rs-row { border-top: 0; }
+
 .rs-card > .rs-subhead:not(:first-child) {
     border-top: 1px solid var(--line);
     margin-top: 0;
 }
 
-/* ---- back link (top of leadership sub-pages) ---- */
+/* back link at the top of leadership sub pages */
 .rs-back {
     display: inline-flex;
     align-items: center;
@@ -233,21 +248,23 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     cursor: pointer;
     transition: opacity .12s ease;
 }
+
 .rs-back:hover { background: none; opacity: 0.8; }
+
 .rs-back:focus-visible { outline: 2px solid var(--ig-blue); outline-offset: 2px; }
+
 .rs-back-arrow { display: block; }
 
-/* ============================================================================
-   Competition Rules knowledge base (hub + detail pages)
-   ============================================================================ */
+/* Competition Rules knowledge base, hub and detail pages */
 
-/* meta chips (section + division labels) */
+/* meta chips for section and division labels */
 .rk-meta {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     margin-bottom: 10px;
 }
+
 .rk-chip {
     display: inline-flex;
     align-items: center;
@@ -261,12 +278,14 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     background: var(--surface-2);
     border: 1px solid var(--line);
 }
-/* division accents: HS blue, MS red (subtle TSA accents) */
+
+/* division accents, HS blue and MS red */
 .rk-chip-hs {
     color: var(--ig-link);
     border-color: color-mix(in srgb, var(--ig-blue) 40%, var(--line));
     background: color-mix(in srgb, var(--ig-blue) 12%, var(--surface-2));
 }
+
 .rk-chip-ms {
     color: var(--red-400);
     border-color: color-mix(in srgb, var(--red-600) 40%, var(--line));
@@ -278,7 +297,9 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     padding: 16px 0;
     border-bottom: 1px solid var(--line);
 }
+
 .rk-block:first-of-type { border-top: 1px solid var(--line); }
+
 .rk-block-title {
     margin: 0 0 6px;
     font-family: var(--font-system);
@@ -286,6 +307,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     font-weight: 600;
     color: var(--ig-ink);
 }
+
 .rk-block-body {
     margin: 0;
     font-family: var(--font-system);
@@ -305,8 +327,11 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     background: var(--surface);
     border: 1px solid var(--line);
 }
+
 .rk-source .rs-ico { color: var(--muted); }
+
 .rk-source-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
 .rk-source-label {
     font-family: var(--font-system);
     font-size: 11px;
@@ -315,20 +340,23 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     text-transform: uppercase;
     color: var(--muted);
 }
+
 .rk-source-name {
     font-family: var(--font-system);
     font-size: 14px;
     color: var(--ink);
 }
+
 .rk-source-link {
     font-family: var(--font-system);
     font-size: 14px;
     color: var(--ig-link);
     text-decoration: none;
 }
+
 .rk-source-link:hover { text-decoration: underline; }
 
-/* ---- topic page: warning callout ---- */
+/* topic page warning callout */
 .rk-callout {
     display: flex;
     align-items: flex-start;
@@ -339,7 +367,9 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     background: color-mix(in srgb, var(--red-600) 12%, var(--surface));
     border: 1px solid color-mix(in srgb, var(--red-600) 40%, var(--line));
 }
+
 .rk-callout-ico { color: var(--red-400); flex-shrink: 0; display: flex; }
+
 .rk-callout-text {
     font-family: var(--font-system);
     font-size: 13px;
@@ -347,7 +377,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: var(--ink);
 }
 
-/* ---- topic page: division differences ---- */
+/* topic page division differences */
 .rk-diff {
     margin-top: 16px;
     padding: 14px 16px;
@@ -355,32 +385,37 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     background: color-mix(in srgb, var(--ig-blue) 8%, var(--surface));
     border: 1px solid color-mix(in srgb, var(--ig-blue) 30%, var(--line));
 }
+
 .rk-diff-head {
     display: flex;
     align-items: center;
     gap: 10px;
     margin-bottom: 6px;
 }
+
 .rk-diff-head .rs-ico { color: var(--ig-link); }
 
-/* ---- topic page: official source list ---- */
+/* topic page official source list */
 .rk-source-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
+
 .rk-source-meta {
     display: flex;
     flex-direction: column;
     gap: 2px;
     padding: 0 4px 4px;
 }
+
 .rk-source-section {
     font-family: var(--font-system);
     font-size: 13px;
     font-weight: 600;
     color: var(--ink);
 }
+
 .rk-source-sub {
     font-family: var(--font-system);
     font-size: 12px;
@@ -388,20 +423,23 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: var(--muted);
 }
 
-/* ---- topic page: numbered rule points ---- */
+/* topic page numbered rule points */
 .rk-points {
     list-style: none;
     margin: 4px 0 0;
     padding: 0;
     counter-reset: rk;
 }
+
 .rk-point {
     display: flex;
     gap: 12px;
     padding: 14px 0;
     border-bottom: 1px solid var(--line);
 }
+
 .rk-point:last-child { border-bottom: 0; }
+
 .rk-point-num {
     flex: 0 0 auto;
     min-width: 16px;
@@ -411,6 +449,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     font-weight: 600;
     line-height: 21px;
 }
+
 .rk-point-text {
     font-family: var(--font-system);
     font-size: 14px;
@@ -419,18 +458,21 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     padding-top: 1px;
 }
 
-/* ---- topic page: subpoints (a. b.) under a numbered point ---- */
+/* topic page subpoints under a numbered point */
 .rk-point-body { display: flex; flex-direction: column; gap: 0; flex: 1; min-width: 0; }
+
 .rk-sub {
     list-style: none;
     margin: 8px 0 0;
     padding: 0 0 0 4px;
 }
+
 .rk-subpoint {
     display: flex;
     gap: 10px;
     padding: 5px 0;
 }
+
 .rk-sub-num {
     flex: 0 0 auto;
     min-width: 14px;
@@ -440,14 +482,17 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     font-weight: 600;
     line-height: 20px;
 }
+
 .rk-subpoint .rk-point-text { font-size: 13px; line-height: 20px; color: var(--ink); }
 
-/* ---- topic page: named subsection groups ---- */
+/* topic page named subsection groups */
 .rk-group {
     padding: 16px 0;
     border-bottom: 1px solid var(--line);
 }
+
 .rk-group:last-of-type { border-bottom: 0; }
+
 .rk-group-title {
     margin: 0 0 4px;
     font-family: var(--font-system);
@@ -455,6 +500,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     font-weight: 600;
     color: var(--ig-ink);
 }
+
 .rk-group-intro {
     margin: 0 0 8px;
     font-family: var(--font-system);
@@ -462,10 +508,12 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     line-height: 19px;
     color: var(--muted);
 }
+
 .rk-group-list {
     margin: 0;
     padding-left: 20px;
 }
+
 .rk-group-item {
     font-family: var(--font-system);
     font-size: 14px;
@@ -473,7 +521,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: var(--ink);
 }
 
-/* ---- topic page: intro line + plain bullet list + footer ---- */
+/* topic page intro line, bullet list and footer */
 .rk-intro {
     margin: 0 0 8px;
     font-family: var(--font-system);
@@ -481,16 +529,19 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     line-height: 21px;
     color: var(--ink);
 }
+
 .rk-list {
     margin: 0 0 4px;
     padding-left: 20px;
 }
+
 .rk-list-item {
     font-family: var(--font-system);
     font-size: 14px;
     line-height: 23px;
     color: var(--ink);
 }
+
 .rk-footer {
     margin: 16px 0 0;
     font-family: var(--font-system);
@@ -499,11 +550,9 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: var(--muted);
 }
 
-/* ============================================================================
-   Resources page header + search
-   ============================================================================ */
+/* Resources page header and search */
 
-/* three-tier header: red eyebrow, white title, gray subtitle */
+/* three tier header, red eyebrow, white title, grey subtitle */
 .rs-eyebrow {
     font-family: var(--font-display);
     color: #FF5A6E;
@@ -513,10 +562,12 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     text-transform: uppercase;
     margin-bottom: 5px;
 }
+
 .rs-h1 {
     color: #ffffff;
     margin: 0 0 8px;
 }
+
 .rs-sub {
     font-family: var(--font-system);
     color: var(--muted);
@@ -525,7 +576,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     margin: 0 0 18px;
 }
 
-/* Instagram-style search bar */
+/* Instagram style search bar */
 .rs-search {
     display: flex;
     align-items: center;
@@ -536,7 +587,9 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     background: var(--surface-2);
     border: 1px solid var(--line);
 }
+
 .rs-search svg { color: var(--muted); flex-shrink: 0; }
+
 .rs-search-input {
     flex: 1;
     min-width: 0;
@@ -547,7 +600,9 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     font-family: var(--font-system);
     font-size: 14px;
 }
+
 .rs-search-input::placeholder { color: var(--muted); }
+
 .rs-search-clear {
     flex: 0 0 auto;
     display: flex;
@@ -561,12 +616,14 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: var(--muted);
     cursor: pointer;
 }
+
 .rs-search-clear:hover { color: var(--ink); }
+
 .rs-search:focus-within {
     border-color: color-mix(in srgb, var(--ig-blue) 40%, var(--line));
 }
 
-/* ---- Awards & Scholarships: scholarship blocks (frameless) ---- */
+/* Awards and scholarships, frameless scholarship blocks */
 .rk-scholar {
     padding: 16px 0;
     margin-bottom: 0;
@@ -575,7 +632,9 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     border: 0;
     border-bottom: 1px solid var(--line);
 }
+
 .rk-scholar:last-of-type { border-bottom: 0; }
+
 .rk-scholar-title {
     margin: 0 0 8px;
     font-family: var(--font-system);
@@ -583,6 +642,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     font-weight: 700;
     color: var(--ig-link);
 }
+
 .rk-scholar-text {
     margin: 0 0 8px;
     font-family: var(--font-system);
@@ -590,8 +650,11 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     line-height: 20px;
     color: var(--ink);
 }
+
 .rk-scholar-text:last-of-type { margin-bottom: 0; }
+
 .rk-scholar-block { margin-top: 14px; }
+
 .rk-scholar-label {
     font-family: var(--font-system);
     font-size: 11px;
@@ -602,17 +665,21 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     margin-bottom: 6px;
 }
 
-/* ---- Awards & Scholarships page: red headings, white text ---- */
+/* Awards and scholarships page, red headings and white text */
 .aw-page h1 { color: #ffffff; }
+
 .aw-page .aw-heading { color: #CC4A3E; }
-/* brighter, more saturated blue for section titles on program pages */
+
+/* brighter blue for section titles on program pages */
 .aw-page .rk-scholar-title { color: #ffffff; }
+
 .aw-sub {
     font-family: var(--font-system);
     font-size: 14px;
     line-height: 22px;
     color: #ffffff;
 }
+
 .aw-intro {
     margin: 0 0 8px;
     font-family: var(--font-system);
@@ -620,6 +687,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     line-height: 21px;
     color: #ffffff;
 }
+
 .aw-note {
     font-family: var(--font-system);
     font-size: 14px;
@@ -629,13 +697,14 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
 
 .aw-page .rk-list-item { font-size: 14px; }
 
-/* ---- Awards/program pages: inline blue link ---- */
+/* Awards and program pages, inline blue link */
 .aw-link { color: var(--ig-link); text-decoration: none; }
+
 .aw-link:hover { text-decoration: underline; }
 
-/* ---- National Conference: accordion (Conference Essentials) ---- */
+/* National conference accordion, conference essentials */
 .rs-acc-btn {
-    /* same look as .rs-row but as a full-width button */
+    /* same look as rs row but a full width button */
     display: flex;
     align-items: center;
     gap: 14px;
@@ -651,24 +720,29 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     border-radius: 10px;
     transition: background 0.12s ease;
 }
+
 .rs-acc-btn:hover { background: var(--surface-2); }
+
 .rs-acc-chevron {
     transition: transform 0.2s ease;
     color: rgba(255, 255, 255, 0.55);
     flex-shrink: 0;
 }
+
 .rs-acc-btn[aria-expanded="true"] .rs-acc-chevron { transform: rotate(90deg); }
 
-/* animated container: grid-rows trick for smooth height auto */
+/* animated container, grid rows trick for smooth auto height */
 .rs-acc-panel {
     display: grid;
     grid-template-rows: 0fr;
     transition: grid-template-rows 0.24s ease;
 }
+
 .rs-acc-panel.is-open { grid-template-rows: 1fr; }
+
 .rs-acc-panel > .rs-acc-inner { overflow: hidden; min-height: 0; }
 
-/* nested topic rows — shifted right; colors match main resource rows */
+/* nested topic rows shifted right, colors match the main rows */
 .rs-subrow {
     display: flex;
     align-items: center;
@@ -680,8 +754,11 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     border-radius: 10px;
     transition: background 0.12s ease;
 }
+
 .rs-subrow:hover { background: var(--surface-2); }
+
 .rs-subrow .rs-sub-ico { display: flex; color: var(--ink); flex-shrink: 0; }
+
 .rs-subrow .rs-sub-title {
     flex: 1;
     font-family: var(--font-system);
@@ -689,11 +766,14 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     font-weight: 600;
     color: #F6F6F6;
 }
+
 .rs-subrow > svg { color: rgba(255, 255, 255, 0.55); flex-shrink: 0; }
 
-/* ---- Conference topic: labelled attire sub-blocks + "Not allowed" ---- */
+/* conference topic, labelled attire sub blocks and not allowed */
 .cf-item { margin-top: 12px; }
+
 .cf-item:first-of-type { margin-top: 8px; }
+
 .cf-item-label {
     font-family: var(--font-system);
     font-size: 14px;
@@ -701,6 +781,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: #ffffff;
     margin-bottom: 2px;
 }
+
 .cf-not-allowed {
     font-family: var(--font-system);
     font-size: 14px;
@@ -709,9 +790,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     margin: 8px 0 2px;
 }
 
-/* ============================================================================
-   2026 Conference Guide page
-   ============================================================================ */
+/* 2026 Conference Guide page */
 .cf26-meta {
     font-family: var(--font-system);
     font-size: 14px;
@@ -719,6 +798,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: #ffffff;
     margin: 0 0 10px;
 }
+
 .cf26-theme {
     display: inline-block;
     font-family: var(--font-system);
@@ -733,8 +813,9 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     padding: 4px 12px;
 }
 
-/* Table of Contents */
+/* Table of contents */
 .cf26-toc { margin: 8px 0 18px; }
+
 .cf26-toc-row {
     display: flex;
     align-items: center;
@@ -749,8 +830,11 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     border-bottom: 1px solid var(--line);
     transition: background 0.12s ease;
 }
+
 .cf26-toc-row:last-child { border-bottom: 0; }
+
 .cf26-toc-row:hover { background: var(--surface-2); }
+
 .cf26-toc-num {
     flex: 0 0 auto;
     font-family: var(--font-system);
@@ -759,6 +843,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: #FF5A6E;
     min-width: 22px;
 }
+
 .cf26-toc-title {
     flex: 1;
     font-family: var(--font-system);
@@ -766,9 +851,10 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     font-weight: 600;
     color: #F6F6F6;
 }
+
 .cf26-toc-row > svg { color: rgba(255, 255, 255, 0.55); flex-shrink: 0; }
 
-/* Section header: red number + blue title */
+/* section header, red number and blue title */
 .cf26-head {
     display: flex;
     align-items: baseline;
@@ -778,6 +864,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     border-top: 1px solid var(--line);
     scroll-margin-top: 12px;
 }
+
 .cf26-num {
     font-family: var(--font-display, var(--font-system));
     font-size: 20px;
@@ -785,6 +872,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: #FF3B52;
     line-height: 1;
 }
+
 .cf26-title {
     margin: 0;
     font-family: var(--font-display, var(--font-system));
@@ -804,6 +892,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: var(--muted);
     margin: 10px 0 4px;
 }
+
 .cf26-session-meta {
     font-family: var(--font-system);
     font-size: 13px;
@@ -811,19 +900,21 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     margin: 0 0 2px;
 }
 
-/* Officers grid */
+/* officers grid */
 .cf26-officers {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 10px;
     margin-bottom: 4px;
 }
+
 .cf26-officer {
     padding: 12px 14px;
     border-radius: var(--radius);
     background: var(--surface);
     border: 1px solid var(--line);
 }
+
 .cf26-officer-role {
     font-family: var(--font-system);
     font-size: 11px;
@@ -833,12 +924,14 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: var(--ig-link);
     margin-bottom: 4px;
 }
+
 .cf26-officer-name {
     font-family: var(--font-system);
     font-size: 15px;
     font-weight: 700;
     color: #ffffff;
 }
+
 .cf26-officer-sub {
     font-family: var(--font-system);
     font-size: 12px;
@@ -846,7 +939,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: var(--muted);
 }
 
-/* Back to Contents */
+/* back to contents */
 .cf26-back-toc {
     display: inline-flex;
     align-items: center;
@@ -862,9 +955,10 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     cursor: pointer;
     transition: background .12s ease, color .12s ease;
 }
+
 .cf26-back-toc:hover { background: var(--surface-2); color: var(--ink); }
 
-/* Floating Contents button */
+/* floating contents button */
 .cf26-fab {
     position: fixed;
     right: 16px;
@@ -886,9 +980,10 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     cursor: pointer;
     box-shadow: 0 8px 24px rgba(0, 0, 0, .45);
 }
+
 .cf26-fab svg { color: var(--muted); }
 
-/* Contents bottom sheet */
+/* contents bottom sheet */
 .cf26-sheet-backdrop {
     position: fixed;
     inset: 0;
@@ -901,6 +996,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     justify-content: center;
     animation: rs-fade .12s ease;
 }
+
 .cf26-sheet {
     width: 100%;
     max-width: 480px;
@@ -912,7 +1008,9 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     border-radius: 18px 18px 0 0;
     animation: cf26-slideup .18s ease;
 }
+
 @keyframes cf26-slideup { from { transform: translateY(24px); opacity: .7; } to { transform: translateY(0); opacity: 1; } }
+
 .cf26-sheet-head {
     position: sticky;
     top: 0;
@@ -923,7 +1021,9 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     background: var(--surface);
     border-bottom: 1px solid var(--line);
 }
+
 .cf26-sheet-head h3 { margin: 0; font-family: var(--font-system); font-size: 15px; color: var(--ig-ink); }
+
 .cf26-sheet-body { padding: 8px 12px 16px; }
 
 /* 2027 preview card */
@@ -934,6 +1034,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     background: color-mix(in srgb, var(--ig-blue) 8%, var(--surface));
     border: 1px solid color-mix(in srgb, var(--ig-blue) 26%, var(--line));
 }
+
 .cf26-preview-eyebrow {
     font-family: var(--font-system);
     font-size: 11px;
@@ -943,6 +1044,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: var(--ig-link);
     margin-bottom: 4px;
 }
+
 .cf26-preview-title {
     font-family: var(--font-system);
     font-size: 17px;
@@ -950,14 +1052,16 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: #ffffff;
     margin-bottom: 6px;
 }
+
 .cf26-preview-meta { font-family: var(--font-system); font-size: 13px; color: var(--muted); line-height: 19px; }
 
-/* Official Sources (secondary) */
+/* official sources, secondary */
 .cf26-sources {
     margin-top: 22px;
     padding-top: 16px;
     border-top: 1px solid var(--line);
 }
+
 .cf26-sources-title {
     font-family: var(--font-system);
     font-size: 12px;
@@ -967,13 +1071,18 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: var(--muted);
     margin-bottom: 6px;
 }
+
 .cf26-sources-text { font-family: var(--font-system); font-size: 12px; line-height: 18px; color: var(--muted); margin: 0 0 8px; }
+
 .cf26-sources-links { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+
 .cf26-sources-links a { font-size: 13px; }
+
 .cf26-sources-disabled { font-family: var(--font-system); font-size: 13px; color: var(--muted); opacity: .6; }
+
 .cf26-sources-notice { font-family: var(--font-system); font-size: 11px; line-height: 16px; color: var(--muted); font-style: italic; }
 
-/* ---- Conference Guides: "Upcoming" status badge on nested rows ---- */
+/* conference guides, upcoming status badge on nested rows */
 .rs-status-badge {
     flex-shrink: 0;
     font-family: var(--font-system);
@@ -989,17 +1098,17 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     margin-right: 8px;
 }
 
-/* ============================================================================
-   2026 topic pages (shared ConferenceTopicPage renderer)
-   ============================================================================ */
+/* 2026 topic pages, shared topic renderer */
 .cf2026-sec {
     padding: 16px 0;
     border-bottom: 1px solid var(--line);
 }
+
 .cf2026-sec:last-of-type { border-bottom: 0; }
 
-/* plain labelled lines (schedules, hours, addresses) */
+/* plain labelled lines for schedules, hours and addresses */
 .cf2026-lines { margin: 4px 0 0; }
+
 .cf2026-line {
     font-family: var(--font-system);
     font-size: 14px;
@@ -1009,17 +1118,20 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
 
 /* contact rows */
 .cf2026-contacts { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+
 .cf2026-contact {
     display: flex;
     align-items: baseline;
     gap: 10px;
     justify-content: space-between;
 }
+
 .cf2026-contact-label {
     font-family: var(--font-system);
     font-size: 13px;
     color: var(--muted);
 }
+
 .cf2026-contact-val {
     font-family: var(--font-system);
     font-size: 14px;
@@ -1027,54 +1139,60 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: #ffffff;
 }
 
-/* labelled sub-blocks */
+/* labelled sub blocks */
 .cf2026-items { margin-top: 8px; display: flex; flex-direction: column; gap: 12px; }
+
 .cf2026-item-label {
     font-family: var(--font-system);
     font-size: 14px;
     font-weight: 700;
     color: #ffffff;
 }
+
 .cf2026-item-meta {
     font-family: var(--font-system);
     font-size: 13px;
     line-height: 19px;
     color: var(--muted);
 }
+
 .cf2026-item-text {
     font-family: var(--font-system);
     font-size: 14px;
     line-height: 20px;
     color: #ffffff;
 }
+
 .cf2026-item-contact {
     font-family: var(--font-system);
     font-size: 14px;
     color: #ffffff;
     margin-top: 2px;
 }
+
 .cf2026-item-contact .cf2026-contact-label { color: var(--muted); }
 
 /* welcome attribution */
 .cf2026-attrib { margin-top: 10px; }
+
 .cf2026-attrib-name {
     font-family: var(--font-system);
     font-size: 14px;
     font-weight: 700;
     color: var(--ig-link);
 }
+
 .cf2026-attrib-role {
     font-family: var(--font-system);
     font-size: 13px;
     color: var(--muted);
 }
 
-/* ============================================================================
-   Your State: prompt, set/change buttons, and the state picker modal
-   ============================================================================ */
+/* Your State prompt, buttons and the state picker modal */
 .rs-state-prompt {
     padding: 14px 4px 6px;
 }
+
 .rs-state-prompt-text {
     margin: 0 0 12px;
     font-family: var(--font-system);
@@ -1082,6 +1200,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     line-height: 20px;
     color: var(--muted);
 }
+
 .rs-state-btn {
     display: inline-flex;
     align-items: center;
@@ -1097,7 +1216,9 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     cursor: pointer;
     transition: filter 0.12s ease;
 }
+
 .rs-state-btn:hover { filter: brightness(1.08); }
+
 .rs-state-btn svg { color: #ffffff; }
 
 .rs-change-state {
@@ -1111,14 +1232,16 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     font-weight: 600;
     cursor: pointer;
 }
+
 .rs-change-state:hover { text-decoration: underline; }
 
-/* picker modal reuses .rs-modal / .rs-modal-backdrop from the contact modal */
+/* picker modal reuses rs modal and rs modal backdrop from the contact modal */
 .rs-state-modal {
     display: flex;
     flex-direction: column;
     max-height: 74vh;
 }
+
 .rs-state-search {
     display: flex;
     align-items: center;
@@ -1129,7 +1252,9 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     background: var(--surface-2, var(--surface));
     border: 1px solid var(--line);
 }
+
 .rs-state-search svg { color: var(--muted); flex-shrink: 0; }
+
 .rs-state-search-input {
     flex: 1;
     min-width: 0;
@@ -1140,12 +1265,14 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     font-family: var(--font-system);
     font-size: 14px;
 }
+
 .rs-state-search-input::placeholder { color: var(--muted); }
 
 .rs-state-list {
     overflow-y: auto;
     padding: 6px 8px 12px;
 }
+
 .rs-state-option {
     display: flex;
     align-items: center;
@@ -1162,10 +1289,15 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     cursor: pointer;
     transition: background 0.12s ease;
 }
+
 .rs-state-option:hover { background: var(--surface-2); }
+
 .rs-state-option.is-current { background: color-mix(in srgb, var(--ig-blue) 14%, transparent); }
+
 .rs-state-option-name { flex: 1; min-width: 0; }
+
 .rs-state-option svg { color: var(--ig-link); flex-shrink: 0; }
+
 .rs-state-has {
     flex-shrink: 0;
     font-family: var(--font-system);
@@ -1179,6 +1311,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     border-radius: 999px;
     padding: 2px 8px;
 }
+
 .rs-state-empty {
     padding: 16px 10px;
     font-family: var(--font-system);
@@ -1186,24 +1319,25 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: var(--muted);
 }
 
-/* ============================================================================
-   Recent searches (shown under the Resources search bar when it's empty)
-   ============================================================================ */
+/* Recent searches, shown under the search bar when it is empty */
 .rs-recent {
     margin: -8px 0 18px;
 }
+
 .rs-recent-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 4px 8px;
 }
+
 .rs-recent-label {
     font-family: var(--font-system);
     font-size: 12px;
     font-weight: 600;
     color: var(--muted);
 }
+
 .rs-recent-clear {
     border: 0;
     background: none;
@@ -1213,14 +1347,17 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     font-weight: 600;
     cursor: pointer;
 }
+
 .rs-recent-clear:hover { text-decoration: underline; }
 
 .rs-recent-list { display: flex; flex-direction: column; }
+
 .rs-recent-item {
     display: flex;
     align-items: center;
     gap: 4px;
 }
+
 .rs-recent-term {
     flex: 1;
     min-width: 0;
@@ -1237,13 +1374,17 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     cursor: pointer;
     border-radius: 8px;
 }
+
 .rs-recent-term:hover { background: var(--surface-2); }
+
 .rs-recent-term svg { color: var(--muted); flex-shrink: 0; }
+
 .rs-recent-term span {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
 .rs-recent-remove {
     flex: 0 0 auto;
     display: flex;
@@ -1257,21 +1398,24 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: var(--muted);
     cursor: pointer;
 }
+
 .rs-recent-remove:hover { background: var(--surface-2); color: var(--ink); }
 
-/* ---- Resources search bar as a trigger (opens the search page) ---- */
+/* resources search bar as a trigger that opens the search page */
 .rs-search-trigger {
     text-decoration: none;
     cursor: pointer;
 }
+
 .rs-search-placeholder {
     color: var(--muted);
     font-family: var(--font-system);
     font-size: 14px;
 }
 
-/* ---- dedicated search page ---- */
+/* dedicated search page */
 .rs-search-page { margin-bottom: 18px; }
+
 .rs-search-hint {
     padding: 8px 4px;
     font-family: var(--font-system);
@@ -1280,22 +1424,21 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: var(--muted);
 }
 
-
-/* ============================================================================
-   Conference: National Officer Team grid (photo + name + role, 3 across)
-   ============================================================================ */
+/* Conference national officer team grid, three across */
 .officer-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 18px 12px;
     margin: 10px 0 6px;
 }
+
 .officer {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
 }
+
 .officer-photo {
     width: 100%;
     max-width: 104px;
@@ -1306,6 +1449,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     border: 1px solid var(--line);
     margin-bottom: 8px;
 }
+
 .officer-name {
     font-family: var(--font-system);
     font-size: 14px;
@@ -1313,6 +1457,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     line-height: 18px;
     color: #ffffff;
 }
+
 .officer-role {
     font-family: var(--font-system);
     font-size: 12px;

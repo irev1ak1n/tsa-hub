@@ -1,7 +1,6 @@
-/* ============================================================================
-   Feedback modal — textarea + actions. Reuses the shared .rs-modal shell
-   (backdrop, blur, border) from resources.css. Add this to your global CSS.
-   ============================================================================ */
+/* Feedback modal with a textarea and action buttons.
+   Reuses the shared rs-modal shell from resources.css for the backdrop,
+   blur and border. */
 
 .fb-hint {
     font-family: var(--font-system);
@@ -26,11 +25,18 @@
     line-height: 21px;
     outline: none;
 }
-.fb-textarea::placeholder { color: var(--muted); }
+
+.fb-textarea::placeholder {
+    color: var(--muted);
+}
+
 .fb-textarea:focus {
     border-color: color-mix(in srgb, var(--ig-blue) 45%, var(--line));
 }
-.fb-textarea:disabled { opacity: .6; }
+
+.fb-textarea:disabled {
+    opacity: .6;
+}
 
 .fb-actions {
     display: flex;
@@ -55,13 +61,20 @@
     margin: 4px 0;
 }
 
-/* ---- light theme overrides (put these in theme-light-fixes.css instead
-        if you keep light overrides in one place) ---- */
-html[data-theme="light"] .fb-hint { color: #4a4a55; }
-html[data-theme="light"] .fb-thanks { color: #111111; }
+html[data-theme="light"] .fb-hint {
+    color: #4a4a55;
+}
+
+html[data-theme="light"] .fb-thanks {
+    color: #111111;
+}
+
 html[data-theme="light"] .fb-textarea {
     background: #ffffff;
     border-color: #d0d0da;
     color: #111111;
 }
-html[data-theme="light"] .fb-textarea::placeholder { color: #8a8a95; }
+
+html[data-theme="light"] .fb-textarea::placeholder {
+    color: #8a8a95;
+}

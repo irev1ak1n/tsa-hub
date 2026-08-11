@@ -1,6 +1,9 @@
+/* App layout and navigation.
+   Column layout with a bottom tab bar on phones and a left rail on desktop. */
+
 .shell { min-height: 100vh; display: flex; flex-direction: column; }
 
-
+/* Logo wordmark */
 .wordmark {
   font-family: var(--font-display);
   font-weight: 700;
@@ -24,7 +27,7 @@
 }
 
 
-
+/* Main page area, centered with a max width */
 .content {
   flex: 1;
   width: 100%;
@@ -33,6 +36,7 @@
   padding: calc(18px + env(safe-area-inset-top)) 16px calc(var(--nav-h) + 28px);
 }
 
+/* Bottom tab bar on phones */
 .tabbar {
   position: fixed;
   bottom: 0;
@@ -64,10 +68,19 @@
 
 .tabbar a svg { width: 21px; height: 21px; }
 
-.tabbar a.active { color: var(--ink-hi); border-top-color: var(--red-600); }
+/* Active tab gets a red top line */
+.tabbar a.active
+{
+  color: var(--ink-hi);
+  border-top-color: var(--red-600);
+}
 
+/* On desktop, swap the bottom bar for a left rail */
 @media (min-width: 920px) {
-  .shell { flex-direction: row; }
+  .shell {
+    flex-direction: row;
+  }
+
   .rail {
     width: 218px;
     background: #000000;
@@ -81,7 +94,12 @@
     gap: 4px;
     border-right: 1px solid #252525;
   }
-  .rail .wordmark { margin-bottom: 22px; padding: 0 8px; }
+
+  .rail .wordmark {
+    margin-bottom: 22px;
+    padding: 0 8px;
+  }
+
   .tabbar {
     position: static;
     height: auto;
@@ -91,6 +109,7 @@
     gap: 4px;
     padding-bottom: 0;
   }
+
   .tabbar a {
     flex-direction: row;
     justify-content: flex-start;
@@ -117,12 +136,36 @@
   .content { padding: 30px 32px 48px; }
 }
 
-@media (max-width: 919.5px) { .rail { display: none; } }
+/* Hide the rail on phones */
+@media (max-width: 919.5px)
+{
+  .rail {
+    display: none;
+  }
+}
 
-@media (min-width: 920px) { .mobile-tabs-holder { display: none; } .content { padding-bottom: 48px; } }
+/* Hide the phone tabs on desktop */
+@media (min-width: 920px) {
+  .mobile-tabs-holder {
+    display: none;
+  }
 
-.tab-ico { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+  .content
+  {
+    padding-bottom: 48px;
+  }
 
+}
+
+/* Icon wrapper so the badge can sit on top of it */
+.tab-ico {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Unread count badge */
 .tab-badge {
   position: absolute;
   top: -6px;
@@ -143,11 +186,17 @@
   justify-content: center;
 }
 
+/* On the rail the badge border matches the black background */
 @media (min-width: 920px) {
-  .rail .tab-badge { border-color: #000000; }
-  .rail .tabbar a.active .tab-badge { border-color: #000000; }
+  .rail .tab-badge {
+    border-color: #000000;
+  }
+  .rail .tabbar a.active .tab-badge {
+    border-color: #000000;
+  }
 }
 
+/* On phones shrink the badge to a small dot with no number */
 @media (max-width: 919.5px) {
   .tab-badge {
     min-width: 0;

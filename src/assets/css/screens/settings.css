@@ -4,6 +4,7 @@
     gap: 14px;
     margin-bottom: 20px;
 }
+
 .set-back {
     border: 0;
     background: none;
@@ -13,9 +14,11 @@
     display: flex;
     border-radius: 8px;
 }
+
 .set-back:hover {
     background: var(--surface-2);
 }
+
 .set-title {
     font-family: var(--font-system);
     font-weight: 700;
@@ -36,24 +39,26 @@
     padding: 0 4px 8px;
     margin-top: 20px;
 }
+
 .set-group-label:first-of-type {
     margin-top: 0;
 }
 
-/* ---- section card: themable surface + border ---- */
+/* Section card with a themable surface and border */
 .set-card {
     background: var(--set-card-bg);
     border: 3px solid var(--card-line);
     border-radius: 18px;
     overflow: hidden;
     padding: 26px 26px 30px;
-    margin-bottom: 22px; /* space between sections (no divider line) */
+    margin-bottom: 22px; /* space between sections, no divider line */
 }
+
 .set-card:last-of-type {
     margin-bottom: 0;
 }
 
-/* section heading INSIDE the card (uppercase, weight 600) */
+/* Section heading inside the card, uppercase and weight 600 */
 .set-card-title {
     font-family: var(--font-system);
     font-weight: 600;
@@ -65,7 +70,7 @@
     margin: 0 0 18px;
 }
 
-/* divider lines only WITHIN a section (between rows) */
+/* Divider lines only within a section, between the rows */
 .set-row {
     display: flex;
     align-items: center;
@@ -83,13 +88,16 @@
     font-size: 16px;
     line-height: 24px;
 }
+
 .set-row:last-child {
     border-bottom: 0;
     padding-bottom: 0;
 }
+
 .set-row:first-of-type {
     padding-top: 0;
 }
+
 .set-row:hover {
     background: transparent;
 }
@@ -112,6 +120,7 @@
     flex-direction: column;
     gap: 2px;
 }
+
 .set-sub {
     font-family: var(--font-system);
     font-weight: 400;
@@ -146,11 +155,12 @@
 .set-toggle-row {
     cursor: default;
 }
+
 .set-toggle-row:hover {
     background: none;
 }
 
-/* ---- Appearance: small uppercase sublabel above the theme value ---- */
+/* Appearance, a small uppercase sublabel above the theme value */
 .set-uplabel {
     font-family: var(--font-system);
     font-weight: 600;
@@ -160,6 +170,7 @@
     text-transform: uppercase;
     color: var(--muted);
 }
+
 .set-theme-value {
     font-family: var(--font-system);
     font-weight: 400;
@@ -168,7 +179,7 @@
     color: var(--ig-ink);
 }
 
-/* ---- theme toggle switch (pill + sliding knob w/ icon) ---- */
+/* Theme toggle switch, a pill with a sliding knob and icon */
 .set-theme-switch {
     position: relative;
     flex-shrink: 0;
@@ -180,14 +191,17 @@
     padding: 0;
     transition: background 0.18s ease;
 }
+
 .set-theme-switch.is-dark {
     background: #2a2a2a;
     border: 1px solid #404040;
 }
+
 .set-theme-switch.is-light {
     background: #d9d9de;
     border: 1px solid #c4c4cc;
 }
+
 .set-theme-knob {
     position: absolute;
     top: 50%;
@@ -200,22 +214,25 @@
     transform: translateY(-50%);
     transition: left 0.18s ease, background 0.18s ease, color 0.18s ease;
 }
+
 .set-theme-switch.is-dark .set-theme-knob {
     left: 31px;
     background: #f2c94c;
     color: #171717;
 }
+
 .set-theme-switch.is-light .set-theme-knob {
     left: 3px;
     background: #ffffff;
     color: #e8944a;
 }
+
 .set-theme-switch:focus-visible {
     outline: 2px solid var(--ig-blue);
     outline-offset: 2px;
 }
 
-/* legacy checkbox switch (kept for any other toggles) */
+/* Legacy checkbox switch, kept for any other toggles */
 .set-switch {
     position: relative;
     flex-shrink: 0;
@@ -223,6 +240,7 @@
     height: 26px;
     cursor: pointer;
 }
+
 .set-switch input {
     position: absolute;
     opacity: 0;
@@ -231,6 +249,7 @@
     margin: 0;
     cursor: pointer;
 }
+
 .set-switch-track {
     position: absolute;
     inset: 0;
@@ -238,6 +257,7 @@
     border-radius: 999px;
     transition: background 0.16s ease;
 }
+
 .set-switch-track::after {
     content: '';
     position: absolute;
@@ -249,9 +269,11 @@
     background: #fff;
     transition: transform 0.16s ease;
 }
+
 .set-switch input:checked + .set-switch-track {
     background: var(--ig-blue);
 }
+
 .set-switch input:checked + .set-switch-track::after {
     transform: translateX(18px);
 }
@@ -268,12 +290,14 @@
     gap: 14px;
     padding: 4px 4px 18px;
 }
+
 .ap-label {
     font-family: var(--font-system);
     font-size: 17px;
     line-height: 22px;
     color: var(--ig-ink);
 }
+
 .ap-text {
     font-family: var(--font-system);
     font-size: 14px;

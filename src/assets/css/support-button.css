@@ -1,10 +1,7 @@
-/* ============================================================================
-   Floating action button (SupportButton.jsx).
-   - bubble variant: the whole button is a speech-bubble silhouette (SVG),
-     #171717 fill, #404040 border, contour shadow via drop-shadow.
-   - circle variant: round button with an icon inside.
-   Fixed bottom-right, above mobile nav + safe-area, below modals.
-   ============================================================================ */
+/* Floating support button.
+   Two shapes, a speech bubble where the SVG is the button, and a plain
+   circle with an icon.
+   Sits bottom right, above the mobile nav bar. */
 
 .fab-wrap {
     position: fixed;
@@ -13,6 +10,7 @@
     z-index: 80;
 }
 
+/* On phones, lift it above the bottom nav */
 @media (max-width: 760px) {
     .fab-wrap {
         bottom: calc(var(--nav-h, 62px) + 16px + env(safe-area-inset-bottom, 0px));
@@ -28,65 +26,114 @@
     color: #ffffff;
     transition: transform 0.14s ease, filter 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
 }
+
 .fab-btn:active {
     transform: translateY(0) scale(0.96);
 }
+
 .fab-btn:focus-visible {
     outline: 2px solid var(--ig-blue, #4250f7);
     outline-offset: 4px;
     border-radius: 12px;
 }
 
-/* ---- circle variant (recommender) ---- */
+/* Circle shape */
 .fab-btn--circle {
     width: 58px;
     height: 58px;
     border-radius: 50%;
     background: #171717;
-    border: 2.5px solid #404040;
+    border: 2px solid #404040;
     box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
 }
+
 .fab-btn--circle:hover {
     transform: translateY(-2px);
     box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
     border-color: #4d4d4d;
 }
-.fab-btn--circle svg { color: #ffffff; }
 
-/* ---- bubble variant (coach): the SVG silhouette IS the button ---- */
+.fab-btn--circle svg {
+    color: #ffffff;
+}
+
+/* Bubble shape, the SVG itself is the button */
 .fab-btn--bubble {
     width: 64px;
     height: 64px;
     background: transparent;
     border: 0;
-    /* contour shadow follows the bubble outline, not a box */
     filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.55));
 }
+
 .fab-btn--bubble:hover {
     transform: translateY(-2px);
     filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.6));
 }
+
 .fab-bubble-svg {
     width: 100%;
     height: 100%;
     display: block;
     overflow: visible;
 }
+
 .fab-bubble-path {
     fill: #171717;
     stroke: #404040;
     stroke-width: 2.5;
     stroke-linejoin: round;
-    transition: stroke 0.14s ease;
+    transition: stroke 0.14s ease, fill 0.14s ease;
 }
+
 .fab-btn--bubble:hover .fab-bubble-path {
     stroke: #4d4d4d;
 }
 
-/* ---- light theme: keep the dark floating control on both themes ---- */
-html[data-theme="light"] .fab-btn--circle {
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+/* Icon inside the bubble, white on dark */
+.fab-bubble-icon {
+    stroke: #ffffff;
 }
+
+.fab-bubble-icon--filled {
+    stroke: none;
+    color: #ffffff;
+}
+
+/* Light theme, white button with black border and icon */
+html[data-theme="light"] .fab-btn--circle {
+    background: #ffffff;
+    border-color: #111111;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+}
+
+html[data-theme="light"] .fab-btn--circle:hover {
+    border-color: #111111;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+}
+
+html[data-theme="light"] .fab-btn--circle svg {
+    color: #111111;
+}
+
 html[data-theme="light"] .fab-btn--bubble {
-    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.25));
+    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.2));
+}
+
+html[data-theme="light"] .fab-btn--bubble .fab-bubble-path {
+    fill: #ffffff;
+    stroke: #111111;
+}
+
+html[data-theme="light"] .fab-btn--bubble:hover .fab-bubble-path {
+    stroke: #111111;
+}
+
+html[data-theme="light"] .fab-bubble-icon {
+    stroke: #111111;
+}
+
+html[data-theme="light"] .fab-bubble-icon--filled {
+    stroke: none;
+    color: #111111;
 }

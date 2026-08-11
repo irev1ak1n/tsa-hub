@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 const PATHS = {
     home: 'M3 10.5 12 3l9 7.5M5 9.5V21h5v-6h4v6h5V9.5',
     grid: 'M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z',
@@ -132,6 +134,36 @@ export function StoreFilledIcon({ size = 22 }) {
             <path d="M4.5 13.2c.5 0 1-.1 1.4-.3V20a1 1 0 0 0 1 1h4v-5h3v5h4a1 1 0 0 0 1-1v-7.1c.4.2.9.3 1.4.3v.0M5.9 12.9V20h4v-5.5c0-.3.2-.5.5-.5h3c.3 0 .5.2.5.5V20h4v-7.1" />
             {/* left window box */}
             <rect x="6.8" y="15.4" width="3.4" height="3.2" rx=".4" fill="none" stroke="currentColor" strokeWidth="1.4" />
+        </svg>
+    );
+}
+
+/* FILLED sparkle glyph (AI assistant).
+   Three four-point sparkles with CONCAVE (curved-in) rays, like the reference:
+   a LARGE one upper-right, a MEDIUM one lower-left, and a SMALL one to the
+   left. No orbital disc — the sparkles ARE the glyph. Solid fill via
+   currentColor so it themes with light/dark. Kept separate from <Icon>
+   (which forces fill="none"), like the other filled icons.
+
+   Each sparkle is one path: from top tip, curve IN to centre, OUT to right
+   tip, IN to centre, OUT to bottom tip, IN, OUT to left tip, IN, close. */
+export function SparkleOrbitIcon({ size = 22, className = '' }) {
+    return (
+        <svg
+            width={size}
+            height={size}
+            viewBox="0 0 48 48"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg"
+            className={className}
+            aria-hidden="true"
+        >
+            {/* large sparkle — centre (30,20), reach 16 */}
+            <path d="M30 4C30.6 15.4 34.6 19.4 46 20C34.6 20.6 30.6 24.6 30 36C29.4 24.6 25.4 20.6 14 20C25.4 19.4 29.4 15.4 30 4Z" />
+            {/* medium sparkle — centre (17,33), reach 10 */}
+            <path d="M17 23C17.4 30.1 19.9 32.6 27 33C19.9 33.4 17.4 35.9 17 43C16.6 35.9 14.1 33.4 7 33C14.1 32.6 16.6 30.1 17 23Z" />
+            {/* small sparkle — centre (11,17), reach 5 */}
+            <path d="M11 12C11.2 15.6 12.4 16.8 16 17C12.4 17.2 11.2 18.4 11 22C10.8 18.4 9.6 17.2 6 17C9.6 16.8 10.8 15.6 11 12Z" />
         </svg>
     );
 }
