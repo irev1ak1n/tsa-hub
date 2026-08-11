@@ -162,9 +162,14 @@
 }
 .rec-rank {
     flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
-    background: var(--ig-blue); color: #fff;
+    background: rgba(255, 255, 255, 0.06); border: 1px solid #404040; color: #ffffff;
     font-family: var(--font-display); font-weight: 700; font-size: 15px;
     display: flex; align-items: center; justify-content: center;
+}
+/* First place reads a touch brighter so the top match stands out */
+.rec-card:first-child .rec-rank {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #565656;
 }
 .rec-body { flex: 1; min-width: 0; }
 .rec-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
@@ -345,17 +350,17 @@
     width: 40px;
     height: 40px;
     border-radius: 10px;
-    border: 1px solid var(--card-line);
-    background: var(--surface-2);
-    color: var(--ink);
+    border: 1px solid #404040;
+    background: rgba(10, 10, 12, .55);
+    color: #ffffff;
     cursor: pointer;
     text-decoration: none;
     transition: background .12s ease, border-color .12s ease, color .12s ease;
 }
 .icon-btn:hover {
-    background: color-mix(in srgb, var(--ig-blue) 12%, var(--surface-2));
-    border-color: color-mix(in srgb, var(--ig-blue) 45%, var(--card-line));
-    color: var(--ig-ink);
+    background: rgba(20, 20, 24, .7);
+    border-color: #4d4d4d;
+    color: #ffffff;
 }
 
 .icon-btn::after {
@@ -414,9 +419,32 @@ html[data-theme="light"] .rec-card {
 
 html[data-theme="light"] .pref-chip,
 html[data-theme="light"] .pref-modal-item,
-html[data-theme="light"] .rec-practical,
-html[data-theme="light"] .icon-btn {
+html[data-theme="light"] .rec-practical {
     border-color: #d0d0da;
+}
+
+/* Icon buttons and rank badge, soft light fill with dark content */
+html[data-theme="light"] .icon-btn {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: #404040;
+    color: #111111;
+}
+
+html[data-theme="light"] .icon-btn:hover {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: #404040;
+    color: #111111;
+}
+
+html[data-theme="light"] .rec-rank {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: #c9c9d2;
+    color: #111111;
+}
+
+html[data-theme="light"] .rec-card:first-child .rec-rank {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: #b3b3be;
 }
 
 html[data-theme="light"] .pref-add,
@@ -776,11 +804,11 @@ html[data-theme="light"] .rec-nav .btn.primary:hover:not(:disabled) {
     align-items: center;
     padding: 6px 12px;
     border-radius: 999px;
-    border: 1px solid var(--card-line);
-    background: var(--surface-2);
+    border: 1px solid #404040;
+    background: rgba(255, 255, 255, 0.05);
     font-family: var(--font-system);
     font-size: 13px;
-    color: var(--ink);
+    color: #ffffff;
 }
 
 /* Score breakdown rows at the very bottom */
@@ -798,43 +826,76 @@ html[data-theme="light"] .rec-nav .btn.primary:hover:not(:disabled) {
     margin: 0 0 12px;
 }
 
+/* One factor block, a header line then a full width striped bar */
 .rec-breakdown-row {
+    display: block;
+    margin-bottom: 16px;
+}
+
+/* Header line, factor name on the left and earned over max on the right */
+.rec-breakdown-head {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 7px;
 }
 
 .rec-breakdown-name {
-    flex: 0 0 auto;
-    width: 96px;
     font-family: var(--font-system);
-    font-size: 13px;
-    color: var(--ink);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ig-ink);
 }
 
+/* Earned over max, the earned number bold and the max quieter */
+.rec-breakdown-pts {
+    font-family: var(--font-display);
+    font-size: 14px;
+    color: var(--ig-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.rec-breakdown-pts b {
+    font-weight: 700;
+}
+
+.rec-breakdown-max {
+    color: var(--muted);
+    font-weight: 600;
+    margin-left: 1px;
+}
+
+/* Track for the fill, dark and translucent like the rest of the theme */
 .rec-breakdown-bar {
-    flex: 1 1 auto;
-    height: 8px;
-    border-radius: 4px;
-    background: var(--surface-2);
+    display: block;
+    width: 100%;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #333333;
     overflow: hidden;
 }
 
+/* Fill, green diagonal stripes that grow with the earned share */
 .rec-breakdown-fill {
+    display: block;
     height: 100%;
-    border-radius: 4px;
-    background: var(--ig-blue);
+    min-width: 0;
+    border-radius: 999px;
+    transition: width .4s cubic-bezier(.2, .7, .2, 1);
+    background-color: rgba(63, 185, 80, 0.28);
+    background-image: repeating-linear-gradient(
+            135deg,
+            rgba(74, 210, 96, 1) 0,
+            rgba(74, 210, 96, 1) 7px,
+            rgba(46, 160, 67, 0.6) 7px,
+            rgba(46, 160, 67, 0.6) 14px
+    );
 }
 
-.rec-breakdown-pct {
-    flex: 0 0 auto;
-    width: 38px;
-    text-align: right;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 13px;
-    color: var(--ig-ink);
+.rec-breakdown-fill.is-zero {
+    background: transparent;
 }
 
 /* Light theme surfaces for the intro picker and detail modal */
@@ -844,8 +905,9 @@ html[data-theme="light"] .rec-division-opt {
 }
 
 html[data-theme="light"] .rec-tag {
-    background: #f2f2f7;
-    border-color: #d0d0da;
+    background: rgba(0, 0, 0, 0.04);
+    border-color: #404040;
+    color: #111111;
 }
 
 html[data-theme="light"] .rec-modal {
@@ -859,5 +921,6 @@ html[data-theme="light"] .rec-modal-head {
 }
 
 html[data-theme="light"] .rec-breakdown-bar {
-    background: #e4e4ea;
+    background: rgba(0, 0, 0, 0.06);
+    border-color: #d0d0da;
 }

@@ -45,7 +45,7 @@ export const STYLE_OPTIONS = [
     { id: "present", label: "Presenting / speaking" },
 ];
 
-// Competition Experience — event format tags a student can Prefer / Avoid.
+// Competition Experience, event format tags a student can Prefer / Avoid.
 export const FORMAT_OPTIONS = [
     { id: "prepared-project", label: "Prepare a project in advance" },
     { id: "live-challenge", label: "Live / onsite challenge" },
@@ -55,7 +55,7 @@ export const FORMAT_OPTIONS = [
     { id: "performance", label: "Performance-based" },
 ];
 
-// Challenge level — difficulty a student can Prefer / Avoid.
+// Challenge level, difficulty a student can Prefer / Avoid.
 export const DIFFICULTY_OPTIONS = [
     { id: "beginner", label: "Beginner-friendly" },
     { id: "challenging", label: "Challenging" },
@@ -78,7 +78,9 @@ const TIME_ORDER = ["light", "medium", "heavy", "project"];
 const COST_ORDER = ["0-25", "25-75", "75-150", "150-300", "300+"];
 
 
-const MATCH = { workType: 42, interest: 36, style: 9, format: 3, difficulty: 2, budget: 1, career: 7 };
+// Match weights, summing to 100 across the six scored factors.
+// Budget is not scored, it stays a display note only, so its weight is 0.
+const MATCH = { workType: 50, interest: 27, style: 8, format: 5, difficulty: 5, budget: 0, career: 5 };
 
 function styleForEvent(ev) {
     const s = new Set();
@@ -143,8 +145,8 @@ const FORMAT_IDS = new Set(FORMAT_OPTIONS.map((o) => o.id));
 const DIFFICULTY_IDS = new Set(DIFFICULTY_OPTIONS.map((o) => o.id));
 const BUDGET_IDS = new Set(["budget-free", "budget-low", "budget-high"]);
 
-// Map an event's cost band -> a coarse budget category used as a prefer/avoid
-// criterion. 0-25 = free; 25-150 = low-cost; 150+ = high-cost.
+// Map an event's cost band to a coarse budget category used as a prefer/avoid
+// criterion. 0-25 = free, 25-150 = low-cost, 150+ = high-cost.
 function budgetCategoryOf(ev) {
     const c = ev.cost;
     if (c === "0-25") return "budget-free";
@@ -164,8 +166,8 @@ function splitPrefs(list) {
     return out;
 }
 
-// generic prefer/avoid scorer over a membership test -> raw in roughly [-1..+1]
-// (avoid weighted 1.6x so avoiding matters more than preferring)
+// generic prefer/avoid scorer over a membership test, raw in roughly [-1..+1]
+// avoid weighted 1.6x so avoiding matters more than preferring
 function scoreAxis(preferIds, avoidIds, has) {
     let raw = 0;
     const hitPrefer = [], hitAvoid = [];
@@ -199,10 +201,9 @@ function scoreCareerForMatch(ev, careers) {
 
 function personalMax(answers) {
     // Ceiling = a realistic strong event that nails the #1 project choice exactly.
-    // (Previously it also assumed a second exact hit on #2, which quietly capped a
-    // pure #1 bullseye at ~80% of the workType block.) Requiring only the #1 exact
-    // lets a true bullseye earn the full workType weight, while events that ALSO
-    // hit #2 still score higher via the raw secondary contribution.
+    // Requiring only the #1 exact lets a true bullseye earn the full workType
+    // weight, while events that ALSO hit #2 still score higher via the raw
+    // secondary contribution.
     const wtMax = WORKTYPE_RANK_WEIGHTS[0];
     const intMax = 3 * INTEREST_RANK_WEIGHTS[0] + 2 * INTEREST_RANK_WEIGHTS[1];
     return { wtMax, intMax };
@@ -231,7 +232,6 @@ export function matchScore(ev, answers, norm) {
     if (!usedStyle) reclaimed += MATCH.style;
     if (!usedFormat) reclaimed += MATCH.format;
     if (!usedDiff) reclaimed += MATCH.difficulty;
-    if (!usedBudget) reclaimed += MATCH.budget;
 
     // Split the reclaimed weight between workType and interest in their existing
     // proportion, so their relative importance stays the same.
@@ -295,7 +295,7 @@ function timeNote(ev, time) {
 }
 
 function budgetNote(ev) {
-    // Budget is now a prefer/avoid criterion, not a threshold. On the results card
+    // Budget is a prefer/avoid criterion, not a threshold. On the results card
     // we just show the event's own cost band as an informational note.
     const c = ev.cost;
 
@@ -321,7 +321,7 @@ function teamNotes(ev, teamAvailId) {
     } else if (el.minTeamSize && el.maxTeamSize && el.minTeamSize === el.maxTeamSize) {
         requirement = `${el.minTeamSize} required`;
     } else if (el.minTeamSize && el.maxTeamSize) {
-        requirement = `${el.minTeamSize}–${el.maxTeamSize} members`;
+        requirement = `${el.minTeamSize}\u2013${el.maxTeamSize} members`;
     } else if (el.minTeamSize) {
         requirement = `${el.minTeamSize}+ required`;
     } else {
@@ -346,7 +346,7 @@ function teamNotes(ev, teamAvailId) {
     } else if (have === 1 && min != null && min > 1 && !el.individualAllowed) {
         notes.push({
             kind: "warn",
-            text: `This event requires ${el.maxTeamSize ? `${min}–${el.maxTeamSize}` : `${min}+`} members. You'll need teammates before registration.`,
+            text: `This event requires ${el.maxTeamSize ? `${min}\u2013${el.maxTeamSize}` : `${min}+`} members. You'll need teammates before registration.`,
         });
     }
 
@@ -394,11 +394,11 @@ export function recommend(events, answers, { topN = 10 } = {}) {
     // Rank primarily by PURE fit so a great match is never demoted by team/time/
     // budget. But because the DISPLAYED number is the penalized pct, sort by pct
     // first to keep the visible list monotonic (no lower % sitting above a higher
-    // one), then fall back to baseMatch. The practical penalties are tiny (≤6 each)
-    // so this preserves fit-based ordering while keeping the numbers readable.
+    // one), then fall back to baseMatch. The practical penalties are tiny so this
+    // preserves fit-based ordering while keeping the numbers readable.
     scored.sort((a, b) => b.pct - a.pct || b.baseMatch - a.baseMatch);
     const top = scored.slice(0, topN);
-    // Now that order + shown pct are final, generate position-aware explanations.
+    // Now that order and shown pct are final, generate position-aware explanations.
     top.forEach((row, i) => {
         row.explanation = explain(row.ev, row.detail, row.connection, answers, i, row.pct);
     });
@@ -406,7 +406,7 @@ export function recommend(events, answers, { topN = 10 } = {}) {
 }
 
 
-// interest key -> prose phrase (fits after "you're into ___" / "your love of ___")
+// interest key to prose phrase (fits after "you're into ___" / "your love of ___")
 const INTEREST_PHRASE = {
     codingSoftware: "coding and building software",
     creativeDesign: "creative and design work",
@@ -418,7 +418,7 @@ const INTEREST_PHRASE = {
     gamesHandsOn: "games and hands-on making",
 };
 
-// work-choice id -> prose phrase (fits after "you want to ___")
+// work-choice id to prose phrase (fits after "you want to ___")
 const WORKTYPE_PHRASE = {
     website: "build websites",
     "app-software": "create apps and software",
@@ -438,7 +438,7 @@ const WORKTYPE_PHRASE = {
     "product-prototype": "build products and prototypes",
 };
 
-// style/format preference id -> prose phrase (fits after "you like ___")
+// style/format preference id to prose phrase (fits after "you like ___")
 const PREF_PHRASE = {
     // styles
     digital: "working digitally, on-screen",
@@ -461,7 +461,7 @@ function workPhrase(id) {
     return o ? o.label.toLowerCase() : id;
 }
 
-// What each competition format actually has you DO — used to describe the
+// What each competition format actually has you DO, used to describe the
 // experience ("you'll build a project ahead of time and present it to judges").
 const FORMAT_ACTIVITY = {
     "prepared-project": "build a project ahead of time",
@@ -490,7 +490,7 @@ function joinList(a) {
     return a.slice(0, -1).join(", ") + ", and " + a[a.length - 1];
 }
 
-// Gather the concrete matched factors (as short phrases) for one event, plus a
+// Gather the concrete matched factors as short phrases for one event, plus a
 // couple of structured flags the templates use to pick tone.
 function collectFactors(ev, detail, connection, answers) {
     const { wt, it, st, fm, df, bg } = detail;
@@ -556,9 +556,9 @@ function collectFactors(ev, detail, connection, answers) {
         .slice(0, 3);
 
     // difficulty descriptor
-    f.difficulty = ev?.difficulty || null; // "beginner" | "intermediate" | "competitive" ...
+    f.difficulty = ev?.difficulty || null; // beginner, intermediate, competitive
 
-    // is this a long build vs a quick/live thing?
+    // is this a long build vs a quick/live thing
     f.isProject = (ev?.formats || []).includes("prepared-project");
     f.isLive = (ev?.formats || []).includes("live-challenge");
 
@@ -571,9 +571,9 @@ function pick(variants, seed) {
     return variants[((seed % variants.length) + variants.length) % variants.length];
 }
 
-// Converts phrases such as:
-// "build a website" -> "building a website"
-// "create an app" -> "creating an app"
+// Converts phrases such as
+// "build a website" to "building a website"
+// "create an app" to "creating an app"
 function toGerundPhrase(phrase = "") {
     const transformations = [
         [/^build\b/i, "building"],
@@ -609,7 +609,7 @@ function toGerundPhrase(phrase = "") {
 }
 
 
-// Creates a personalized explanation using four layers:
+// Creates a personalized explanation using four layers.
 //
 // 1. How the event connects to the user's answers
 // 2. What the student will actually do
@@ -1157,7 +1157,7 @@ export const CAREER_LABELS = {
     biotech: "Biotechnology & Life Sciences",
     "research-science": "Science & Research",
     government: "Government & Public Safety",
-    // legacy/merged keys still tagged on events -> fold into their umbrella label
+    // legacy/merged keys still tagged on events, fold into their umbrella label
     // so Career Connection keeps working without re-tagging every event.
     ai: "AI, Data & Analytics",
     "electrical-eng": "Mechanical & Electrical Engineering",

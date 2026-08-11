@@ -63,6 +63,7 @@ export function AppProvider({ children }) {
     fetchEvents()
         .then((rows) => {
           if (!alive) return;
+          console.log('EVENT SAMPLE:', rows[0]);   // ← добавь эту строку
           setEvents(rows);
         })
         .catch(() => {

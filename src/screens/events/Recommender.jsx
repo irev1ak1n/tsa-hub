@@ -11,6 +11,8 @@ import {
     CAREER_LABELS,
 } from '../../services/recommender.js';
 import { EVENT_REC_BY_ID, EVENT_REC_DATA } from '../../data/eventRecommendationData.js';
+import { getEvent } from '../../data/events.js';
+import { COMPETITION_REQUIREMENTS } from '../../data/competitionRequirements.js';
 import { Icon } from '../../components/UI.jsx';
 
 // Emoji for the step 2 work tiles, keyed by option id.
@@ -113,6 +115,58 @@ function teamSizeText(el) {
     return 'Team event';
 }
 
+// Preconference submission requirement, read from the competition tables and
+// turned into one plain line. Matched by event name since the tables have no id.
+// Names are normalised by dropping any trailing star and comparing lower case.
+function normName(s) {
+    return (s || '').replace(/\*+$/, '').trim().toLowerCase();
+}
+
+function preconferenceText(eventName, division) {
+    const page = COMPETITION_REQUIREMENTS.find((r) => r.id === 'preconference-submissions');
+    if (!page || !page.tables) return 'None';
+
+    const wantHeading = division === 'HS' ? 'High School' : 'Middle School';
+    const table = page.tables.find((t) => t.heading === wantHeading);
+    if (!table) return 'None';
+
+    const target = normName(eventName);
+    const row = table.rows.find((r) => normName(r[0]) === target);
+    if (!row) return 'None';
+
+    // Row shape is [Event, PDF, # of files, URL, # of links].
+    const pdf = (row[1] || '').trim();
+    const pdfCount = (row[2] || '').trim();
+    const url = (row[3] || '').trim();
+    const urlCount = (row[4] || '').trim();
+
+    const bits = [];
+    if (pdf) {
+        const label = pdf.replace(/\s+/g, ' ');
+        bits.push(pdfCount && Number(pdfCount) > 1 ? `${label} (${pdfCount} PDFs)` : `${label} (PDF)`);
+    }
+    if (url) {
+        const label = url.replace(/\s+/g, ' ');
+        bits.push(urlCount && Number(urlCount) > 1 ? `${label} (${urlCount} links)` : `${label} (link)`);
+    }
+
+    return bits.length ? bits.join(' + ') : 'None';
+}
+
+// Whether the event needs state advisor approval, from the approval-events page.
+// Same name matching, star stripped and case ignored, scoped to the division.
+function needsStateAdvisorApproval(eventName, division) {
+    const page = COMPETITION_REQUIREMENTS.find((r) => r.id === 'state-advisor-approval-events');
+    if (!page || !page.tables) return false;
+
+    const wantHeading = division === 'HS' ? 'High School' : 'Middle School';
+    const table = page.tables.find((t) => t.heading === wantHeading);
+    if (!table) return false;
+
+    const target = normName(eventName);
+    return table.rows.some((r) => normName(r[0]) === target);
+}
+
 // Related events are computed by similarity, limited to the same division.
 // Overlap counts shared workTypes and interests, plus a small category bonus.
 function relatedEvents(sourceId) {
@@ -133,24 +187,26 @@ function relatedEvents(sourceId) {
     return scored.slice(0, 6).map((x) => x.e.name);
 }
 
-// Build the score breakdown rows from the engine parts, largest first.
+// Score breakdown as a showcase of how scoring works. Each factor carries a
+// weight, which is also its max, so the earned points read as x out of weight.
+// The bar fills by how much this event earned of that factor. Weights come
+// from the product table, matching the engine split.
+const BREAKDOWN_FACTORS = [
+    { key: 'workPts', name: 'Work type', max: 50 },
+    { key: 'interestPts', name: 'Interests', max: 27 },
+    { key: 'stylePts', name: 'Style', max: 8 },
+    { key: 'formatPts', name: 'Format', max: 5 },
+    { key: 'careerPts', name: 'Career fit', max: 5 },
+    { key: 'difficultyPts', name: 'Difficulty', max: 5 },
+];
+
 function breakdownRows(parts) {
     if (!parts) return [];
-    const labels = {
-        workPts: 'Work type',
-        interestPts: 'Interests',
-        careerPts: 'Career fit',
-        stylePts: 'Style',
-        formatPts: 'Format',
-        difficultyPts: 'Difficulty',
-        budgetPts: 'Budget',
-    };
-    const rows = Object.entries(parts)
-        .map(([k, v]) => ({ name: labels[k] || k, value: Math.max(0, v) }))
-        .filter((r) => r.value > 0.5);
-    const max = rows.reduce((m, r) => Math.max(m, r.value), 0) || 1;
-    rows.sort((a, b) => b.value - a.value);
-    return rows.map((r) => ({ ...r, bar: Math.round((r.value / max) * 100), pct: Math.round(r.value) }));
+    return BREAKDOWN_FACTORS.map((f) => {
+        const earned = Math.max(0, Math.min(f.max, parts[f.key] || 0));
+        const fill = Math.max(0, Math.min(100, Math.round((earned / f.max) * 100)));
+        return { name: f.name, max: f.max, fill, pts: Math.round(earned) };
+    });
 }
 
 export default function Recommender() {
@@ -692,7 +748,10 @@ export default function Recommender() {
 function EventModal({ result, onClose }) {
     const ev = EVENT_REC_BY_ID[result.id];
     const el = ev?.eligibility;
-    const isStateQualifier = el?.entryScope === 'state';
+
+    // Event description comes from the events store (loaded from Supabase).
+    // The column is named overview. If empty, the section below does not render.
+    const eventDescription = getEvent(result.id)?.overview || null;
 
     const relatedCareers = Object.entries(ev?.careers || {})
         .sort((a, b) => b[1] - a[1])
@@ -715,15 +774,31 @@ function EventModal({ result, onClose }) {
                         <span className="rec-modal-score-label">match with your profile</span>
                     </div>
 
-                    {result.explanation && <p className="rec-modal-desc">{result.explanation}</p>}
+                    {result.explanation && (
+                        <div className="rec-modal-section" style={{ marginTop: 0 }}>
+                            <div className="rec-modal-section-title">Analysis</div>
+                            <p className="rec-modal-desc" style={{ margin: 0 }}>{result.explanation}</p>
+                        </div>
+                    )}
+
+                    {eventDescription && (
+                        <div className="rec-modal-section">
+                            <div className="rec-modal-section-title">Description</div>
+                            <p className="rec-modal-desc" style={{ margin: 0 }}>{eventDescription}</p>
+                        </div>
+                    )}
 
                     <div className="rec-fact">
                         <span className="rec-fact-label">Team Size</span>
                         <span className="rec-fact-value">{teamSizeText(el)}</span>
                     </div>
                     <div className="rec-fact">
-                        <span className="rec-fact-label">State Qualifier Event</span>
-                        <span className="rec-fact-value">{isStateQualifier ? 'Yes' : 'No'}</span>
+                        <span className="rec-fact-label">Preconference Submission</span>
+                        <span className="rec-fact-value">{preconferenceText(result.name, result.division)}</span>
+                    </div>
+                    <div className="rec-fact">
+                        <span className="rec-fact-label">State Advisor Approval</span>
+                        <span className="rec-fact-value">{needsStateAdvisorApproval(result.name, result.division) ? 'Yes' : 'No'}</span>
                     </div>
 
                     {relatedCareers.length > 0 && (
@@ -747,14 +822,21 @@ function EventModal({ result, onClose }) {
                     {rows.length > 0 && (
                         <div className="rec-breakdown">
                             <div className="rec-modal-section-title">Score Breakdown</div>
-                            <p className="rec-breakdown-sub">How we calculate it. Each factor adds to your overall match based on your answers.</p>
+                            <p className="rec-breakdown-sub">How the match is built. The bar fills toward each factor, and the number shows the points earned out of that factor.</p>
                             {rows.map((r) => (
                                 <div className="rec-breakdown-row" key={r.name}>
-                                    <span className="rec-breakdown-name">{r.name}</span>
-                                    <span className="rec-breakdown-bar">
-                                        <span className="rec-breakdown-fill" style={{ width: `${r.bar}%` }} />
-                                    </span>
-                                    <span className="rec-breakdown-pct">{r.pct}</span>
+                                    <div className="rec-breakdown-head">
+                                        <span className="rec-breakdown-name">{r.name}</span>
+                                        <span className="rec-breakdown-pts">
+                                            <b>{r.pts}</b><span className="rec-breakdown-max">/{r.max}</span>
+                                        </span>
+                                    </div>
+                                    <div className="rec-breakdown-bar">
+                                        <div
+                                            className={`rec-breakdown-fill ${r.fill > 0 ? 'is-on' : 'is-zero'}`}
+                                            style={{ width: `${r.fill}%` }}
+                                        />
+                                    </div>
                                 </div>
                             ))}
                         </div>
