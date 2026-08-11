@@ -1,22 +1,19 @@
 import { useState, useRef } from 'react';
 import { flushSync } from 'react-dom';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext.jsx';
 import {
     recommend,
     STEP1_INTERESTS,
     STEP2_WORK_OPTIONS,
-    STYLE_CHOICES,
-    FORMAT_CHOICES,
-    DIFFICULTY_CHOICES,
     TIME_CHOICES,
     TEAM_AVAILABILITY_CHOICES,
+    CAREER_LABELS,
 } from '../../services/recommender.js';
+import { EVENT_REC_BY_ID, EVENT_REC_DATA } from '../../data/eventRecommendationData.js';
 import { Icon } from '../../components/UI.jsx';
 
-// ---------------------------------------------------------------------------
-// Step 2 tiles keep their emoji; ids now match the engine's workType option ids.
-// ---------------------------------------------------------------------------
+// Emoji for the step 2 work tiles, keyed by option id.
 const WORK_EMOJI = {
     website: '🌐', 'app-software': '💻', robot: '🤖', drone: '🚁', vehicle: '🏎️',
     'structure-model': '🏛️', game: '🎮', cad: '📐', 'graphic-design': '🎨',
@@ -47,9 +44,7 @@ const CAREERS = [
     ['government', 'Government & Public Safety'],
 ];
 
-// Preference catalog for the two-column builder. Every id here is understood by
-// the engine (style, format, or difficulty) so nothing is "dead". Grouped by
-// theme for the picker modal; emoji used on the chips.
+// Prefer and avoid catalog for the last step. Every id is understood by the engine.
 const PREF_CATALOG = [
     {
         group: 'Competition Format',
@@ -88,12 +83,13 @@ const PREF_CATALOG = [
         ],
     },
 ];
-// flat lookup: id -> { label, emoji, group }
 const PREF_BY_ID = Object.fromEntries(
     PREF_CATALOG.flatMap((g) => g.items.map((it) => [it.id, { ...it, group: g.group }]))
 );
 
+// Step 0 is the intro with the division picker. Steps 1 to 6 are the survey.
 const STEP_TITLES = [
+    'Find your best-fit events',
     'What interests you most?',
     'What would you love to work on?',
     'Where could you see yourself?',
@@ -103,46 +99,92 @@ const STEP_TITLES = [
 ];
 const STEP_COUNT = STEP_TITLES.length;
 
-// How far the pointer must move before a press becomes a drag (px). Below this
-// threshold the gesture is treated as a tap / page scroll, so the list doesn't
-// grab on every touch.
 const DRAG_THRESHOLD = 6;
 
+// Human label for an event team requirement, read straight from eligibility.
+function teamSizeText(el) {
+    if (!el) return 'Varies';
+    if (el.individualAllowed && (el.minTeamSize == null || el.minTeamSize <= 1)) {
+        return el.maxTeamSize && el.maxTeamSize > 1 ? `Solo or up to ${el.maxTeamSize}` : 'Individual';
+    }
+    if (el.minTeamSize && el.maxTeamSize && el.minTeamSize === el.maxTeamSize) return `Team of ${el.minTeamSize}`;
+    if (el.minTeamSize && el.maxTeamSize) return `${el.minTeamSize}–${el.maxTeamSize} members`;
+    if (el.minTeamSize) return `${el.minTeamSize}+ members`;
+    return 'Team event';
+}
+
+// Related events are computed by similarity, limited to the same division.
+// Overlap counts shared workTypes and interests, plus a small category bonus.
+function relatedEvents(sourceId) {
+    const src = EVENT_REC_BY_ID[sourceId];
+    if (!src) return [];
+    const srcWork = Object.keys(src.workTypes || {});
+    const srcInt = Object.keys(src.interests || {});
+    const scored = EVENT_REC_DATA
+        .filter((e) => e.id !== src.id && e.division === src.division)
+        .map((e) => {
+            const workOverlap = Object.keys(e.workTypes || {}).filter((k) => srcWork.includes(k)).length;
+            const intOverlap = Object.keys(e.interests || {}).filter((k) => srcInt.includes(k)).length;
+            const catBonus = e.category === src.category ? 1 : 0;
+            return { e, score: workOverlap * 2 + intOverlap + catBonus };
+        })
+        .filter((x) => x.score > 0)
+        .sort((a, b) => b.score - a.score);
+    return scored.slice(0, 6).map((x) => x.e.name);
+}
+
+// Build the score breakdown rows from the engine parts, largest first.
+function breakdownRows(parts) {
+    if (!parts) return [];
+    const labels = {
+        workPts: 'Work type',
+        interestPts: 'Interests',
+        careerPts: 'Career fit',
+        stylePts: 'Style',
+        formatPts: 'Format',
+        difficultyPts: 'Difficulty',
+        budgetPts: 'Budget',
+    };
+    const rows = Object.entries(parts)
+        .map(([k, v]) => ({ name: labels[k] || k, value: Math.max(0, v) }))
+        .filter((r) => r.value > 0.5);
+    const max = rows.reduce((m, r) => Math.max(m, r.value), 0) || 1;
+    rows.sort((a, b) => b.value - a.value);
+    return rows.map((r) => ({ ...r, bar: Math.round((r.value / max) * 100), pct: Math.round(r.value) }));
+}
+
 export default function Recommender() {
-    const { profile, myEvents, addEvent, removeEvent } = useApp();
-    const division = profile?.division || 'HS';
+    const { profile } = useApp();
+
+    const navigate = useNavigate();
 
     const [step, setStep] = useState(0);
+    const [division, setDivision] = useState(profile?.division || '');
     const [results, setResults] = useState(null);
+    const [openEvent, setOpenEvent] = useState(null); // result object shown in the detail modal
 
-    // Step 1 starts as the full list in default order (draggable to rank).
     const [intOrder, setIntOrder] = useState(STEP1_INTERESTS.map((i) => i.key));
-    const [workRank, setWorkRank] = useState([]);      // ordered picks, max 5
+    const [workRank, setWorkRank] = useState([]);
     const [careers, setCareers] = useState([]);
     const [time, setTime] = useState('');
     const [teamAvail, setTeamAvail] = useState('');
-    const [placement, setPlacement] = useState({});    // id -> 'prefer' | 'avoid'
-    const [prefModal, setPrefModal] = useState(null);  // 'prefer' | 'avoid' | null (which column is being added to)
+    const [placement, setPlacement] = useState({});
+    const [prefModal, setPrefModal] = useState(null);
 
     const intLabel = Object.fromEntries(STEP1_INTERESTS.map((i) => [i.key, i.label]));
 
-    // ---- pointer drag for step 1 — displacement reorder (mouse + touch) -----
-    // Robust approach (dnd-kit style): the DOM order NEVER changes during a drag.
-    // The dragged row translates by the raw pointer delta (so it can't escape the
-    // list). Every other row shifts by exactly one row-height when it needs to make
-    // room, via CSS transition (smooth slide). We commit the new order to state
-    // only on drop. No baseTop math, no mid-drag re-renders, no jumps.
+    // Pointer drag for step 1 ranking.
     const listRef = useRef(null);
     const pressRef = useRef(null);
     const [draggingId, setDraggingId] = useState(null);
-    const [dragOffset, setDragOffset] = useState(0);   // px the dragged row moved
-    const [targetIndex, setTargetIndex] = useState(null); // where it would drop
-    const [dragFrom, setDragFrom] = useState(null);    // origin index (kept during settle)
-    const [settling, setSettling] = useState(false);   // true during the release glide
-    const [committing, setCommitting] = useState(false); // true for the 1 frame we swap DOM order
+    const [dragOffset, setDragOffset] = useState(0);
+    const [targetIndex, setTargetIndex] = useState(null);
+    const [dragFrom, setDragFrom] = useState(null);
+    const [settling, setSettling] = useState(false);
+    const [committing, setCommitting] = useState(false);
     const settleTimer = useRef(null);
 
-    const GAP = 8; // must match .drag-list gap in CSS
+    const GAP = 8;
 
     function rowMetrics() {
         const list = listRef.current;
@@ -155,12 +197,7 @@ export default function Recommender() {
 
     function onPointerDown(e, id, index) {
         if (e.button != null && e.button !== 0) return;
-        pressRef.current = {
-            id,
-            index,               // original index in intOrder
-            startY: e.clientY,
-            dragging: false,
-        };
+        pressRef.current = { id, index, startY: e.clientY, dragging: false };
         try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* ignore */ }
     }
 
@@ -176,19 +213,16 @@ export default function Recommender() {
         }
         e.preventDefault();
 
-        // clamp the visual offset so the dragged row can't leave the list: it may
-        // travel at most from its own slot up to the first slot / down to the last.
         const m = rowMetrics();
         const rawDy = e.clientY - press.startY;
         let dy = rawDy;
         if (m) {
-            const minDy = -press.index * m.step;                          // up to slot 0
-            const maxDy = (intOrder.length - 1 - press.index) * m.step;   // down to last
+            const minDy = -press.index * m.step;
+            const maxDy = (intOrder.length - 1 - press.index) * m.step;
             dy = Math.max(minDy, Math.min(maxDy, rawDy));
         }
         setDragOffset(dy);
 
-        // how many slots the dragged row has moved past, based on row height
         if (!m) return;
         const moved = Math.round(dy / m.step);
         let idx = press.index + moved;
@@ -214,30 +248,15 @@ export default function Recommender() {
         const to = targetIndex != null ? targetIndex : press.index;
         const m = rowMetrics();
 
-        // Glide the dragged card from wherever the finger left it to the EXACT
-        // offset of its destination slot, then commit the reorder once the glide
-        // finishes. Animating to the exact slot offset (moved * step) is what kills
-        // the little jump: at commit the card is already sitting precisely where
-        // its new DOM slot will be, so nothing teleports. Neighbors are already in
-        // their final visual spots, so the commit is invisible.
         pressRef.current = null;
         if (m) {
             const targetOffset = (to - from) * m.step;
             setSettling(true);
-            setDragOffset(targetOffset); // CSS transition animates card to the slot
+            setDragOffset(targetOffset);
             if (settleTimer.current) clearTimeout(settleTimer.current);
             settleTimer.current = setTimeout(() => {
-                // The card has now glided to its destination slot visually. Commit
-                // the real DOM order in a dedicated "committing" frame where ALL
-                // transitions are off, so the instant we swap DOM order and drop the
-                // transform, nothing animates — the visual position is unchanged.
-                // (Without this, clearing draggingId re-enables the CSS .18s
-                // transition and the leftover transform animates to 0 at the same
-                // moment the layout moves the row → the bounce you saw.)
                 setCommitting(true);
                 requestAnimationFrame(() => {
-                    // flushSync makes the order change + state reset one synchronous,
-                    // visually atomic paint (React alone doesn't guarantee that).
                     flushSync(() => {
                         if (to !== from) {
                             setIntOrder((cur) => {
@@ -252,10 +271,9 @@ export default function Recommender() {
                         setDragFrom(null);
                         setSettling(false);
                     });
-                    // re-enable transitions on the next frame, after the swap painted
                     requestAnimationFrame(() => setCommitting(false));
                 });
-            }, 170); // must match the settle transition duration below
+            }, 170);
         } else {
             if (to !== from) {
                 const copy = [...intOrder];
@@ -269,25 +287,18 @@ export default function Recommender() {
         }
     }
 
-    // For a given row index, how far should it visually shift to make room for the
-    // dragged row? Returns px translateY (0 for the dragged row — it uses offset).
-    // Uses dragFrom state (not pressRef) so it keeps working during the release
-    // settle, when pressRef has already been cleared.
     function shiftFor(index) {
         if (!draggingId || dragFrom == null || targetIndex == null) return 0;
         const from = dragFrom;
         const to = targetIndex;
-        if (index === from) return 0; // dragged row handled separately
+        if (index === from) return 0;
         const m = rowMetrics();
         if (!m) return 0;
-        // dragged moving DOWN: rows between (from, to] shift up by one step
         if (to > from && index > from && index <= to) return -m.step;
-        // dragged moving UP: rows between [to, from) shift down by one step
         if (to < from && index >= to && index < from) return m.step;
         return 0;
     }
 
-    // ---- step 2 tiles ----
     function toggleWork(id) {
         if (workRank.includes(id)) setWorkRank(workRank.filter((x) => x !== id));
         else if (workRank.length < 5) setWorkRank([...workRank, id]);
@@ -298,8 +309,6 @@ export default function Recommender() {
         else if (careers.length < 3) setCareers([...careers, id]);
     }
 
-    // add an item to a column from the modal; if it's already in the other column,
-    // just switch it (an item can't be in both Prefer and Avoid at once).
     function addPref(id, col) {
         setPlacement((p) => ({ ...p, [id]: col }));
         setPrefModal(null);
@@ -316,9 +325,9 @@ export default function Recommender() {
         const prefer = Object.entries(placement).filter(([, c]) => c === 'prefer').map(([id]) => id);
         const avoid = Object.entries(placement).filter(([, c]) => c === 'avoid').map(([id]) => id);
         const raw = recommend({
-            division,
-            interestRanking: intOrder,          // all 8, ranked
-            workRanking: workRank,              // up to 5, ranked
+            division: division || 'HS',
+            interestRanking: intOrder,
+            workRanking: workRank,
             careers,
             prefer,
             avoid,
@@ -326,10 +335,6 @@ export default function Recommender() {
             teamAvailability: teamAvail || null,
         }, { topN: 10 });
 
-        // De-duplicate displayed percentages. Ranking already reflects true score;
-        // this only adjusts the shown number so ties don't read as "30, 30, 30".
-        // Each time a % would repeat (or exceed) the one above it, drop it by 1 so
-        // the column always descends. Underlying order is untouched.
         let prev = Infinity;
         const deduped = raw.map((r) => {
             let shown = Math.min(r.pct, prev - 1);
@@ -352,16 +357,18 @@ export default function Recommender() {
     function restart() {
         setIntOrder(STEP1_INTERESTS.map((i) => i.key));
         setWorkRank([]); setCareers([]); setTime(''); setTeamAvail(''); setPlacement({});
-        setStep(0); setResults(null);
+        setDivision(profile?.division || '');
+        setStep(0); setResults(null); setOpenEvent(null);
     }
 
     const canNext =
-        step === 0 ? true :
-            step === 1 ? workRank.length > 0 :
-                step === 2 ? true :
-                    step === 3 ? !!time :
-                        step === 4 ? !!teamAvail :
-                            true;
+        step === 0 ? !!division :
+            step === 1 ? true :
+                step === 2 ? workRank.length > 0 :
+                    step === 3 ? true :
+                        step === 4 ? !!time :
+                            step === 5 ? !!teamAvail :
+                                true;
 
     // ------------------------------------------------------------------ RESULTS
     if (results) {
@@ -398,24 +405,31 @@ export default function Recommender() {
                     </div>
                 ) : (
                     <div className="rec-list">
-                        {results.map((r, i) => {
-                            return (
-                                <div className="rec-card" key={r.id}>
-                                    <div className="rec-rank">{i + 1}</div>
-                                    <div className="rec-body">
-                                        <div className="rec-top">
-                                            <h3>{r.name}</h3>
-                                            <span className={`rec-pct ${pctClass(r.pct)}`}>{r.pct}%</span>
-                                        </div>
-
-                                        {/* WHY it matches — interest fit only */}
-                                        {r.explanation && <p className="rec-why">{r.explanation}</p>}
+                        {results.map((r, i) => (
+                            <div className="rec-card" key={r.id} onClick={() => setOpenEvent(r)}>
+                                <div className="rec-rank">{i + 1}</div>
+                                <div className="rec-body">
+                                    <div className="rec-top">
+                                        <h3>{r.name}</h3>
+                                        <span className={`rec-pct ${pctClass(r.pct)}`}>{r.pct}%</span>
                                     </div>
+                                    {r.explanation && <p className="rec-why rec-why-clamp">{r.explanation}</p>}
+                                    <button
+                                        className="rec-seemore"
+                                        onClick={(e) => { e.stopPropagation(); setOpenEvent(r); }}
+                                    >
+                                        See more
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="m9 18 6-6-6-6" />
+                                        </svg>
+                                    </button>
                                 </div>
-                            );
-                        })}
+                            </div>
+                        ))}
                     </div>
                 )}
+
+                {openEvent && <EventModal result={openEvent} onClose={() => setOpenEvent(null)} />}
             </>
         );
     }
@@ -425,18 +439,41 @@ export default function Recommender() {
         <>
             <div className="section">
                 <div className="rec-progress">
-                    {STEP_TITLES.map((_, i) => <span key={i} className={`rec-dot ${i <= step ? 'on' : ''}`}/>)}
+                    {STEP_TITLES.map((_, i) => <span key={i} className={`rec-dot ${i <= step ? 'on' : ''}`} />)}
                 </div>
                 <div className="eyebrow">Step {step + 1} of {STEP_COUNT}</div>
                 <h1>{STEP_TITLES[step]}</h1>
             </div>
 
-            {/* STEP 1 — drag to rank all 8 interests (pointer-based: mouse + touch) */}
+            {/* STEP 0 — intro and division picker */}
             {step === 0 && (
                 <>
+                    <p className="rec-intro-lead">
+                        Take a short quiz and we’ll match you with the TSA events that fit your interests best. First, pick your division.
+                    </p>
+                    <div className="rec-division">
+                        {[
+                            { id: 'HS', title: 'High School', sub: 'Grades 9–12' },
+                            { id: 'MS', title: 'Middle School', sub: 'Grades 6–8' },
+                        ].map((d) => (
+                            <button
+                                key={d.id}
+                                className={`rec-division-opt ${division === d.id ? 'on' : ''}`}
+                                onClick={() => setDivision(d.id)}
+                            >
+                                <span className="rec-division-title">{d.title}</span>
+                                <span className="rec-division-sub">{d.sub}</span>
+                            </button>
+                        ))}
+                    </div>
+                </>
+            )}
+
+            {/* STEP 1 — drag to rank interests */}
+            {step === 1 && (
+                <>
                     <p className="muted small rec-stepsub">
-                        Put what interests you most at the top, and we’ll use your choices to find the best matches for
-                        you.
+                        Put what interests you most at the top, and we’ll use your choices to find the best matches for you.
                     </p>
                     <div
                         className={`drag-list ${draggingId ? 'is-dragging' : ''} ${committing ? 'is-committing' : ''}`}
@@ -444,10 +481,7 @@ export default function Recommender() {
                     >
                         {intOrder.map((id, i) => {
                             const isDragged = draggingId === id;
-                            // dragged row follows the finger; others shift to make room
                             const translate = isDragged ? dragOffset : shiftFor(i);
-                            // number stays as the row's current position; it only changes
-                            // once the reorder is committed (after release), not mid-drag.
                             const shownNum = i + 1;
                             return (
                                 <div
@@ -461,12 +495,6 @@ export default function Recommender() {
                                     style={{
                                         touchAction: 'none',
                                         transform: translate ? `translateY(${translate}px)` : undefined,
-                                        // While actively dragging, the dragged row tracks the finger
-                                        // 1:1 (no transition). On release (settling) it glides to its
-                                        // exact slot. During the commit frame ALL rows have transitions
-                                        // off, so swapping DOM order + dropping the transform doesn't
-                                        // animate → no bounce. Neighbors otherwise slide via the CSS
-                                        // rule on .drag-item.
                                         transition: committing
                                             ? 'none'
                                             : isDragged
@@ -486,15 +514,14 @@ export default function Recommender() {
                 </>
             )}
 
-            {/* STEP 2 — emoji tiles, ranked up to 5 */}
-            {step === 1 && (
+            {/* STEP 2 — work tiles */}
+            {step === 2 && (
                 <>
                     <p className="muted small rec-stepsub">
-                        Choose up to five types of projects you’d enjoy working on, starting with your favorite. Your
-                        choices will help shape your matches.
+                        Choose up to five types of projects you’d enjoy working on, starting with your favorite. Your choices will help shape your matches.
                     </p>
                     <div className="tile-grid">
-                        {STEP2_WORK_OPTIONS.map(({id, label}) => {
+                        {STEP2_WORK_OPTIONS.map(({ id, label }) => {
                             const idx = workRank.indexOf(id);
                             const on = idx !== -1;
                             const disabled = !on && workRank.length >= 5;
@@ -516,19 +543,17 @@ export default function Recommender() {
             )}
 
             {/* STEP 3 — careers */}
-            {step === 2 && (
+            {step === 3 && (
                 <>
-                    <p className="muted small rec-stepsub">Choose up to 3 career paths you’re most interested in. We’ll
-                        use them to show how each event connects to your future goals.</p>
+                    <p className="muted small rec-stepsub">Choose up to 3 career paths you’re most interested in. We’ll use them to show how each event connects to your future goals.</p>
                     <div className="rec-options">
                         {CAREERS.map(([id, label]) => {
                             const on = careers.includes(id);
                             const disabled = !on && careers.length >= 3;
                             return (
-                                <button key={id} className={`rec-opt ${on ? 'on' : ''}`} disabled={disabled}
-                                        onClick={() => toggleCareer(id)}>
+                                <button key={id} className={`rec-opt ${on ? 'on' : ''}`} disabled={disabled} onClick={() => toggleCareer(id)}>
                                     <span className="rec-opt-main"><span className="rec-opt-label">{label}</span></span>
-                                    {on && <Icon name="check" size={16}/>}
+                                    {on && <Icon name="check" size={16} />}
                                 </button>
                             );
                         })}
@@ -537,17 +562,16 @@ export default function Recommender() {
             )}
 
             {/* STEP 4 — time */}
-            {step === 3 && (
+            {step === 4 && (
                 <>
-                    <p className="muted small rec-stepsub">How much time would you feel comfortable putting in each
-                        week? We’ll keep your schedule in mind when finding matches.</p>
+                    <p className="muted small rec-stepsub">How much time would you feel comfortable putting in each week? We’ll keep your schedule in mind when finding matches.</p>
                     <div className="rec-options">
-                        {TIME_CHOICES.map(({id, label}) => {
+                        {TIME_CHOICES.map(({ id, label }) => {
                             const on = time === id;
                             return (
                                 <button key={id} className={`rec-opt ${on ? 'on' : ''}`} onClick={() => setTime(id)}>
                                     <span className="rec-opt-main"><span className="rec-opt-label">{label}</span></span>
-                                    {on && <Icon name="check" size={16}/>}
+                                    {on && <Icon name="check" size={16} />}
                                 </button>
                             );
                         })}
@@ -555,22 +579,20 @@ export default function Recommender() {
                 </>
             )}
 
-            {/* STEP 5 — team availability (eligibility only) */}
-            {step === 4 && (
+            {/* STEP 5 — team availability */}
+            {step === 5 && (
                 <>
-                    <p className="muted small rec-stepsub">Tell us whether you prefer working independently or with a
-                        team. This will helps us highlight suitable events and team-size requirements.</p>
+                    <p className="muted small rec-stepsub">Tell us whether you prefer working independently or with a team. This will helps us highlight suitable events and team-size requirements.</p>
                     <div className="rec-options">
-                        {TEAM_AVAILABILITY_CHOICES.map(({id, label, desc}) => {
+                        {TEAM_AVAILABILITY_CHOICES.map(({ id, label, desc }) => {
                             const on = teamAvail === id;
                             return (
-                                <button key={id} className={`rec-opt rec-opt-rich ${on ? 'on' : ''}`}
-                                        onClick={() => setTeamAvail(id)}>
+                                <button key={id} className={`rec-opt rec-opt-rich ${on ? 'on' : ''}`} onClick={() => setTeamAvail(id)}>
                                     <span className="rec-opt-main">
                                         <span className="rec-opt-label">{label}</span>
                                         {desc && <span className="rec-opt-desc">{desc}</span>}
                                     </span>
-                                    {on && <Icon name="check" size={16}/>}
+                                    {on && <Icon name="check" size={16} />}
                                 </button>
                             );
                         })}
@@ -578,17 +600,16 @@ export default function Recommender() {
                 </>
             )}
 
-            {/* STEP 6 — preferences: two-column builder (Prefer / Avoid) + budget */}
-            {step === 5 && (
+            {/* STEP 6 — preferences */}
+            {step === 6 && (
                 <>
-                    <p className="muted small rec-stepsub">Add anything you’d especially enjoy or rather avoid. This
-                        step is optional and only helps us fine-tune your results.</p>
+                    <p className="muted small rec-stepsub">Add anything you’d especially enjoy or rather avoid. This step is optional and only helps us fine-tune your results.</p>
 
                     <div className="pref-cols">
                         {[
-                            {col: 'prefer', title: 'Sounds Good to Me', addLabel: '+ Add something I’d enjoy'},
-                            {col: 'avoid', title: 'I’d Rather Avoid', addLabel: '+ Add something to avoid'},
-                        ].map(({col, title, addLabel}) => {
+                            { col: 'prefer', title: 'Sounds Good to Me', addLabel: '+ Add something I’d enjoy' },
+                            { col: 'avoid', title: 'I’d Rather Avoid', addLabel: '+ Add something to avoid' },
+                        ].map(({ col, title, addLabel }) => {
                             const ids = Object.entries(placement).filter(([, c]) => c === col).map(([id]) => id);
                             return (
                                 <div key={col} className={`pref-col ${col}`}>
@@ -602,29 +623,23 @@ export default function Recommender() {
                                                 <div key={id} className={`pref-chip ${col}`}>
                                                     <span className="pref-chip-emoji">{it.emoji}</span>
                                                     <span className="pref-chip-label">{it.label}</span>
-                                                    <button className="pref-chip-x" onClick={() => removePref(id)}
-                                                            aria-label="Remove">×
-                                                    </button>
+                                                    <button className="pref-chip-x" onClick={() => removePref(id)} aria-label="Remove">×</button>
                                                 </div>
                                             );
                                         })}
-                                        <button className="pref-add"
-                                                onClick={() => setPrefModal(col)}>{addLabel}</button>
+                                        <button className="pref-add" onClick={() => setPrefModal(col)}>{addLabel}</button>
                                     </div>
                                 </div>
                             );
                         })}
                     </div>
 
-                    {/* picker modal */}
                     {prefModal && (
                         <div className="pref-modal-backdrop" onClick={() => setPrefModal(null)}>
                             <div className="pref-modal" onClick={(e) => e.stopPropagation()}>
                                 <div className="pref-modal-head">
                                     <h3>{prefModal === 'prefer' ? 'What would you enjoy?' : 'What would you rather avoid?'}</h3>
-                                    <button className="pref-modal-close" onClick={() => setPrefModal(null)}
-                                            aria-label="Close">×
-                                    </button>
+                                    <button className="pref-modal-close" onClick={() => setPrefModal(null)} aria-label="Close">×</button>
                                 </div>
                                 <div className="pref-modal-body">
                                     {PREF_CATALOG.map((g) => (
@@ -644,8 +659,7 @@ export default function Recommender() {
                                                             <span className="pref-chip-emoji">{it.emoji}</span>
                                                             <span className="pref-chip-label">{it.label}</span>
                                                             {inThis && <span className="pref-modal-tick">✓</span>}
-                                                            {inOther &&
-                                                                <span className="pref-modal-moved">move here</span>}
+                                                            {inOther && <span className="pref-modal-moved">move here</span>}
                                                         </button>
                                                     );
                                                 })}
@@ -660,18 +674,98 @@ export default function Recommender() {
             )}
 
             <div className="rec-nav">
-                {step > 0 && (
+                {step === 0 ? (
+                    <button className="btn ghost rec-back" onClick={() => navigate(-1)}>Cancel</button>
+                ) : (
                     <button className="btn ghost rec-back" onClick={back}>Back</button>
                 )}
                 <button className="btn primary" onClick={next} disabled={!canNext}>
-                    {step === STEP_COUNT - 1 ? 'See my matches' : 'Next'}
+                    {step === 0 ? 'Continue' : step === STEP_COUNT - 1 ? 'See my matches' : 'Next'}
                 </button>
             </div>
         </>
     );
 }
 
-// Colour band for a match percentage: green >=80, yellow 50-79, red <50.
+// Detail modal for one recommended event. Reads eligibility and careers from
+// the event dataset, computes related events, and shows the score breakdown.
+function EventModal({ result, onClose }) {
+    const ev = EVENT_REC_BY_ID[result.id];
+    const el = ev?.eligibility;
+    const isStateQualifier = el?.entryScope === 'state';
+
+    const relatedCareers = Object.entries(ev?.careers || {})
+        .sort((a, b) => b[1] - a[1])
+        .map(([k]) => CAREER_LABELS[k] || k)
+        .filter((v, i, arr) => arr.indexOf(v) === i);
+
+    const related = relatedEvents(result.id);
+    const rows = breakdownRows(result._parts);
+
+    return (
+        <div className="rec-modal-backdrop" onClick={onClose}>
+            <div className="rec-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="rec-modal-head">
+                    <h3 className="rec-modal-title">{result.name}</h3>
+                    <button className="rec-modal-close" onClick={onClose} aria-label="Close">×</button>
+                </div>
+                <div className="rec-modal-body">
+                    <div className="rec-modal-scoreline">
+                        <span className={`rec-modal-score ${pctClass(result.pct)}`}>{result.pct}%</span>
+                        <span className="rec-modal-score-label">match with your profile</span>
+                    </div>
+
+                    {result.explanation && <p className="rec-modal-desc">{result.explanation}</p>}
+
+                    <div className="rec-fact">
+                        <span className="rec-fact-label">Team Size</span>
+                        <span className="rec-fact-value">{teamSizeText(el)}</span>
+                    </div>
+                    <div className="rec-fact">
+                        <span className="rec-fact-label">State Qualifier Event</span>
+                        <span className="rec-fact-value">{isStateQualifier ? 'Yes' : 'No'}</span>
+                    </div>
+
+                    {relatedCareers.length > 0 && (
+                        <div className="rec-modal-section">
+                            <div className="rec-modal-section-title">Related Careers</div>
+                            <div className="rec-tags">
+                                {relatedCareers.map((c) => <span className="rec-tag" key={c}>{c}</span>)}
+                            </div>
+                        </div>
+                    )}
+
+                    {related.length > 0 && (
+                        <div className="rec-modal-section">
+                            <div className="rec-modal-section-title">Related Events</div>
+                            <div className="rec-tags">
+                                {related.map((n) => <span className="rec-tag" key={n}>{n}</span>)}
+                            </div>
+                        </div>
+                    )}
+
+                    {rows.length > 0 && (
+                        <div className="rec-breakdown">
+                            <div className="rec-modal-section-title">Score Breakdown</div>
+                            <p className="rec-breakdown-sub">How we calculate it. Each factor adds to your overall match based on your answers.</p>
+                            {rows.map((r) => (
+                                <div className="rec-breakdown-row" key={r.name}>
+                                    <span className="rec-breakdown-name">{r.name}</span>
+                                    <span className="rec-breakdown-bar">
+                                        <span className="rec-breakdown-fill" style={{ width: `${r.bar}%` }} />
+                                    </span>
+                                    <span className="rec-breakdown-pct">{r.pct}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// Colour band for a match percentage, green high, yellow mid, red low.
 function pctClass(pct) {
     if (pct >= 80) return 'pct-high';
     if (pct >= 50) return 'pct-mid';

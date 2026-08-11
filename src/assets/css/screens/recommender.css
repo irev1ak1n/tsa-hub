@@ -506,3 +506,358 @@ html[data-theme="light"] .rec-nav .btn.primary {
 html[data-theme="light"] .rec-nav .btn.primary:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.85);
 }
+
+/* Division picker on the intro step */
+.rec-intro-lead {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 22px;
+    color: var(--muted);
+    margin: 0 0 20px;
+}
+
+.rec-division {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+@media (min-width: 520px) {
+    .rec-division {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* One division choice, styled like a thick Settings card */
+.rec-division-opt {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 20px;
+    border: 3px solid var(--card-line);
+    border-radius: 18px;
+    background: var(--set-card-bg);
+    color: var(--ink);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .12s ease, background .12s ease;
+}
+
+.rec-division-opt:hover {
+    background: var(--surface-2);
+}
+
+.rec-division-opt.on {
+    border-color: var(--ig-blue);
+    background: color-mix(in srgb, var(--ig-blue) 12%, var(--set-card-bg));
+}
+
+.rec-division-title {
+    font-family: var(--font-system);
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--ig-ink);
+}
+
+.rec-division-sub {
+    font-family: var(--font-system);
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--muted);
+}
+
+/* Truncated AI explanation on the result card, three lines then fade */
+.rec-why-clamp {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* See more button under the clamped text */
+.rec-seemore {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ig-link);
+    font-family: var(--font-system);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.rec-seemore:hover {
+    text-decoration: underline;
+}
+
+/* The whole result card is clickable to open the modal */
+.rec-card {
+    cursor: pointer;
+    transition: border-color .12s ease, background .12s ease;
+}
+
+.rec-card:hover {
+    border-color: color-mix(in srgb, var(--ig-blue) 40%, var(--card-line));
+}
+
+/* Event detail modal, same glassy shell as the picker modal */
+.rec-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, .4);
+    backdrop-filter: blur(16px) saturate(115%);
+    -webkit-backdrop-filter: blur(16px) saturate(115%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: pref-fade .12s ease;
+}
+
+.rec-modal {
+    width: 100%;
+    max-width: 520px;
+    max-height: 85vh;
+    overflow-y: auto;
+    background: rgba(10, 10, 12, .55);
+    border: 2px solid #404040;
+    border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+    animation: pref-pop .14s ease;
+}
+
+/* Sticky header with the event name and a close button */
+.rec-modal-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid #404040;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #14141a;
+    border-radius: 18px 18px 0 0;
+}
+
+.rec-modal-title {
+    margin: 0;
+    font-family: var(--font-system);
+    font-weight: 700;
+    font-size: 19px;
+    line-height: 24px;
+    color: var(--ig-ink);
+}
+
+.rec-modal-close {
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rec-modal-close:hover {
+    background: var(--surface-2);
+    color: var(--ink);
+}
+
+.rec-modal-body {
+    padding: 16px 20px 20px;
+}
+
+/* Score line right under the title */
+.rec-modal-scoreline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--card-line);
+}
+
+.rec-modal-score {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.rec-modal-score.pct-high {
+    color: var(--ok);
+}
+
+.rec-modal-score.pct-mid {
+    color: #e3b341;
+}
+
+.rec-modal-score.pct-low {
+    color: var(--red-400);
+}
+
+.rec-modal-score-label {
+    font-family: var(--font-system);
+    font-size: 13px;
+    color: var(--muted);
+}
+
+/* Description text */
+.rec-modal-desc {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 21px;
+    color: var(--ink);
+    margin: 0 0 18px;
+}
+
+/* A labelled fact row, such as team size and state qualifier */
+.rec-fact {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--card-line);
+}
+
+.rec-fact-label {
+    font-family: var(--font-system);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.rec-fact-value {
+    font-family: var(--font-system);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ig-ink);
+    text-align: right;
+}
+
+/* A titled section inside the modal */
+.rec-modal-section {
+    margin-top: 18px;
+}
+
+.rec-modal-section-title {
+    font-family: var(--font-system);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+}
+
+/* Small pill tags for careers and related events */
+.rec-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.rec-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--card-line);
+    background: var(--surface-2);
+    font-family: var(--font-system);
+    font-size: 13px;
+    color: var(--ink);
+}
+
+/* Score breakdown rows at the very bottom */
+.rec-breakdown {
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 1px solid var(--card-line);
+}
+
+.rec-breakdown-sub {
+    font-family: var(--font-system);
+    font-size: 12px;
+    line-height: 17px;
+    color: var(--muted);
+    margin: 0 0 12px;
+}
+
+.rec-breakdown-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.rec-breakdown-name {
+    flex: 0 0 auto;
+    width: 96px;
+    font-family: var(--font-system);
+    font-size: 13px;
+    color: var(--ink);
+}
+
+.rec-breakdown-bar {
+    flex: 1 1 auto;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    overflow: hidden;
+}
+
+.rec-breakdown-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--ig-blue);
+}
+
+.rec-breakdown-pct {
+    flex: 0 0 auto;
+    width: 38px;
+    text-align: right;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--ig-ink);
+}
+
+/* Light theme surfaces for the intro picker and detail modal */
+html[data-theme="light"] .rec-division-opt {
+    background: #ffffff;
+    border-color: #d0d0da;
+}
+
+html[data-theme="light"] .rec-tag {
+    background: #f2f2f7;
+    border-color: #d0d0da;
+}
+
+html[data-theme="light"] .rec-modal {
+    background: rgba(255, 255, 255, 0.75);
+    border-color: #404040;
+}
+
+html[data-theme="light"] .rec-modal-head {
+    background: #ffffff;
+    border-bottom-color: #404040;
+}
+
+html[data-theme="light"] .rec-breakdown-bar {
+    background: #e4e4ea;
+}
