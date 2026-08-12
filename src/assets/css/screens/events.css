@@ -829,3 +829,17 @@ html[data-theme="light"] .ev-sort-opt.on .ev-radio {
 html[data-theme="light"] .ev-sort-opt.on .ev-radio::after {
   background: #111111;
 }
+
+/* Clickable tile keeps the exact figure look, just add pointer feedback */
+.ev-tile-btn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}

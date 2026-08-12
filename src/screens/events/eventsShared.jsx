@@ -48,12 +48,14 @@ export function mergeByName(events) {
     }));
 }
 
-// One explore tile (image + name + MS/HS badge). Not clickable by design.
-export function EventTile({ event }) {
+// One explore tile (image + name + MS/HS badge). Clickable when onSelect is
+// given, otherwise it renders as a plain non-interactive figure.
+export function EventTile({ event, onSelect }) {
     const img = imageForEvent(event);
     const badge = divisionLabel(event._divisions || [event.division]);
-    return (
-        <figure className="ev-tile">
+
+    const inner = (
+        <>
             {badge && <span className="ev-tile-badge">{badge}</span>}
             {img ? (
                 <img className="ev-tile-img" src={img} alt="" loading="lazy" />
@@ -61,17 +63,32 @@ export function EventTile({ event }) {
                 <div className="ev-tile-img ev-tile-fallback" aria-hidden="true" />
             )}
             <figcaption className="ev-tile-name">{event.name}</figcaption>
-        </figure>
+        </>
     );
+
+    if (onSelect) {
+        return (
+            <button
+                type="button"
+                className="ev-tile ev-tile-btn"
+                onClick={() => onSelect(event)}
+                aria-label={event.name}
+            >
+                {inner}
+            </button>
+        );
+    }
+
+    return <figure className="ev-tile">{inner}</figure>;
 }
 
 // Render a merged grid from a plain event list, with a key that re-animates
-// tiles whenever `animKey` changes.
-export function EventGrid({ events, animKey = '' }) {
+// tiles whenever `animKey` changes. Pass onSelect to make tiles open a modal.
+export function EventGrid({ events, animKey = '', onSelect }) {
     return (
         <div className="ev-grid" key={animKey}>
             {mergeByName(events).map((e) => (
-                <EventTile key={e.id} event={e} />
+                <EventTile key={e.id} event={e} onSelect={onSelect} />
             ))}
         </div>
     );

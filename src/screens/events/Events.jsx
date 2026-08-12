@@ -4,6 +4,7 @@ import { useApp } from '../../context/AppContext.jsx';
 import { EVENTS, CATEGORIES } from '../../data/events.js';
 import { Icon, SlidersIcon } from '../../components/UI.jsx';
 import { EventGrid } from './eventsShared.jsx';
+import EventInfoModal from './EventInfoModal.jsx';
 import SupportButton from '../../components/SupportButton.jsx';
 
 // Sort options. Default keeps the source order, the rest read existing metadata.
@@ -105,6 +106,7 @@ export default function Events() {
     const [panelOpen, setPanelOpen] = useState(false);
     const [sort, setSort] = useState('default');
     const [active, setActive] = useState({}); // { optionId: true }
+    const [openEvent, setOpenEvent] = useState(null); // event shown in the detail modal
 
     // Show both divisions by default; MS/HS chips narrow it down.
     const byDivision = EVENTS.filter((e) => division === 'all' || e.division === division);
@@ -252,7 +254,7 @@ export default function Events() {
 
             {eventsLoading && <p className="muted" style={{ marginTop: 12 }}>Loading events…</p>}
 
-            <EventGrid events={list} animKey={`${division}|${category}|${sort}|${activeCount}`} />
+            <EventGrid events={list} animKey={`${division}|${category}|${sort}|${activeCount}`} onSelect={setOpenEvent} />
 
             {!eventsLoading && list.length === 0 && (
                 <p className="muted" style={{ marginTop: 16 }}>No events match that filter.</p>
@@ -309,6 +311,8 @@ export default function Events() {
                     </div>
                 </div>
             )}
+
+            {openEvent && <EventInfoModal event={openEvent} onClose={() => setOpenEvent(null)} />}
 
             <SupportButton preset="recommender" />
         </div>
