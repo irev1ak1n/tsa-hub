@@ -181,6 +181,9 @@ export default function Events() {
     function resetDraft() {
         setDraftActive({});
         setDraftSort('default');
+        // Apply the cleared state right away so no Show tap is needed.
+        setActive({});
+        setSort('default');
     }
     function applyPanel() {
         setSort(draftSort);

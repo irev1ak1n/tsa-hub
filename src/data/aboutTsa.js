@@ -5,7 +5,7 @@
 
 export const ABOUT_TSA = [
     { id: 'what-is-tsa', icon: 'info', title: 'What is TSA?' },
-    { id: 'who-we-are', icon: 'users', title: 'Who We Are' },
+    { id: 'who-we-are', icon: 'users', title: 'About TSA' },
     { id: 'history', icon: 'book', title: 'History' },
     { id: 'tsa-competitions', icon: 'trophy', title: 'TSA Competitions' },
     { id: 'competition-divisions', icon: 'grid', title: 'Competition Divisions' },
@@ -32,7 +32,7 @@ export const ABOUT_TSA_CONTENT = {
     },
 
     'who-we-are': {
-        title: 'Who We Are',
+        title: 'About TSA',
         sections: [
             {
                 heading: 'Mission',

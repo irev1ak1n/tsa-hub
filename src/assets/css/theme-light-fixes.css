@@ -208,7 +208,9 @@ html[data-theme="light"] .doc-h2 {
     color: #111111;
 }
 
-html[data-theme="light"] .doc-p,
+html[data-theme="light"] .doc-p {
+    color: #111111;
+}
 html[data-theme="light"] .doc-updated,
 html[data-theme="light"] .doc-note {
     color: #4a4a55;
@@ -354,7 +356,7 @@ html[data-theme="light"] .doc-wrap,
 html[data-theme="light"] .doc,
 html[data-theme="light"] .doc-body,
 html[data-theme="light"] .doc-bleed {
-    background: var(--bg) !important;
+    background: #ffffff !important;
 }
 
 html[data-theme="light"] .doc-eyebrow {
@@ -368,7 +370,9 @@ html[data-theme="light"] .doc-title {
     color: #111111;
 }
 
-html[data-theme="light"] .doc-p,
+html[data-theme="light"] .doc-p {
+    color: #111111;
+}
 html[data-theme="light"] .doc-updated,
 html[data-theme="light"] .doc-note,
 html[data-theme="light"] .doc-sub {

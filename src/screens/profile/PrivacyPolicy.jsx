@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { Icon } from '../../components/UI.jsx';
 
-// Static informational page. TSA Hub has no accounts and collects no personal
-// data; everything the user enters (name, state, grade) is stored locally in
-// their browser. This page states that plainly.
+// Static privacy page. TSA Hub is an independent, student-built project, not
+// affiliated with TSA. No accounts, minimal data. Written in plain language,
+// and deliberately avoids absolute promises that AI Coach / feedback / Supabase
+// could later make untrue.
 export default function PrivacyPolicy() {
     return (
         <div className="doc-page">
@@ -20,74 +21,98 @@ export default function PrivacyPolicy() {
 
             <div className="doc-body">
                 <p className="doc-lead">
-                    TSA Hub is built to be simple and private. There are no accounts, no
-                    sign-in, and we do not collect personal information about you.
+                    TSA Hub is an independent, student-built project created to make TSA
+                    information easier to find and use. TSA Hub is not an official Technology
+                    Student Association (TSA) product and is not affiliated with or endorsed by
+                    TSA. We try to keep the app simple and collect as little information as
+                    possible.
                 </p>
 
-                <h2 className="doc-h2">The short version</h2>
+                <h2 className="doc-h2">Using TSA Hub</h2>
                 <p className="doc-p">
-                    You can open TSA Hub and use it right away. We do not ask for your name,
-                    email, school, or any other personal details in order to use the app.
+                    You do not need to create an account or sign in to use TSA Hub. We do not
+                    require your name, email address, school, phone number, or other personal
+                    information just to use the app.
                 </p>
 
-                <h2 className="doc-h2">Information stored on your device</h2>
+                <h2 className="doc-h2">Information saved on your device</h2>
                 <p className="doc-p">
-                    Anything you set inside the app — such as your name, your division, or the
-                    state you pick in Resources — is saved only in your own browser on your
-                    device. It stays on your device, is not sent to us, and is not shared with
-                    anyone. If you clear your browser data or use a different device, that
-                    information is gone.
+                    Some features may save information directly on your device, such as saved events, personal calendar items, and notes you create. This information is stored in your browser or on your device and is not automatically shared with us.
+
+                    If you clear your browser data, uninstall TSA Hub, or switch to another device, this locally saved information may be lost.
                 </p>
 
-                <h2 className="doc-h2">Information we do not collect</h2>
+                <h2 className="doc-h2">Information loaded from the internet</h2>
                 <p className="doc-p">
-                    We do not collect names, email addresses, phone numbers, location data,
-                    contacts, or any other personal information. We do not use advertising
-                    trackers, and we do not sell or share any data, because we do not have any
-                    to sell or share.
+                    TSA Hub may connect to online services such as Supabase to load app content
+                    or provide certain features. Like most websites and apps, these services may
+                    automatically receive basic technical information needed to process a
+                    request, such as your IP address, browser type, or device information. TSA
+                    Hub does not use this information to personally identify you or create
+                    advertising profiles.
                 </p>
 
-                <h2 className="doc-h2">Loading event information</h2>
+                <h2 className="doc-h2">Feedback and reports</h2>
                 <p className="doc-p">
-                    TSA Hub loads its list of competitive events from a hosted database
-                    (Supabase) without logging you in. Like any request to any website, the
-                    server that answers these requests can see standard technical details such
-                    as your device&rsquo;s IP address. This is a normal part of how the internet
-                    works and is not used to identify you or build a profile. Images in the app
-                    are stored inside the app itself and are not loaded from outside services.
+                    If you choose to send feedback or report incorrect information through TSA
+                    Hub, the message you submit may be stored so that it can be reviewed. Please
+                    do not include sensitive personal information in feedback messages.
                 </p>
 
-                <h2 className="doc-h2">Children&rsquo;s privacy</h2>
+                <h2 className="doc-h2">AI Coach</h2>
                 <p className="doc-p">
-                    TSA Hub is intended for students, including those under 18. Because the app
-                    has no accounts and collects no personal information, there is nothing for a
-                    parent or guardian to request, correct, or delete on our side. Anything a
-                    student enters stays on their own device.
+                    TSA Hub may include an AI Coach that helps answer questions about TSA
+                    competitions, rules, resources, and related information. Questions you send
+                    to the AI Coach may need to be processed by the services that power the
+                    feature. You should avoid entering private or sensitive personal information
+                    into the AI Coach. AI responses may sometimes be incomplete or incorrect, so
+                    important competition rules, deadlines, eligibility requirements, and other
+                    official information should always be confirmed using the official TSA
+                    sources provided in the app.
+                </p>
+
+                <h2 className="doc-h2">Advertising and selling data</h2>
+                <p className="doc-p">
+                    TSA Hub does not sell your personal information. We do not use the app to
+                    create advertising profiles about users.
+                </p>
+
+                <h2 className="doc-h2">Students and younger users</h2>
+                <p className="doc-p">
+                    TSA Hub is designed for students, including middle and high school students.
+                    Because no account is required, students can use most of the app without
+                    providing personal information. Users should avoid entering private or
+                    sensitive information into feedback forms, notes intended for sharing, or AI
+                    features.
                 </p>
 
                 <h2 className="doc-h2">Official TSA information</h2>
                 <p className="doc-p">
-                    Rules, resources, and links in TSA Hub point to official Technology Student
-                    Association materials. TSA Hub is a student-built project and is not an
-                    official product of TSA. Always confirm important details against the
-                    official sources linked in the app.
+                    TSA Hub organizes and links to information from the Technology Student
+                    Association and other relevant sources to make it easier for students to
+                    use. However, TSA Hub is an independent project. It is not operated,
+                    sponsored, approved, or endorsed by the Technology Student Association. For
+                    competition rules, deadlines, eligibility requirements, conference
+                    information, and other important decisions, always check the official TSA
+                    source linked in the app.
                 </p>
 
                 <h2 className="doc-h2">Changes to this policy</h2>
                 <p className="doc-p">
-                    If the app ever starts collecting information, this policy will be updated
-                    first to explain what and why. Until then, this page reflects how the app
-                    works today.
+                    TSA Hub may change as new features are added. If the way the app handles
+                    information changes, this Privacy Policy will be updated to explain those
+                    changes.
                 </p>
 
                 <h2 className="doc-h2">Contact</h2>
                 <p className="doc-p">
-                    Questions about this policy can be directed to the project maintainer
-                    through the app&rsquo;s repository or the contact method listed there.
+                    If you have questions about TSA Hub or this Privacy Policy, you can contact
+                    the project maintainer using the contact information provided in the app.
                 </p>
 
                 <p className="doc-note">
-                    This page is provided for transparency and is not legal advice.
+                    TSA Hub is an independent student-built project and is not affiliated with or
+                    endorsed by the Technology Student Association.
                 </p>
             </div>
         </div>

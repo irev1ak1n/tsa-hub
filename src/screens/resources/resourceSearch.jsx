@@ -35,7 +35,7 @@ export const LEADERSHIP_NAV = [
 // Extra search words per item (keyed by lowercased title).
 const RESOURCE_KEYWORDS = {
     'what is tsa': 'technology student association meaning overview intro about explained definition',
-    'who we are': 'mission vision motto values purpose cte career technical education',
+    'about tsa': 'mission vision motto values purpose cte career technical education',
     'history': 'founded founding origin background past established started timeline',
     'tsa competitions': 'events competitive events contests categories list of events',
     'competition divisions': 'middle school high school ms hs grades division level age',

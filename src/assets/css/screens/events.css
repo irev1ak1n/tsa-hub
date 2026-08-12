@@ -601,13 +601,11 @@ body.light .ev-filter-ico--light { display: block; }
   max-height: 88vh;
   display: flex;
   flex-direction: column;
-  background: rgba(10, 10, 12, 0.55);
+  background: #14141a;
   border: 2px solid #404040;
   border-bottom: 0;
   border-radius: 20px 20px 0 0;
   box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(16px) saturate(115%);
-  -webkit-backdrop-filter: blur(16px) saturate(115%);
   animation: ev-sheet-up 0.22s cubic-bezier(.2, .7, .2, 1);
 }
 
@@ -627,6 +625,8 @@ body.light .ev-filter-ico--light { display: block; }
   background: #14141a;
   border-radius: 20px 20px 0 0;
 }
+
+
 
 .ev-sheet-title {
   margin: 0;
@@ -783,14 +783,14 @@ body.light .ev-filter-ico--light { display: block; }
 
 /* Light theme surfaces for the sheet */
 html[data-theme="light"] .ev-sheet {
-  background: rgba(255, 255, 255, 0.75);
-  border-color: #404040;
+  background: #ffffff;
+  border-color: #d0d0da;
 }
 
 html[data-theme="light"] .ev-sheet-head,
 html[data-theme="light"] .ev-sheet-foot {
   background: #ffffff;
-  border-color: #404040;
+  border-color: #ececf3;
 }
 
 html[data-theme="light"] .ev-pill {
@@ -815,4 +815,17 @@ html[data-theme="light"] .ev-sheet-apply {
 html[data-theme="light"] .ev-sheet-reset:hover,
 html[data-theme="light"] .ev-sheet-apply:hover {
   background: rgba(255, 255, 255, 0.85);
+}
+
+/* Light theme, selected radio dot is dark so it shows on white */
+html[data-theme="light"] .ev-radio {
+  border-color: #b3b3be;
+}
+
+html[data-theme="light"] .ev-sort-opt.on .ev-radio {
+  border-color: #111111;
+}
+
+html[data-theme="light"] .ev-sort-opt.on .ev-radio::after {
+  background: #111111;
 }
