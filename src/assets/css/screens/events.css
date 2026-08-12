@@ -20,8 +20,8 @@
   gap: 10px;
   padding: 11px 18px;
   border-radius: 999px;
-  background: var(--surface-2, var(--surface));
-  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #404040;
 }
 .ev-search svg { color: var(--muted); flex-shrink: 0; }
 .ev-search-input {
@@ -35,7 +35,7 @@
   font-size: 15px;
 }
 .ev-search-input::placeholder { color: var(--muted); }
-.ev-search:focus-within { border-color: color-mix(in srgb, var(--ig-blue) 40%, transparent); }
+.ev-search:focus-within { border-color: #4d4d4d; }
 
 .ev-filter-btn {
   flex: 0 0 auto;
@@ -548,3 +548,271 @@ body.light .ev-filter-ico--light { display: block; }
   cursor: pointer;
 }
 .ev-recent-remove:hover { background: var(--surface-2); color: var(--ink); }
+
+
+/* ============================================================================
+   Filter and sort bottom sheet
+   ============================================================================ */
+
+/* Small count badge on the sliders button */
+.ev-filter-btn { position: relative; }
+
+.ev-filter-badge {
+  position: absolute;
+  top: -2px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #404040;
+  border: 1px solid #565656;
+  color: #ffffff;
+  font-family: var(--font-display, var(--font-system));
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 15px;
+  text-align: center;
+}
+
+/* Backdrop that dims and blurs the page behind the sheet */
+.ev-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(16px) saturate(115%);
+  -webkit-backdrop-filter: blur(16px) saturate(115%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: ev-sheet-fade 0.16s ease;
+}
+
+@keyframes ev-sheet-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* The sheet slides up, same glassy dark surface as the other modals */
+.ev-sheet {
+  width: 100%;
+  max-width: 560px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  background: rgba(10, 10, 12, 0.55);
+  border: 2px solid #404040;
+  border-bottom: 0;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(16px) saturate(115%);
+  -webkit-backdrop-filter: blur(16px) saturate(115%);
+  animation: ev-sheet-up 0.22s cubic-bezier(.2, .7, .2, 1);
+}
+
+@keyframes ev-sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* Sticky header, opaque so scrolling content does not show through */
+.ev-sheet-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid #404040;
+  background: #14141a;
+  border-radius: 20px 20px 0 0;
+}
+
+.ev-sheet-title {
+  margin: 0;
+  font-family: var(--font-system);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--ig-ink, #fff);
+}
+
+.ev-sheet-close {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ev-sheet-close:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+/* Scrollable body between the header and footer */
+.ev-sheet-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 8px 18px 16px;
+}
+
+.ev-sheet-section { margin-top: 18px; }
+
+.ev-sheet-section:first-child { margin-top: 8px; }
+
+.ev-sheet-section-title {
+  font-family: var(--font-system);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+/* Sort list, one radio row per option */
+.ev-sort-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ev-sort-opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 6px;
+  border: 0;
+  background: transparent;
+  color: var(--ink, #fff);
+  font-family: var(--font-system);
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.ev-sort-opt:hover { background: rgba(255, 255, 255, 0.04); }
+
+/* Radio dot, neutral so it matches the theme */
+.ev-radio {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #565656;
+  position: relative;
+  transition: border-color 0.12s ease;
+}
+
+.ev-sort-opt.on .ev-radio { border-color: #ffffff; }
+
+.ev-sort-opt.on .ev-radio::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+/* Filter pills, multi select */
+.ev-pillwrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ev-pill {
+  padding: 9px 15px;
+  border-radius: 999px;
+  border: 1px solid #404040;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--ink, #fff);
+  font-family: var(--font-system);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.ev-pill:hover { background: rgba(255, 255, 255, 0.08); }
+
+/* Selected pill, brighter fill in the same neutral family */
+.ev-pill.on {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: #565656;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Footer with two equal width buttons */
+.ev-sheet-foot {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 10px;
+  padding: 12px 18px;
+  border-top: 1px solid #404040;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  background: #14141a;
+}
+
+/* Both actions share the same size and the same dark translucent look */
+.ev-sheet-reset,
+.ev-sheet-apply {
+  flex: 1 1 0;
+  padding: 13px 22px;
+  border-radius: 12px;
+  border: 1px solid #404040;
+  background: rgba(10, 10, 12, 0.55);
+  color: #ffffff;
+  font-family: var(--font-system);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.ev-sheet-reset:hover,
+.ev-sheet-apply:hover {
+  background: rgba(20, 20, 24, 0.7);
+  border-color: #4d4d4d;
+}
+
+/* Light theme surfaces for the sheet */
+html[data-theme="light"] .ev-sheet {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: #404040;
+}
+
+html[data-theme="light"] .ev-sheet-head,
+html[data-theme="light"] .ev-sheet-foot {
+  background: #ffffff;
+  border-color: #404040;
+}
+
+html[data-theme="light"] .ev-pill {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: #d0d0da;
+  color: #111;
+}
+
+html[data-theme="light"] .ev-pill.on {
+  background: rgba(0, 0, 0, 0.1);
+  border-color: #b3b3be;
+  color: #111;
+}
+
+html[data-theme="light"] .ev-sheet-reset,
+html[data-theme="light"] .ev-sheet-apply {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: #404040;
+  color: #111;
+}
+
+html[data-theme="light"] .ev-sheet-reset:hover,
+html[data-theme="light"] .ev-sheet-apply:hover {
+  background: rgba(255, 255, 255, 0.85);
+}
