@@ -345,7 +345,7 @@ function StatePicker({ current, onPick, onClose }) {
                             onClick={() => onPick(s)}
                         >
                             <span className="rs-state-option-name">{s}</span>
-                            {getStateTsa(s) && <span className="rs-state-has">Content</span>}
+                            {/*{getStateTsa(s) && <span className="rs-state-has">Content</span>}*/}
                             {s === current && <Icon name="check" size={16} />}
                         </button>
                     ))}
