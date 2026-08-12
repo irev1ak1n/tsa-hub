@@ -378,3 +378,8 @@ html[data-theme="light"] .doc-note,
 html[data-theme="light"] .doc-sub {
     color: #4a4a55;
 }
+
+/* spacing between paragraphs on doc pages */
+.doc-p {
+    margin-bottom: 16px;
+}
