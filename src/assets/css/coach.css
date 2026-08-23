@@ -1,0 +1,462 @@
+/* ============================================================================
+   Coach, TSA Assistant chat
+   Dark by default, light overrides at the bottom of the file.
+   ============================================================================ */
+
+.cch-page {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    background: #000000;
+    color: #ffffff;
+}
+
+/* Header with back arrow, title, and clear chat */
+.cch-head {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+}
+
+.cch-head-title {
+    flex: 1 1 auto;
+    margin: 0;
+    font-family: var(--font-system);
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.cch-icon-btn {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.cch-icon-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Scroll area between the header and the message bar */
+.cch-scroll {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 4px 16px 16px;
+}
+
+.cch-intro {
+    max-width: 620px;
+    margin: 0 auto;
+}
+
+.cch-lead {
+    margin: 10px 0 22px;
+    text-align: center;
+    font-family: var(--font-system);
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.28;
+    color: #ffffff;
+}
+
+/* Two column topic grid */
+.cch-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.cch-topic {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 78px;
+    padding: 14px;
+    border: 1px solid #262626;
+    border-radius: 14px;
+    background: #141414;
+    color: #ffffff;
+    font-family: var(--font-system);
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.cch-topic:hover {
+    background: #1c1c1c;
+    border-color: #3a3a3a;
+}
+
+.cch-topic-ico {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+}
+
+.cch-topic-ico svg {
+    width: 26px;
+    height: 26px;
+}
+
+.cch-topic-label {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+/* Icon tones */
+.cch-tone-blue { color: #3b82f6; }
+
+.cch-tone-purple { color: #a855f7; }
+
+.cch-tone-green { color: #22c55e; }
+
+.cch-tone-orange { color: #f97316; }
+
+.cch-tone-grey { color: #9ca3af; }
+
+/* Disclaimer under the grid */
+.cch-note {
+    margin: 16px 0 6px;
+    text-align: center;
+    font-family: var(--font-system);
+    font-size: 13px;
+    line-height: 1.45;
+    color: #8a8a8a;
+}
+
+.cch-note-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #4a9eff;
+    font: inherit;
+    cursor: pointer;
+}
+
+.cch-note-link:hover {
+    text-decoration: underline;
+}
+
+/* Conversation */
+.cch-thread {
+    max-width: 620px;
+    margin: 18px auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* User message, right aligned pill */
+.cch-user {
+    align-self: flex-end;
+    max-width: 80%;
+    padding: 11px 16px;
+    border-radius: 18px;
+    background: #2a2a2a;
+    color: #ffffff;
+    font-family: var(--font-system);
+    font-size: 15px;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+/* Assistant block, a label then stacked cards */
+.cch-block {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 96%;
+}
+
+.cch-who {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-system);
+    font-size: 13px;
+    font-weight: 600;
+    color: #9a9a9a;
+}
+
+.cch-who-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #3b82f6;
+}
+
+.cch-card {
+    padding: 14px 16px;
+    border: 1px solid #202020;
+    border-radius: 14px;
+    background: #131313;
+    color: #ececec;
+    font-family: var(--font-system);
+    font-size: 15px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Tappable FAQ row */
+.cch-faq-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #202020;
+    border-radius: 14px;
+    background: #131313;
+    color: #ffffff;
+    font-family: var(--font-system);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.12s ease;
+}
+
+.cch-faq-item:hover {
+    background: #1c1c1c;
+}
+
+.cch-faq-arrow {
+    flex: 0 0 auto;
+    display: flex;
+    color: #4a9eff;
+}
+
+/* Regenerate pill under a FAQ block */
+.cch-regen {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 2px;
+    padding: 9px 16px;
+    border: 1px solid #2a2a2a;
+    border-radius: 999px;
+    background: #131313;
+    color: #ffffff;
+    font-family: var(--font-system);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.12s ease;
+}
+
+.cch-regen:hover {
+    background: #1f1f1f;
+}
+
+/* Message bar */
+.cch-bar {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 10px 16px;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+}
+
+.cch-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px 6px 20px;
+    border: 1px solid #2a2a2a;
+    border-radius: 999px;
+    background: #1a1a1a;
+}
+
+.cch-field:focus-within {
+    border-color: #444444;
+}
+
+.cch-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 40px;
+    border: 0;
+    background: transparent;
+    color: #ffffff;
+    font-family: var(--font-system);
+    font-size: 16px;
+    outline: none;
+}
+
+.cch-input::placeholder {
+    color: #7a7a7a;
+}
+
+.cch-send {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #000000;
+    cursor: pointer;
+    transition: opacity 0.12s ease;
+}
+
+.cch-send:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+/* ============================================================================
+   Light theme
+   ============================================================================ */
+
+html[data-theme="light"] .cch-page {
+    background: #ffffff;
+    color: #111111;
+}
+
+html[data-theme="light"] .cch-head-title,
+html[data-theme="light"] .cch-lead {
+    color: #111111;
+}
+
+html[data-theme="light"] .cch-icon-btn {
+    color: #111111;
+}
+
+html[data-theme="light"] .cch-icon-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+html[data-theme="light"] .cch-topic {
+    background: #f6f6f8;
+    border-color: #e4e4ea;
+    color: #111111;
+}
+
+html[data-theme="light"] .cch-topic:hover {
+    background: #eeeef2;
+    border-color: #d4d4dc;
+}
+
+html[data-theme="light"] .cch-note {
+    color: #6b6b72;
+}
+
+html[data-theme="light"] .cch-user {
+    background: #dbeafe;
+    color: #111111;
+}
+
+html[data-theme="light"] .cch-who {
+    color: #6b6b72;
+}
+
+html[data-theme="light"] .cch-card {
+    background: #ffffff;
+    border-color: #e4e4ea;
+    color: #111111;
+}
+
+html[data-theme="light"] .cch-faq-item {
+    background: #ffffff;
+    border-color: #e4e4ea;
+    color: #111111;
+}
+
+html[data-theme="light"] .cch-faq-item:hover {
+    background: #f4f4f7;
+}
+
+html[data-theme="light"] .cch-regen {
+    background: #ffffff;
+    border-color: #e4e4ea;
+    color: #111111;
+}
+
+html[data-theme="light"] .cch-regen:hover {
+    background: #f2f2f5;
+}
+
+html[data-theme="light"] .cch-field {
+    background: #f2f2f5;
+    border-color: #e0e0e6;
+}
+
+html[data-theme="light"] .cch-field:focus-within {
+    border-color: #c4c4cc;
+}
+
+html[data-theme="light"] .cch-input {
+    color: #111111;
+}
+
+html[data-theme="light"] .cch-input::placeholder {
+    color: #8a8a92;
+}
+
+html[data-theme="light"] .cch-send {
+    background: #111111;
+    color: #ffffff;
+}
+
+/* Follow up suggestions under an assistant answer */
+.cch-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+.cch-chip {
+    padding: 8px 14px;
+    border: 1px solid #2a2a2a;
+    border-radius: 999px;
+    background: #131313;
+    color: #d4d4d4;
+    font-family: var(--font-system);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.12s ease, color 0.12s ease;
+}
+
+.cch-chip:hover {
+    background: #1f1f1f;
+    color: #ffffff;
+}
+
+html[data-theme="light"] .cch-chip {
+    background: #ffffff;
+    border-color: #e4e4ea;
+    color: #444448;
+}
+
+html[data-theme="light"] .cch-chip:hover {
+    background: #f2f2f5;
+    color: #111111;
+}

@@ -1,0 +1,45 @@
+// Event aliases, kept separate from generic language synonyms on purpose.
+// Keys are event ids where known, plus a name based fallback map so events
+// loaded from Supabase still get aliases without hardcoding all 77 rows.
+
+// Curated aliases by canonical event name, lowercased.
+export const NAME_ALIASES = {
+    'webmaster': ['web master', 'website event', 'web dev event'],
+    'software development': ['software dev', 'app development', 'app dev', 'softdev'],
+    'coding': ['code event', 'programming event'],
+    'video game design': ['game design', 'video game', 'game dev event'],
+    'audio podcasting': ['podcast', 'podcasting', 'audio podcast'],
+    'architectural design': ['architecture event', 'arch design'],
+    'animatronics': ['animatronic'],
+    'digital video production': ['digital video', 'video production'],
+    'structural engineering': ['structures', 'structure event'],
+    'technology bowl': ['tech bowl'],
+    'flight endurance': ['flight'],
+    'dragster design': ['dragster'],
+    'cybersecurity': ['cyber security', 'cyber'],
+    'data science and analytics': ['data science', 'data analytics', 'analytics'],
+    'promotional design': ['promo design'],
+    'music production': ['music prod'],
+    'photographic technology': ['photography event', 'photo tech'],
+    'stem mass media': ['mass media'],
+    'virtual reality simulation (vr)': ['vr', 'virtual reality', 'vr simulation'],
+    'children\'s stories': ['childrens stories', 'kids stories'],
+};
+
+// Common misspellings mapped to the correct canonical name.
+export const MISSPELLINGS = {
+    'webmater': 'webmaster',
+    'webmasetr': 'webmaster',
+    'webmastr': 'webmaster',
+    'animatronix': 'animatronics',
+    'animatroncis': 'animatronics',
+    'sofware development': 'software development',
+    'softwear development': 'software development',
+    'architechtural design': 'architectural design',
+    'podcasing': 'audio podcasting',
+    'cybersecuirty': 'cybersecurity',
+};
+
+export function aliasesFor(name) {
+    return NAME_ALIASES[(name || '').trim().toLowerCase()] || [];
+}
