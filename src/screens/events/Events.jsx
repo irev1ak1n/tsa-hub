@@ -7,7 +7,6 @@ import { EventGrid } from './eventsShared.jsx';
 import EventInfoModal from './EventInfoModal.jsx';
 import SupportButton from '../../components/SupportButton.jsx';
 
-// Sort options. Default keeps the source order, the rest read existing metadata.
 const SORTS = [
     { id: 'default', label: 'Default' },
     { id: 'az', label: 'A to Z' },
@@ -20,16 +19,13 @@ const SORTS = [
     { id: 'diff-desc', label: 'Difficulty: Hard to Easy' },
 ];
 
-// Ordering keys for the metadata-driven sorts.
 const TIME_ORDER = { light: 0, medium: 1, heavy: 2, project: 3 };
 const COST_ORDER = { '0-25': 0, '25-75': 1, '75-150': 2, '150-300': 3, '300+': 4 };
 const DIFF_ORDER = { beginner: 0, challenging: 1, competitive: 2 };
 
-// Grouping of raw bands into the three buckets shown in the panel.
 const TIME_BUCKET = { light: 'light', medium: 'medium', heavy: 'high', project: 'high' };
 const COST_BUCKET = { '0-25': 'low', '25-75': 'low', '75-150': 'medium', '150-300': 'high', '300+': 'high' };
 
-// Filter groups. Every predicate reads a real field on the event object.
 const FILTER_GROUPS = [
     {
         key: 'participation',
@@ -78,7 +74,6 @@ const FILTER_GROUPS = [
     },
 ];
 
-// An event needs a team when solo is not allowed, or the team size is above one.
 function teamRequired(e) {
     const el = e.eligibility || {};
     if (el.individualOk) return false;
@@ -88,45 +83,50 @@ function teamRequired(e) {
     return true;
 }
 
-// projectStyle is an array of style tags on the event.
 function hasStyle(e, tag) {
     return Array.isArray(e.projectStyle) && e.projectStyle.includes(tag);
 }
 
-// Build a flat lookup from option id to its group key and test function.
+// FIX: key is now "groupKey:optionId" so time:medium and cost:medium are distinct.
+// Previously both mapped to the same "medium" key and overwrote each other.
 const OPTION_INDEX = {};
-FILTER_GROUPS.forEach((g) => g.options.forEach((o) => { OPTION_INDEX[o.id] = { group: g.key, test: o.test }; }));
+FILTER_GROUPS.forEach((g) =>
+    g.options.forEach((o) => {
+        OPTION_INDEX[`${g.key}:${o.id}`] = { group: g.key, test: o.test };
+    })
+);
+
+// Build the composite key used in the active/draft maps.
+function optKey(groupKey, optionId) {
+    return `${groupKey}:${optionId}`;
+}
 
 export default function Events() {
     const { eventsLoading } = useApp();
-    const [division, setDivision] = useState('all'); // all | MS | HS
+    const [division, setDivision] = useState('all');
     const [category, setCategory] = useState('All');
 
-    // Advanced panel state.
     const [panelOpen, setPanelOpen] = useState(false);
     const [sort, setSort] = useState('default');
-    const [active, setActive] = useState({}); // { optionId: true }
-    const [openEvent, setOpenEvent] = useState(null); // event shown in the detail modal
+    const [active, setActive] = useState({});
+    const [openEvent, setOpenEvent] = useState(null);
 
-    // Show both divisions by default; MS/HS chips narrow it down.
     const byDivision = EVENTS.filter((e) => division === 'all' || e.division === division);
     const divisionCount = byDivision.length;
 
     const toggleDivision = (d) => setDivision((cur) => (cur === d ? 'all' : d));
 
-    // Group the selected advanced options by their filter group for OR/AND logic.
     function groupSelected(sel) {
         const byGroup = {};
-        Object.keys(sel).forEach((id) => {
-            if (!sel[id]) return;
-            const meta = OPTION_INDEX[id];
+        Object.keys(sel).forEach((key) => {
+            if (!sel[key]) return;
+            const meta = OPTION_INDEX[key];
             if (!meta) return;
             (byGroup[meta.group] = byGroup[meta.group] || []).push(meta.test);
         });
         return byGroup;
     }
 
-    // Apply category, then advanced filters (OR within a group, AND across groups).
     function applyFilters(list, sel) {
         const byGroup = groupSelected(sel);
         return list.filter((e) => {
@@ -154,7 +154,6 @@ export default function Events() {
         return arr;
     }
 
-    // The visible list uses the committed sort and active filters.
     const list = useMemo(
         () => applySort(applyFilters(byDivision, active), sort),
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -163,7 +162,6 @@ export default function Events() {
 
     const activeCount = Object.values(active).filter(Boolean).length;
 
-    // Live count inside the open panel reflects the working selection.
     const [draftSort, setDraftSort] = useState(sort);
     const [draftActive, setDraftActive] = useState(active);
 
@@ -173,20 +171,23 @@ export default function Events() {
         setPanelOpen(true);
     }
     function closePanel() { setPanelOpen(false); }
-    function toggleDraft(id) {
+
+    function toggleDraft(groupKey, optionId) {
+        const key = optKey(groupKey, optionId);
         setDraftActive((cur) => {
             const next = { ...cur };
-            if (next[id]) delete next[id]; else next[id] = true;
+            if (next[key]) delete next[key]; else next[key] = true;
             return next;
         });
     }
+
     function resetDraft() {
         setDraftActive({});
         setDraftSort('default');
-        // Apply the cleared state right away so no Show tap is needed.
         setActive({});
         setSort('default');
     }
+
     function applyPanel() {
         setSort(draftSort);
         setActive(draftActive);
@@ -201,7 +202,6 @@ export default function Events() {
 
     return (
         <div className="ev-page">
-            {/* Search row, the bar opens the dedicated search page */}
             <div className="ev-searchrow">
                 <Link to="/events/search" className="ev-search ev-search-trigger" aria-label="Search TSA events">
                     <Icon name="search" size={18} />
@@ -213,7 +213,6 @@ export default function Events() {
                 </button>
             </div>
 
-            {/* Horizontal filter chips */}
             <div className="ev-chips" role="tablist" aria-label="Filters">
                 <button
                     type="button"
@@ -260,7 +259,6 @@ export default function Events() {
                 <p className="muted" style={{ marginTop: 16 }}>No events match that filter.</p>
             )}
 
-            {/* Filter and sort bottom sheet */}
             {panelOpen && (
                 <div className="ev-sheet-backdrop" onClick={closePanel}>
                     <div className="ev-sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Filter and sort">
@@ -293,8 +291,8 @@ export default function Events() {
                                         {g.options.map((o) => (
                                             <button
                                                 key={o.id}
-                                                className={`ev-pill ${draftActive[o.id] ? 'on' : ''}`}
-                                                onClick={() => toggleDraft(o.id)}
+                                                className={`ev-pill ${draftActive[optKey(g.key, o.id)] ? 'on' : ''}`}
+                                                onClick={() => toggleDraft(g.key, o.id)}
                                             >
                                                 {o.label}
                                             </button>
