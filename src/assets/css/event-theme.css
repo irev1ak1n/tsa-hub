@@ -1,0 +1,242 @@
+/* ============================================================
+   Event Theme Page  (EventThemePage.jsx)
+   ============================================================ */
+
+/* ── Theme badge / headline ── */
+.eth-theme-badge {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: var(--c-text);
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 6px;
+    padding: 4px 10px;
+    margin-bottom: 14px;
+}
+
+/* ── Body wrapper ── */
+.eth-body {
+    padding: 0 0 40px;
+}
+
+/* ── Top description ── */
+.eth-desc {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--c-text);
+    margin: 0 0 20px;
+}
+
+/* ── Named section ── */
+.eth-section {
+    margin-top: 22px;
+}
+.eth-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--c-text-muted);
+    margin-bottom: 8px;
+}
+.eth-section-body {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--c-text);
+    margin: 0;
+}
+
+/* ── Lists ── */
+.eth-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.eth-list-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--c-text);
+}
+.eth-list-item::before {
+    content: '';
+    flex-shrink: 0;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.35);
+    margin-top: 7px;
+}
+
+/* ── Resources ── */
+.eth-resources {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+.eth-resource-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--c-text);
+    transition: background .15s, border-color .15s;
+}
+.eth-resource-row:hover {
+    background: rgba(255,255,255,.07);
+    border-color: rgba(255,255,255,.14);
+}
+.eth-resource-ico {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    background: rgba(255,255,255,.07);
+    color: var(--c-text);
+    flex-shrink: 0;
+}
+.eth-resource-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+.eth-resource-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--c-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.eth-resource-label {
+    font-size: 12px;
+    color: var(--c-text-muted);
+    margin-top: 1px;
+}
+
+/* ── No-theme state ── */
+.eth-no-theme {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.07);
+    color: var(--c-text-muted);
+    font-size: 14px;
+}
+
+/* ── Light theme overrides ── */
+html[data-theme="light"] .eth-theme-badge {
+    background: rgba(0,0,0,.05);
+    border-color: rgba(0,0,0,.1);
+    color: var(--c-text);
+}
+html[data-theme="light"] .eth-list-item::before {
+    background: rgba(0,0,0,.3);
+}
+html[data-theme="light"] .eth-resource-row {
+    background: #fff;
+    border-color: #e4e4ea;
+}
+html[data-theme="light"] .eth-resource-row:hover {
+    background: #f5f5f8;
+}
+html[data-theme="light"] .eth-resource-ico {
+    background: rgba(0,0,0,.06);
+    color: var(--c-text);
+}
+html[data-theme="light"] .eth-no-theme {
+    background: #f5f5f8;
+    border-color: #e4e4ea;
+}
+
+/* ============================================================
+   EventInfoModal additions — theme preview + access button
+   ============================================================ */
+
+/* Theme headline inside modal — bold white, not accent */
+.eth-modal-preview {
+    margin-top: 2px;
+}
+.eth-modal-headline {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--c-text);
+    margin-bottom: 4px;
+}
+
+/* "Access full details" button — neutral, not accent-colored */
+.eth-access-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 10px;
+    padding: 9px 14px;
+    width: 100%;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 9px;
+    color: var(--c-text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    transition: background .15s, border-color .15s;
+}
+.eth-access-btn span {
+    flex: 1;
+}
+.eth-access-btn:hover {
+    background: rgba(255,255,255,.09);
+    border-color: rgba(255,255,255,.18);
+}
+html[data-theme="light"] .eth-access-btn {
+    background: rgba(0,0,0,.04);
+    border-color: rgba(0,0,0,.1);
+    color: var(--c-text);
+}
+html[data-theme="light"] .eth-access-btn:hover {
+    background: rgba(0,0,0,.07);
+}
+
+/* ── Dual-division theme blocks in modal ── */
+.eth-div-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--c-text-muted);
+    margin: 14px 0 6px;
+}
+.eth-div-label:first-child {
+    margin-top: 2px;
+}
+.eth-theme-block + .eth-theme-block {
+    margin-top: 4px;
+}
+.eth-theme-block {
+    padding-bottom: 2px;
+}
+.eth-theme-no-theme {
+    font-size: 13px;
+    color: var(--c-text-muted);
+    margin: 0;
+    font-style: italic;
+}

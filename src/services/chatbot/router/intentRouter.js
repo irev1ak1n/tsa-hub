@@ -26,7 +26,14 @@ const PHRASES = [
     { intent: 'career.general', re: /(what|which) (careers?|jobs?|majors?)/, c: 0.9 },
     { intent: 'career.general', re: /(lead to|connect to|good for) .*(career|job|major|engineering|software)/, c: 0.85 },
     { intent: 'preconference.general', re: /(what do i (need to )?submit|preconference|pre-conference)/, c: 0.9 },
-    { intent: 'advisor.general', re: /(advisor approval|state advisor|need approval)/, c: 0.9 },
+    // General question about what advisor approval IS — no event needed
+    { intent: 'advisor.meaning', re: /\b(what|explain|mean|how does).*(state )?advis[oe]r approval\b/, c: 0.93 },
+    { intent: 'advisor.meaning', re: /\badvis[oe]r approval\b.{0,30}(mean|what|why|how|explain)/, c: 0.91 },
+    { intent: 'advisor.meaning', re: /\bstate advisor approval\b.{0,30}(mean|what|why|how|explain)/, c: 0.91 },
+    // "what events are best for X major/career" — career search, not event lookup
+    { intent: 'career.byMajor', re: /\b(what|which)\b.{0,20}\bevents?\b.{0,30}\b(major|career|field|degree|path)\b/, c: 0.93 },
+    { intent: 'career.byMajor', re: /\bevents?.{0,20}(best|good).{0,20}(software|engineering|medicine|design|business|marketing|data|cyber|aerospace|film|media|art|fashion|research)/, c: 0.89 },
+        { intent: 'advisor.general', re: /(advisor approval|state advisor|need approval)/, c: 0.9 },
     { intent: 'eligibility.general', re: /(who can (enter|compete)|am i eligible|eligibility)/, c: 0.88 },
     { intent: 'theme.general', re: /(this year'?s? theme|what is the theme|annual theme)/, c: 0.9 },
 
@@ -42,7 +49,7 @@ const PHRASES = [
     { intent: 'conference.theme', re: /\bconference theme\b/, c: 0.88 },
     { intent: 'conference.search', re: /\b(conference|nationals).*(store|shirt|badge|shuttle|transport|session|safety|lost|luggage|app|pin exchange|meet and greet|advisor)/, c: 0.85 },
 
-    { intent: 'state.advisor', re: /\b(state advisor|who is (the |my )?(state )?advisor|contact.*(state|advisor))/, c: 0.92 },
+    { intent: 'state.advisor', re: /\b(who is (the |my )?(state )?advisor|contact.*(state|advisor)|state advisor (website|email|phone|info|page))/, c: 0.92 },
     { intent: 'state.website', re: /\b(state (tsa )?(website|site|page|url)|my state.*(website|site))/, c: 0.9 },
     { intent: 'state.website', re: /\btsa (website|site|page)\b/, c: 0.85 },
     { intent: 'state.website', re: /^what is the (website|site)\??$/, c: 0.8 },

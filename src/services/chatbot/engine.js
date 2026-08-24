@@ -279,6 +279,69 @@ export function processMessage(input, prevState) {
         }
     }
 
+    // "what events are best for software developer major" — search by career tag
+    if (intent === 'career.byMajor') {
+        const text_lower = text.toLowerCase();
+        const CAREER_MAP = {
+            'software': 'software', 'software dev': 'software', 'software developer': 'software',
+            'app dev': 'software', 'web dev': 'web-dev', 'web developer': 'web-dev',
+            'data science': 'data-science', 'data scientist': 'data-science', 'data analyst': 'data-science',
+            'ai': 'ai', 'machine learning': 'ai', 'artificial intelligence': 'ai',
+            'cybersecurity': 'cybersecurity', 'cyber': 'cybersecurity',
+            'robotics': 'robotics', 'engineering': 'mechanical-eng',
+            'aerospace': 'aerospace', 'aviation': 'aerospace',
+            'architecture': 'architecture', 'civil': 'civil-eng',
+            'manufacturing': 'manufacturing', 'design': 'design', 'graphic': 'design',
+            'marketing': 'marketing', 'business': 'business',
+            'film': 'media-film', 'video': 'media-film', 'media': 'media-film', 'music': 'media-film',
+            'medicine': 'medicine', 'medical': 'medicine', 'health': 'medicine',
+            'education': 'education', 'teaching': 'education', 'fashion': 'fashion',
+            'research': 'research-science', 'science': 'research-science', 'biology': 'biotech',
+        };
+        let careerKey = null;
+        for (const [word, key] of Object.entries(CAREER_MAP)) {
+            if (text_lower.includes(word)) { careerKey = key; break; }
+        }
+        const careerLabel = careerKey ? careerKey.replace(/-/g, ' ') : 'that field';
+        const CAREER_EVENTS = {
+            'software': 'Software Development, Webmaster, Coding, Data Science and Analytics, and Cybersecurity (HS). In Middle School: Coding, Data Science, Cybersecurity, and Microcontroller Design.',
+            'web-dev': 'Webmaster and Software Development (HS), or Website Design (MS).',
+            'data-science': 'Data Science and Analytics (HS and MS), Coding, and Software Development.',
+            'ai': 'Artificial Intelligence (AI) and Data Science and Analytics (HS).',
+            'cybersecurity': 'Cybersecurity (HS and MS) and Coding.',
+            'mechanical-eng': 'Engineering Design, Animatronics, Robotics, Manufacturing Prototype, and Drone Challenge (HS).',
+            'aerospace': 'Drone Challenge, Flight Endurance, Transportation Modeling, and Robotics.',
+            'civil-eng': 'Architectural Design, Structural Design and Engineering, and CAD events.',
+            'architecture': 'Architectural Design, Interior Design, and CAD Architecture.',
+            'design': 'Webmaster, Promotional Design, and CAD events.',
+            'marketing': 'Promotional Design and Fashion Design and Technology.',
+            'business': 'Fashion Design and Technology, Chapter Team, and Promotional Design.',
+            'media-film': 'Digital Video Production, Vlogging, On Demand Video, Audio Podcasting, and Music Production.',
+            'medicine': 'Biotechnology Design and Forensic Science (HS), Medical Technology and Forensic Technology (MS).',
+            'research-science': 'Data Science and Analytics, Biotechnology Design, and Forensic Science.',
+            'game-dev': 'Video Game Design (HS and MS) and Virtual Reality Simulation.',
+            'robotics': 'Robotics, Animatronics, Drone Challenge, and System Control Technology.',
+            'fashion': 'Fashion Design and Technology.',
+        };
+        const eventsText = CAREER_EVENTS[careerKey] || 'Check events in the Engineering, Computing, or Design categories that relate to your field.';
+        const msg = careerKey
+            ? ('For a ' + careerLabel + ' career path, strong TSA events include ' + eventsText)
+            : 'It depends on the career area. Ask me something like "what events connect to software careers" or "what events are good for engineering?"';
+        debug.resolver = 'career.byMajor';
+        return finish(reply(msg, { domain: 'careers', intent, confidence, sourceType: 'derived',
+            suggestions: ['What careers does Software Development lead to?', 'Which events connect to engineering?'] }), state, debug);
+    }
+
+    // advisor.meaning — general explanation, no event needed
+    if (intent === 'advisor.meaning') {
+        debug.resolver = 'advisor.meaning';
+        return finish(reply(
+            'State advisor approval means your state TSA advisor must approve your entry before you can register for that event at the national conference. Events marked with an asterisk (*) require this. Contact your chapter advisor first, and they will work with the state advisor to get approval.',
+            { domain: 'rules', intent, confidence, sourceType: 'official',
+              suggestions: ['Which events need state advisor approval?', 'What do I need to submit?'] }
+        ), state, debug);
+    }
+
     if (REQUIRES_TWO_EVENTS.has(intent)) {
         const pair = state.activeEvents.length >= 2 ? state.activeEvents.slice(0, 2) : null;
         if (!pair) {
@@ -385,6 +448,69 @@ function answerWithIntent(intent, state, norm, rawText, confidence = 0.8) {
             debug.resolver = 'state';
             return finish(reply(res.text, { domain: 'state', intent, confidence, sourceType: res.sourceType, suggestions: ['Who is my state advisor?', 'What is my state website?', 'State officer team'] }), state, debug);
         }
+    }
+
+    // "what events are best for software developer major" — search by career tag
+    if (intent === 'career.byMajor') {
+        const text_lower = text.toLowerCase();
+        const CAREER_MAP = {
+            'software': 'software', 'software dev': 'software', 'software developer': 'software',
+            'app dev': 'software', 'web dev': 'web-dev', 'web developer': 'web-dev',
+            'data science': 'data-science', 'data scientist': 'data-science', 'data analyst': 'data-science',
+            'ai': 'ai', 'machine learning': 'ai', 'artificial intelligence': 'ai',
+            'cybersecurity': 'cybersecurity', 'cyber': 'cybersecurity',
+            'robotics': 'robotics', 'engineering': 'mechanical-eng',
+            'aerospace': 'aerospace', 'aviation': 'aerospace',
+            'architecture': 'architecture', 'civil': 'civil-eng',
+            'manufacturing': 'manufacturing', 'design': 'design', 'graphic': 'design',
+            'marketing': 'marketing', 'business': 'business',
+            'film': 'media-film', 'video': 'media-film', 'media': 'media-film', 'music': 'media-film',
+            'medicine': 'medicine', 'medical': 'medicine', 'health': 'medicine',
+            'education': 'education', 'teaching': 'education', 'fashion': 'fashion',
+            'research': 'research-science', 'science': 'research-science', 'biology': 'biotech',
+        };
+        let careerKey = null;
+        for (const [word, key] of Object.entries(CAREER_MAP)) {
+            if (text_lower.includes(word)) { careerKey = key; break; }
+        }
+        const careerLabel = careerKey ? careerKey.replace(/-/g, ' ') : 'that field';
+        const CAREER_EVENTS = {
+            'software': 'Software Development, Webmaster, Coding, Data Science and Analytics, and Cybersecurity (HS). In Middle School: Coding, Data Science, Cybersecurity, and Microcontroller Design.',
+            'web-dev': 'Webmaster and Software Development (HS), or Website Design (MS).',
+            'data-science': 'Data Science and Analytics (HS and MS), Coding, and Software Development.',
+            'ai': 'Artificial Intelligence (AI) and Data Science and Analytics (HS).',
+            'cybersecurity': 'Cybersecurity (HS and MS) and Coding.',
+            'mechanical-eng': 'Engineering Design, Animatronics, Robotics, Manufacturing Prototype, and Drone Challenge (HS).',
+            'aerospace': 'Drone Challenge, Flight Endurance, Transportation Modeling, and Robotics.',
+            'civil-eng': 'Architectural Design, Structural Design and Engineering, and CAD events.',
+            'architecture': 'Architectural Design, Interior Design, and CAD Architecture.',
+            'design': 'Webmaster, Promotional Design, and CAD events.',
+            'marketing': 'Promotional Design and Fashion Design and Technology.',
+            'business': 'Fashion Design and Technology, Chapter Team, and Promotional Design.',
+            'media-film': 'Digital Video Production, Vlogging, On Demand Video, Audio Podcasting, and Music Production.',
+            'medicine': 'Biotechnology Design and Forensic Science (HS), Medical Technology and Forensic Technology (MS).',
+            'research-science': 'Data Science and Analytics, Biotechnology Design, and Forensic Science.',
+            'game-dev': 'Video Game Design (HS and MS) and Virtual Reality Simulation.',
+            'robotics': 'Robotics, Animatronics, Drone Challenge, and System Control Technology.',
+            'fashion': 'Fashion Design and Technology.',
+        };
+        const eventsText = CAREER_EVENTS[careerKey] || 'Check events in the Engineering, Computing, or Design categories that relate to your field.';
+        const msg = careerKey
+            ? ('For a ' + careerLabel + ' career path, strong TSA events include ' + eventsText)
+            : 'It depends on the career area. Ask me something like "what events connect to software careers" or "what events are good for engineering?"';
+        debug.resolver = 'career.byMajor';
+        return finish(reply(msg, { domain: 'careers', intent, confidence, sourceType: 'derived',
+            suggestions: ['What careers does Software Development lead to?', 'Which events connect to engineering?'] }), state, debug);
+    }
+
+    // advisor.meaning — general explanation, no event needed
+    if (intent === 'advisor.meaning') {
+        debug.resolver = 'advisor.meaning';
+        return finish(reply(
+            'State advisor approval means your state TSA advisor must approve your entry before you can register for that event at the national conference. Events marked with an asterisk (*) require this. Contact your chapter advisor first, and they will work with the state advisor to get approval.',
+            { domain: 'rules', intent, confidence, sourceType: 'official',
+              suggestions: ['Which events need state advisor approval?', 'What do I need to submit?'] }
+        ), state, debug);
     }
 
     if (REQUIRES_TWO_EVENTS.has(intent)) {

@@ -1,7 +1,9 @@
-import { EVENTS, CATEGORIES } from '../../data/events.js';
+import { useNavigate } from 'react-router-dom';
+import { EVENTS } from '../../data/events.js';
 import { COMPETITION_REQUIREMENTS } from '../../data/competitionRequirements.js';
+import { EVENT_THEMES, hasThemeResources } from '../../data/eventThemes.js';
+import { Icon } from '../../components/UI.jsx';
 
-// Career keys on the event map to these human labels.
 const CAREER_LABELS = {
     software: 'Software & App Development',
     'data-science': 'AI, Data & Analytics',
@@ -30,8 +32,6 @@ const CAREER_LABELS = {
     'product-design': 'Manufacturing & Product Design',
 };
 
-// Clean a team size value, dropping a trailing .0 that Supabase numbers add.
-// Ranges like "2-3" stay as they are.
 function fmtSize(ts) {
     if (ts == null) return null;
     const n = Number(ts);
@@ -39,7 +39,6 @@ function fmtSize(ts) {
     return String(ts);
 }
 
-// Team size text from the Events eligibility shape (teamSize string, individualOk).
 function teamSizeText(el) {
     if (!el) return 'Varies';
     const ts = fmtSize(el.teamSize);
@@ -53,7 +52,6 @@ function teamSizeText(el) {
     return 'Team event';
 }
 
-// Name normaliser for matching the competition tables, star stripped, lower case.
 function normName(s) {
     return (s || '').replace(/\*+$/, '').trim().toLowerCase();
 }
@@ -93,8 +91,6 @@ function needsStateAdvisorApproval(eventName, division) {
     return table.rows.some((r) => normName(r[0]) === target);
 }
 
-// Related events from Events fields, overlap on interests and projectStyle plus
-// a category bonus, limited to the same division.
 function relatedEvents(source) {
     if (!source) return [];
     const srcInt = Object.keys(source.interests || {});
@@ -112,13 +108,76 @@ function relatedEvents(source) {
     return scored.slice(0, 6).map((x) => x.e.name);
 }
 
-// Light detail modal for the Events grid. No match percent, analysis, or
-// score breakdown, just the practical facts and related items.
+// Find theme entries for an event. Returns array of 1 or 2 entries.
+// If the event exists in both divisions (same name), returns both.
+// Otherwise returns just the one matching the event's own id.
+function getThemesForEvent(event) {
+    const own = EVENT_THEMES[event.id];
+
+    // Look for counterpart in the other division with matching name
+    const otherDiv = event.division === 'HS' ? 'MS' : 'HS';
+    const counterpart = Object.values(EVENT_THEMES).find(
+        (t) => t.division === otherDiv &&
+            t.name.toLowerCase().replace(/\s*design$/, '').replace(/\s*\(.*\)/, '').trim() ===
+            (own?.name || event.name).toLowerCase().replace(/\s*design$/, '').replace(/\s*\(.*\)/, '').trim()
+    );
+
+    const results = [];
+    if (own) results.push({ ...own, _id: event.id });
+    if (counterpart) {
+        // Find its id
+        const cpId = Object.entries(EVENT_THEMES).find(([, v]) => v === counterpart)?.[0];
+        if (cpId) results.push({ ...counterpart, _id: cpId });
+    }
+
+    // Sort so current division is first
+    results.sort((a, b) => {
+        if (a.division === event.division) return -1;
+        if (b.division === event.division) return 1;
+        return 0;
+    });
+
+    return results;
+}
+
+// Single theme block with optional "Access full details" button
+function ThemeBlock({ theme, onOpenPage }) {
+    const noTheme = theme.status === 'no-theme';
+    const hasResources = hasThemeResources(theme._id);
+
+    const headline = theme.theme || null;
+    const blurb = theme.description || theme.topic || theme.problemStatement || theme.challenge || null;
+    const short = blurb && blurb.length > 200 ? blurb.slice(0, 197) + '…' : blurb;
+
+    return (
+        <div className="eth-theme-block">
+            {noTheme ? (
+                <p className="eth-theme-no-theme">No theme available for this season.</p>
+            ) : (
+                <>
+                    {headline && <div className="eth-modal-headline">{headline}</div>}
+                    {short && <p className="rec-modal-desc" style={{ margin: '4px 0 0' }}>{short}</p>}
+                    {hasResources && (
+                        <button type="button" className="eth-access-btn" onClick={() => onOpenPage(theme._id)}>
+                            <Icon name="file-text" size={15} />
+                            <span>Access full details</span>
+                            <Icon name="chevron-right" size={15} />
+                        </button>
+                    )}
+                </>
+            )}
+        </div>
+    );
+}
+
 export default function EventInfoModal({ event, onClose }) {
+    const navigate = useNavigate();
     if (!event) return null;
 
     const el = event.eligibility;
     const overview = event.overview || null;
+    const themes = getThemesForEvent(event);
+    const multiDiv = themes.length > 1;
 
     const relatedCareers = Object.entries(event.careers || {})
         .sort((a, b) => b[1] - a[1])
@@ -126,6 +185,11 @@ export default function EventInfoModal({ event, onClose }) {
         .filter((v, i, arr) => arr.indexOf(v) === i);
 
     const related = relatedEvents(event);
+
+    function openThemePage(id) {
+        onClose();
+        navigate(`/events/${id}/theme`);
+    }
 
     return (
         <div className="rec-modal-backdrop" onClick={onClose}>
@@ -135,6 +199,8 @@ export default function EventInfoModal({ event, onClose }) {
                     <button className="rec-modal-close" onClick={onClose} aria-label="Close">×</button>
                 </div>
                 <div className="rec-modal-body">
+
+                    {/* Description */}
                     {overview && (
                         <div className="rec-modal-section" style={{ marginTop: 0 }}>
                             <div className="rec-modal-section-title">Description</div>
@@ -142,6 +208,23 @@ export default function EventInfoModal({ event, onClose }) {
                         </div>
                     )}
 
+                    {/* Theme & Problem — one or two divisions */}
+                    {themes.length > 0 && (
+                        <div className="rec-modal-section">
+                            <div className="rec-modal-section-title">Theme &amp; Problem</div>
+                            {themes.map((theme) => (
+                                <div key={theme._id}>
+                                    {/* Division label only when both exist */}
+                                    {multiDiv && (
+                                        <div className="eth-div-label">{theme.division === 'HS' ? 'High School' : 'Middle School'}</div>
+                                    )}
+                                    <ThemeBlock theme={theme} onOpenPage={openThemePage} />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Facts */}
                     <div className="rec-fact">
                         <span className="rec-fact-label">Team Size</span>
                         <span className="rec-fact-value">{teamSizeText(el)}</span>
@@ -155,6 +238,7 @@ export default function EventInfoModal({ event, onClose }) {
                         <span className="rec-fact-value">{needsStateAdvisorApproval(event.name, event.division) ? 'Yes' : 'No'}</span>
                     </div>
 
+                    {/* Related Careers */}
                     {relatedCareers.length > 0 && (
                         <div className="rec-modal-section">
                             <div className="rec-modal-section-title">Related Careers</div>
@@ -164,6 +248,7 @@ export default function EventInfoModal({ event, onClose }) {
                         </div>
                     )}
 
+                    {/* Related Events */}
                     {related.length > 0 && (
                         <div className="rec-modal-section">
                             <div className="rec-modal-section-title">Related Events</div>

@@ -83,6 +83,7 @@ export async function fetchEvents() {
     const { data, error } = await supabase
         .from('events')
         .select('*')
+        .eq('archived', false)
         .order('division', { ascending: true })
         .order('name', { ascending: true });
 

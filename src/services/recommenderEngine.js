@@ -33,7 +33,7 @@ export const WORKTYPE_OPTIONS = [
     { id: "creative", label: "Design Something Creative", types: ["creative-product", "wearable-design"] },
     { id: "research", label: "Research a Problem", types: ["research", "data-analysis"] },
     { id: "presentation", label: "Present or Speak", types: ["presentation"] },
-    { id: "knowledge-challenge", label: "Take on a Knowledge Challenge", types: ["knowledge-challenge"] },
+    { id: "knowledge-challenge", label: "Take on a Knowledge Challenge", types: ["knowledge-challenge", "ai-solution"] },
     { id: "product-prototype", label: "Build a Product / Prototype", types: ["product-prototype"] },
 ];
 
