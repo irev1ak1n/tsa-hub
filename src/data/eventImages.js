@@ -33,6 +33,9 @@ function slugify(s) {
 // Real ids taken from the event data. Some use ms-/hs- prefixes, some don't,
 // so both divisions are covered explicitly where the same event appears twice.
 export const EVENT_IMAGE_MAP = {
+    // Artificial Intelligence (AI) — slug gets double dashes from parentheses
+    'artificial-intelligence-ai': 'artificial-intelligence',
+
     // Future Technology and Engineering Teacher
     'future-tech-teacher': 'future-technology-engineering-teacher',
     'ms-future-tech-teacher': 'future-technology-engineering-teacher',
@@ -66,19 +69,19 @@ export const EVENT_IMAGE_MAP = {
     'ms-leadership-strategies': 'leadership-and-speaking',
     'leadership-strategies': 'leadership-and-speaking',
 
-    // Software Development (reported earlier)
+    // Software Development
     'software-development': 'software-dev',
     'software-dev': 'software-dev',
 
-    // Technology Bowl (reported earlier)
+    // Technology Bowl
     'technology-bowl': 'tech-bowl',
     'tech-bowl': 'tech-bowl',
 
-    // Biotechnology Design (reported earlier)
+    // Biotechnology Design
     'biotechnology-design': 'biotechnology',
     'biotechnology': 'biotechnology',
 
-    // Dragster Design (reported earlier)
+    // Dragster Design
     'dragster-design': 'dragster',
     'dragster': 'dragster',
 };

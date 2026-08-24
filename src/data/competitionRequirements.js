@@ -4,7 +4,7 @@
 // pages without content still show the "coming soon" placeholder.
 //
 // Eligibility data transcribed from the official TSA eligibility charts:
-//   - High School: 2025 & 2026 High School Competitions
+//   - High School: 2027 & 2028 High School Competitions
 //   - Middle School: 2026 & 2027 Middle School Competitions
 // Only official data is used. Verify against the current TSA charts before
 // relying on it, as TSA may update these each year.
@@ -16,52 +16,54 @@ export const COMPETITION_REQUIREMENTS = [
         title: 'Eligibility Charts',
         icon: 'file-text',
         subtitle: 'How many entries each event allows, by division.',
-        // A page can hold one or more tables.
         tables: [
             {
-                heading: '2025 & 2026 High School Competitions',
+                heading: '2027 & 2028 High School Competitions',
+                note: 'Each participant/team shall submit only one [1] entry for the following competitive events.',
                 columns: ['Competition', 'Eligibility'],
                 rows: [
                     ['Animatronics', 'three (3) teams of two to three (2-3) team members per state'],
-                    ['Architectural Design', 'one (1) team per chapter; individual entries are permitted'],
+                    ['Architectural Design', 'two (2) teams of two to four (2-4) members per state; individual entries are permitted'],
+                    ['Artificial Intelligence (AI)', 'one (1) team of two (2) individuals per chapter'],
                     ['Audio Podcasting', 'three (3) teams per state; individual entries are permitted'],
-                    ['Biotechnology Design', 'one (1) team of at least two (2) individuals per chapter'],
-                    ['Board Game Design', 'one (1) team of at least two (2) individuals per chapter'],
+                    ['Automated Manufacturing Systems', 'two (2) teams of two to three (2-3) members per state'],
+                    ['Biotechnology Design', 'one (1) team per chapter'],
+                    ['Board Game Design', 'three (3) teams of two to four (2-4) individuals per state'],
                     ['Chapter Team', 'one (1) team of six (6) members per chapter'],
                     ['Children\u2019s Stories', 'three (3) teams or three (3) individuals per state'],
-                    ['Coding', 'three (3) teams of two (2) individuals per state'],
                     ['Computer-Aided Design (CAD), Architecture', 'two (2) individuals per state'],
                     ['Computer-Aided Design (CAD), Engineering', 'two (2) individuals per state'],
+                    ['Cybersecurity', 'one (1) team of two to four (2-4) members per chapter; one (1) entry per team'],
                     ['Data Science and Analytics', 'three (3) teams of two (2) individuals per state; individual entries are permitted'],
                     ['Debating Technological Issues', 'three (3) teams of two (2) individuals per state'],
                     ['Digital Video Production', 'three (3) teams or three (3) individuals per state'],
                     ['Dragster Design', 'two (2) individuals per chapter'],
                     ['Drone Challenge (UAV)', 'three (3) teams of two to six (2-6) members per state'],
-                    ['Engineering Design', 'three (3) teams of three (3) or more individuals per state'],
+                    ['Engineering Design', 'five (5) teams of two to four (2-4) individuals per state'],
                     ['Extemporaneous Speech', 'three (3) individuals per state'],
                     ['Fashion Design and Technology', 'five (5) teams of two to four (2-4) individuals per state'],
                     ['Flight Endurance', 'two (2) individuals per chapter'],
                     ['Forensic Science', 'one (1) team of two (2) individuals per chapter'],
-                    ['Future Technology and Engineering Teacher', 'three (3) individuals per chapter'],
-                    ['Geospatial Technology', 'one (1) team of two to three (2-3) individuals per chapter'],
-                    ['Manufacturing Prototype', 'one (1) team of at least two (2) individuals per chapter'],
+                    ['Future Technology and Engineering Teacher', 'two (2) individuals per chapter'],
+                    ['Hybrid Racer XL', 'one (1) team of two to four (2-4) individuals per chapter; one (1) entry per team'],
+                    ['Interior Design', 'three (3) teams of two (2) individuals per state; individual entries are permitted'],
+                    ['Manufacturing Prototype', 'one (1) team per chapter'],
                     ['Music Production', 'three (3) teams per state; individual entries are permitted'],
-                    ['On Demand Video', 'one (1) team of at least two (2) individuals per chapter'],
+                    ['On Demand Video', 'one (1) team per chapter'],
                     ['Photographic Technology', 'one (1) individual per chapter'],
                     ['Prepared Presentation', 'three (3) individuals per state'],
                     ['Promotional Design', 'three (3) individuals per state'],
-                    ['Robotics', 'three (3) teams of two to six (2-6) team members per state'],
-                    ['Senior Solar Sprint', 'one (1) team of two to four (2-4) individuals per chapter; one (1) entry per team'],
-                    ['Software Development', 'one (1) team of at least two (2) individuals per chapter; presentation/interview is limited to three (3) members'],
+                    ['Robotics', 'two (2) teams of two to six (2-6) members per state'],
+                    ['Software Development', 'one (1) team per chapter; presentation/interview is limited to three (3) members'],
                     ['STEM Mass Media', 'one (1) team of two to three (2-3) members per chapter'],
                     ['Structural Design and Engineering', 'one (1) team of two (2) individuals per chapter'],
-                    ['System Control Technology', 'two (2) teams of three (3) individuals per state'],
                     ['Technology Bowl', 'one (1) team of three (3) individuals per chapter'],
                     ['Technology Problem Solving', 'one (1) team of two (2) individuals per chapter'],
                     ['Transportation Modeling', 'one (1) individual per chapter'],
-                    ['Video Game Design', 'five (5) teams of at least two (2) individuals per state'],
+                    ['Video Game Design', 'five (5) teams per state'],
                     ['Virtual Reality Simulation (VR)', 'one (1) team per chapter; individual entries are permitted'],
-                    ['Webmaster', 'one (1) team of at least two (2) individuals per chapter'],
+                    ['Vlogging', 'two (2) teams of two to six (2-6) members per chapter'],
+                    ['Webmaster', 'one (1) team per chapter with a maximum of six (6) individuals; individual entries are permitted'],
                 ],
             },
             {
@@ -121,7 +123,7 @@ export const COMPETITION_REQUIREMENTS = [
                 heading: 'High School',
                 columns: ['High School', 'PDF', '# of files', 'URL', '# of links'],
                 rows: [
-                    ['Architectural Design', 'Documentation Portfolio', '1', '', ''],
+                    ['Architectural Design*', 'Documentation Portfolio', '1', 'Virtual Walk-through', '1'],
                     ['Audio Podcasting*', 'Documentation Portfolio', '1', 'Audio Podcast', '1'],
                     ['Data Science and Analytics*', 'Documentation Portfolio; Photo/Film/Video Consent Forms (if applicable)', '2', '', ''],
                     ['Digital Video Production*', 'Documentation Portfolio', '1', 'Digital Video', '1'],
@@ -129,7 +131,7 @@ export const COMPETITION_REQUIREMENTS = [
                     ['Music Production*', 'Documentation Portfolio', '1', 'Musical Piece', '1'],
                     ['Photographic Technology', 'Photographic Portfolio', '1', '', ''],
                     ['Promotional Design', 'Promotional Design Portfolio', '1', '', ''],
-                    ['Software Development', 'Copy of Code (PDF or URL)', '1', 'Copy of Code (PDF or URL)', '1'],
+                    ['Software Development', 'Resources and AI Reflection Form', '1', 'Copy of Code (PDF or URL)', '1'],
                     ['STEM Mass Media', 'Documentation Portfolio', '1', 'Video News Story', '1'],
                     ['Video Game Design*', 'Documentation Portfolio', '1', 'Video Game & Demo Video', '2'],
                     ['Vlogging', 'Documentation Portfolio', '1', 'Video Series', '1'],
@@ -154,7 +156,7 @@ export const COMPETITION_REQUIREMENTS = [
         notes: [
             { label: 'PDF documents', text: 'All documents must be in Portable Document Format (PDF). The competition component upload platform accepts only PDF files. The file size limit is 30 MB.' },
             { label: 'URL link', text: 'A web-based platform will be used by judges to access and view competition components. Competitors must ensure that access to the URLs is not private or password-protected. Any links or documents that cannot be accessed will not be judged (including those stored in Google Drive).' },
-            { label: 'Submission Confirmation', text: 'When uploading the pre-conference submission competition components via the Student Member Site, student members can select "Print Confirmation" (which produces a PDF to save or print) and/or "Email Confirmation" (which sends an email to the address entered in the student member account) to confirm the submission upload.' },
+            { label: 'Submission Confirmation', text: 'When uploading the pre-conference submission competition components via the Student Member Site, student members can select \u201cPrint Confirmation\u201d (which produces a PDF to save or print) and/or \u201cEmail Confirmation\u201d (which sends an email to the address entered in the student member account) to confirm the submission upload.' },
         ],
     },
     {
@@ -162,10 +164,6 @@ export const COMPETITION_REQUIREMENTS = [
         title: 'National Competition Requirements',
         icon: 'file-text',
         subtitle: 'Some, but not all, requirements related to competition at the 2026 National TSA Conference.',
-        // Rich sections. Each block: { heading?, body: [ paragraph, ... ] }.
-        // A paragraph is a string, or an array of spans:
-        //   'plain text'  |  { b: 'bold text' }  |  { link: 'text', url: '...' }
-        // A block may also carry { list: [ 'item', ... ] } for bullet points.
         sections: [
             {
                 body: [
@@ -280,7 +278,7 @@ export const COMPETITION_REQUIREMENTS = [
                 columns: ['Event', 'Eligibility'],
                 rows: [
                     ['Animatronics', 'three (3) teams of two to three (2-3) team individuals per state'],
-                    ['Architectural Design', 'two (2) teams of two to four (2-4) members per state may participate; individual entries are permitted'],
+                    ['Architectural Design*', 'two (2) teams of two to four (2-4) members per state may participate; individual entries are permitted'],
                     ['Audio Podcasting*', 'three (3) teams per state; individual entries are permitted'],
                     ['Automated Manufacturing Systems', 'two (2) teams of two (2) to three (3) members per state'],
                     ['Board Game Design', 'three (3) teams of two to four (2-4) individuals per state'],
