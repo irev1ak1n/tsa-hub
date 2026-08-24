@@ -1,19 +1,12 @@
 import { COMPETITION_REQUIREMENTS } from '../../../data/competitionRequirements.js';
-import { pick } from '../core/variation.js';
+import { pick, hash } from '../core/variation.js';
 import { isMissing, checkTeamSizeConsistency, CONFLICT_MESSAGE } from '../guards/dataGuards.js';
-
-// Answers about a single event. Official rule fields are stated plainly, TSA Hub
-// classifications are always attributed to TSA Hub so they are never mistaken
-// for official TSA judgments.
 
 const DERIVED = 'derived';
 const OFFICIAL = 'official';
 
-function ok(text, sourceType, extra = {}) {
-    return { text, sourceType, ...extra };
-}
+function ok(text, sourceType, extra = {}) { return { text, sourceType, ...extra }; }
 
-// Strip a trailing .0 that Supabase numeric columns add.
 function fmtSize(ts) {
     if (ts == null) return null;
     const n = Number(ts);
@@ -28,6 +21,25 @@ function parseRange(teamSize) {
     if (range) return [Number(range[1]), Number(range[2])];
     const n = Number(s);
     return Number.isFinite(n) ? [n, n] : null;
+}
+
+function parseEligibilityText(text) {
+    if (!text) return null;
+    const t = String(text);
+    const atLeast = t.match(/at least (\w+) \((\d+)\)/);
+    if (atLeast) {
+        const min = Number(atLeast[2]);
+        const maxMatch = t.match(/maximum of (\w+) \((\d+)\)/);
+        const max = maxMatch ? Number(maxMatch[2]) : null;
+        return { min, max, individual: /individual entries? (are|is) permitted/i.test(t) };
+    }
+    const range = t.match(/(\w+) to (\w+) \((\d+)[-\u2013](\d+)\)/);
+    if (range) return { min: Number(range[3]), max: Number(range[4]), individual: /individual/i.test(t) };
+    const exact = t.match(/team of (\w+) \((\d+)\)/);
+    if (exact) return { min: Number(exact[2]), max: Number(exact[2]), individual: /individual/i.test(t) };
+    const simple = t.match(/\((\d+)\) (individuals?|members?|team members?)/);
+    if (simple) return { min: Number(simple[1]), max: Number(simple[1]), individual: /individual/i.test(t) };
+    return null;
 }
 
 const CAREER_LABELS = {
@@ -46,34 +58,36 @@ const CAREER_LABELS = {
     'product-design': 'Manufacturing & Product Design',
 };
 
-const COST_BAND = {
-    '0-25': 'a low cost event', '25-75': 'a low cost event',
-    '75-150': 'a moderate cost event', '150-300': 'a higher cost event',
-    '300+': 'one of the more expensive events',
+const COST_NATURAL = {
+    '0-25': ['one of the lower cost events', "generally affordable since most of the work is digital"],
+    '25-75': ['relatively affordable', "not too expensive, though you may need a few supplies"],
+    '75-150': ['a moderate investment', "likely to need some budget for materials or equipment"],
+    '150-300': ['on the pricier side', "going to need a real budget for materials and supplies"],
+    '300+': ['one of the more expensive events', "a bigger investment, especially if you need physical materials or equipment"],
 };
 
-const TIME_BAND = {
-    light: 'a light time commitment', medium: 'a medium time commitment',
-    heavy: 'a heavy time commitment', project: 'a long running project',
+const TIME_NATURAL = {
+    light: ['a lighter commitment compared with more build-heavy events', "one of the quicker events to prepare for"],
+    medium: ['a moderate amount of preparation', "not the lightest event, but it usually doesn't require an extreme weekly commitment"],
+    heavy: ['a fair amount of preparation, so it is worth starting early', "going to take consistent work over several weeks"],
+    project: ['a long-running project that needs early planning', "a significant time investment, so start as soon as you can"],
 };
 
-const DIFF_BAND = {
-    beginner: 'beginner friendly', challenging: 'challenging', competitive: 'highly competitive',
+const DIFF_NATURAL = {
+    beginner: ['very approachable, especially for first-time competitors', "a solid starting point if you are new to TSA events"],
+    challenging: ['challenging, especially if you are new to the skills involved', "a step up, but very manageable if you start early and practice"],
+    competitive: ['one of the more competitive options, so strong preparation matters', "highly competitive, so plan to put in real effort"],
 };
 
-const WORK_LABEL = {
-    build: 'building', code: 'coding', design: 'designing', present: 'presenting',
-};
+const WORK_LABEL = { build: 'building', code: 'coding', design: 'designing', present: 'presenting' };
 
-function normName(s) {
-    return (s || '').replace(/\*+$/, '').trim().toLowerCase();
-}
+function normName(s) { return (s || '').replace(/\*+$/, '').trim().toLowerCase(); }
 
 function requirementsTable(pageId, division) {
     const page = (COMPETITION_REQUIREMENTS || []).find((r) => r.id === pageId);
     if (!page || !Array.isArray(page.tables)) return null;
     const heading = division === 'HS' ? 'High School' : 'Middle School';
-    return page.tables.find((t) => t.heading === heading) || null;
+    return page.tables.find((t) => t.heading === heading || t.heading?.includes(division === 'HS' ? 'High School' : 'Middle School')) || null;
 }
 
 export function preconferenceFor(event) {
@@ -93,60 +107,49 @@ export function advisorApprovalFor(event) {
     return { known: true, required: table.rows.some((r) => normName(r[0]) === normName(event?.name)) };
 }
 
-function teamSentence(event) {
+function getRange(event) {
     const el = event?.eligibility || {};
-    const range = parseRange(el.teamSize);
-    if (el.individualOk && (!range || range[0] <= 1)) {
-        return range && range[1] > 1
-            ? `allows individual entries, or a team of up to ${range[1]}`
-            : 'allows individual entries';
+    let range = parseRange(el.teamSize);
+    if (!range && el.text) {
+        const parsed = parseEligibilityText(el.text);
+        if (parsed) {
+            range = [parsed.min, parsed.max || parsed.min];
+            if (parsed.individual && el.individualOk == null) el.individualOk = true;
+        }
     }
-    if (range && el.individualOk) return `is normally a team of ${fmtSize(el.teamSize)}, and individual entries are also permitted`;
-    if (range && range[0] === range[1]) return `requires a team of ${range[0]}`;
-    if (range) return `requires a team of ${range[0]} to ${range[1]}`;
-    if (el.individualOk) return 'allows individual entries';
-    return null;
+    return range;
 }
 
-function detailLine(event, style) {
-    if (style !== 'detailed') return '';
-    const bits = [];
-    if (event.category) bits.push(`It sits in the ${event.category} category`);
-    if (DIFF_BAND[event.difficulty]) bits.push(`TSA Hub classifies it as ${DIFF_BAND[event.difficulty]}`);
-    return bits.length ? ` ${bits.join(', ')}.` : '';
-}
+function seed(event, intent) { return (event?.id || '') + intent; }
 
-/**
- * Answer one intent about one event.
- * Returns { text, sourceType, source, missing } or null when unsupported.
- */
-export function answerEventIntent(event, intent, { style = 'normal', seed = '' } = {}) {
+export function answerEventIntent(event, intent, { style = 'normal', seed: extraSeed = '' } = {}) {
     if (!event) return null;
     const name = event.name || 'This event';
     const el = event.eligibility || {};
+    const s = seed(event, intent) + extraSeed;
 
     switch (intent) {
         case 'team.individual': {
-            if (isMissing(el.individualOk) && isMissing(el.teamSize)) {
-                return { text: `I don't have an official team requirement on file for ${name}.`, sourceType: OFFICIAL, missing: true };
+            if (isMissing(el.individualOk) && isMissing(el.teamSize) && !el.text) {
+                return { text: pick(["I don't have a team requirement on file for " + name + " yet.", "I couldn't find official team info for " + name + "."], s), sourceType: OFFICIAL, missing: true };
             }
             const conflict = checkTeamSizeConsistency(event);
             if (conflict.conflict) return { text: CONFLICT_MESSAGE, sourceType: OFFICIAL, conflict: true };
+            const range = getRange(event);
             if (el.individualOk) {
-                const range = parseRange(el.teamSize);
-                const tail = range && range[1] > 1 ? ` You can also enter as a team of ${fmtSize(el.teamSize)}.` : '';
+                const tail = range && range[1] > 1 ? ` You can also enter as a team of up to ${range[1]}.` : '';
                 return ok(pick([
-                    `Yes. ${name} allows individual entries.${tail}`,
                     `Yes, you can compete in ${name} on your own.${tail}`,
-                    `${name} permits individual competitors, so you can enter alone.${tail}`,
-                ], seed + intent), OFFICIAL);
+                    `You don't need a team for ${name}. Individual entries are allowed.${tail}`,
+                    `${name} can be entered individually, so you can compete without teammates.${tail}`,
+                ], s), OFFICIAL);
             }
-            const range = parseRange(el.teamSize);
-            const need = range ? ` It requires a team of ${fmtSize(el.teamSize)}.` : '';
+            const need = range ? ` You'll need ${range[0] === range[1] ? range[0] + ' members' : range[0] + ' to ' + range[1] + ' members'}.` : '';
             return ok(pick([
-                `No. ${name} does not allow individual entries.${need}`,
-                `${name} is a team event, so you cannot enter alone.${need}`,
-            ], seed + intent), OFFICIAL);
+                `You'll need a team for ${name}. Individual entries aren't allowed.${need}`,
+                `${name} is team-based, so you can't enter alone.${need}`,
+                `You can't enter ${name} by yourself.${need} Check the team size before choosing your group.`,
+            ], s), OFFICIAL);
         }
 
         case 'team.minimum':
@@ -155,107 +158,111 @@ export function answerEventIntent(event, intent, { style = 'normal', seed = '' }
         case 'team.general': {
             const conflict = checkTeamSizeConsistency(event);
             if (conflict.conflict) return { text: CONFLICT_MESSAGE, sourceType: OFFICIAL, conflict: true };
-            const sentence = teamSentence(event);
-            if (!sentence) return { text: `I don't have an official team size on file for ${name}.`, sourceType: OFFICIAL, missing: true };
-            const range = parseRange(el.teamSize);
-            if (intent === 'team.minimum' && range) return ok(`${name} needs at least ${range[0]}${range[0] === 1 ? ' competitor' : ' team members'}.`, OFFICIAL);
-            if (intent === 'team.maximum' && range) return ok(`${name} allows up to ${range[1]} team members.`, OFFICIAL);
-            const extra = style === 'short' ? '' : el.text ? ` Official wording: ${el.text}.` : '';
-            return ok(`${name} ${sentence}.${extra}`, OFFICIAL);
+            const range = getRange(event);
+            if (!range && !el.text) return { text: pick(["I don't have an official team size on file for " + name + ".", "No team size info is available for " + name + " yet."], s), sourceType: OFFICIAL, missing: true };
+            if (intent === 'team.minimum' && range) return ok(pick([`${name} needs at least ${range[0]} ${range[0] === 1 ? 'person' : 'members'}.`, `The minimum for ${name} is ${range[0]}.`], s), OFFICIAL);
+            if (intent === 'team.maximum' && range) return ok(pick([`${name} allows up to ${range[1]} members.`, `The max team size for ${name} is ${range[1]}.`], s), OFFICIAL);
+            if (range) {
+                const size = range[0] === range[1] ? `${range[0]}` : `${range[0]} to ${range[1]}`;
+                const solo = el.individualOk ? ' Individual entries are also allowed.' : '';
+                return ok(pick([
+                    `Teams for ${name} can have ${size} members.${solo}`,
+                    `You'll need ${size} people for ${name}.${solo}`,
+                    `${name} is designed for teams of ${size}.${solo}`,
+                ], s) + (style !== 'short' && el.text ? ` Official wording: ${el.text}.` : ''), OFFICIAL);
+            }
+            if (el.text) return ok(`${name} has this eligibility requirement: ${el.text}`, OFFICIAL);
+            return { text: "I don't have team size info for " + name + ".", sourceType: OFFICIAL, missing: true };
         }
 
         case 'cost.isExpensive':
         case 'cost.general': {
-            const band = COST_BAND[event.costBand];
-            if (!band) return { text: `I don't have a cost classification for ${name} yet.`, sourceType: DERIVED, missing: true };
-            const lead = intent === 'cost.isExpensive'
-                ? pick([`${name} is not one of the expensive events.`, `${name} sits on the affordable side.`], seed)
-                : '';
-            const body = `TSA does not publish a single fixed project price for ${name}. TSA Hub classifies it as ${band} based on typical materials and entry costs.`;
-            const cheap = ['0-25', '25-75'].includes(event.costBand);
-            if (intent === 'cost.isExpensive' && !cheap) {
-                return ok(`TSA Hub classifies ${name} as ${band}, so budget for it early. TSA does not publish one fixed project price.`, DERIVED);
+            const variants = COST_NATURAL[event.costBand];
+            if (!variants) return { text: pick(["I don't have cost info for " + name + " yet.", "No cost classification is available for " + name + " right now."], s), sourceType: DERIVED, missing: true };
+            const desc = pick(variants, s);
+            if (intent === 'cost.isExpensive') {
+                return ok(pick([
+                    `${name} is ${desc}. TSA doesn't publish a fixed price, but TSA Hub places it in that range based on typical materials.`,
+                    `Budget-wise, ${name} is ${desc}. That's TSA Hub's classification, not an official TSA number.`,
+                ], s), DERIVED);
             }
-            return ok(intent === 'cost.isExpensive' ? `${lead} ${body}` : body, DERIVED);
+            return ok(pick([
+                `TSA doesn't publish a single project price for ${name}. Based on typical materials, TSA Hub classifies it as ${desc}.`,
+                `${name} is ${desc}. That's a TSA Hub estimate, not an official TSA figure.`,
+            ], s), DERIVED);
         }
 
         case 'time.general': {
-            const band = TIME_BAND[event.timeBand];
-            if (!band) return { text: `I don't have a time commitment on file for ${name}.`, sourceType: DERIVED, missing: true };
+            const variants = TIME_NATURAL[event.timeBand];
+            if (!variants) return { text: "I don't have time commitment info for " + name + ".", sourceType: DERIVED, missing: true };
             return ok(pick([
-                `TSA Hub classifies ${name} as ${band}.`,
-                `Based on the work involved, TSA Hub rates ${name} as ${band}.`,
-            ], seed + intent) + detailLine(event, style), DERIVED);
+                `Expect ${pick(variants, s)}. That's TSA Hub's classification based on the typical workload.`,
+                `${name} is ${pick(variants, s + '2')}. TSA Hub's estimate, not an official number.`,
+            ], s), DERIVED);
         }
 
         case 'difficulty.general': {
-            const band = DIFF_BAND[event.difficulty];
-            if (!band) return { text: `I don't have a difficulty classification for ${name} yet.`, sourceType: DERIVED, missing: true };
+            const variants = DIFF_NATURAL[event.difficulty];
+            if (!variants) return { text: "I don't have a difficulty classification for " + name + " yet.", sourceType: DERIVED, missing: true };
             return ok(pick([
-                `TSA Hub classifies ${name} as ${band} based on the work involved.`,
-                `On TSA Hub's scale, ${name} is ${band}.`,
-            ], seed + intent) + detailLine(event, style), DERIVED);
+                `${name} is ${pick(variants, s)}. That's TSA Hub's assessment, not an official TSA rating.`,
+                `On TSA Hub's scale, ${name} is ${pick(variants, s + '2')}.`,
+            ], s), DERIVED);
         }
 
         case 'overview.general': {
             if (isMissing(event.overview)) {
-                const fallback = event.category
-                    ? `${name} is a ${event.division === 'HS' ? 'High School' : 'Middle School'} event in the ${event.category} category. I don't have a full description on file yet.`
-                    : `I don't have a description on file for ${name} yet.`;
-                return { text: fallback, sourceType: OFFICIAL, missing: true };
+                const div = event.division === 'HS' ? 'High School' : 'Middle School';
+                return { text: event.category ? `${name} is a ${div} event in the ${event.category} category. I don't have a full description yet.` : `I don't have a description for ${name} yet.`, sourceType: OFFICIAL, missing: true };
             }
-            if (style === 'short') {
-                const first = String(event.overview).split(/(?<=\.)\s/)[0];
-                return ok(first, OFFICIAL);
-            }
-            const head = `${name} is a ${event.division === 'HS' ? 'High School' : 'Middle School'} event in the ${event.category || 'TSA'} category.`;
-            const team = teamSentence(event);
-            const tail = style === 'detailed' && team ? ` It ${team}.` : '';
-            return ok(`${head} ${event.overview}${tail}`, OFFICIAL);
+            if (style === 'short') return ok(String(event.overview).split(/(?<=\.)\s/)[0], OFFICIAL);
+            const div = event.division === 'HS' ? 'High School' : 'Middle School';
+            return ok(`${name} is a ${div} event in the ${event.category || 'TSA'} category. ${event.overview}`, OFFICIAL);
         }
 
-        case 'theme.general': {
-            if (isMissing(event.theme)) return { text: `No annual theme is listed for ${name} in my data.`, sourceType: OFFICIAL, missing: true };
-            return ok(`This season's theme for ${name}: ${event.theme}`, OFFICIAL, { season: event.season });
-        }
+        case 'theme.general':
+            if (isMissing(event.theme)) return { text: pick(["No annual theme is listed for " + name + " in my data.", name + " doesn't have an annual theme listed right now."], s), sourceType: OFFICIAL, missing: true };
+            return ok(`This season's theme for ${name}: ${event.theme}.`, OFFICIAL, { season: event.season });
 
         case 'category.general':
-            if (isMissing(event.category)) return { text: `I don't have a category on file for ${name}.`, sourceType: OFFICIAL, missing: true };
+            if (isMissing(event.category)) return { text: "I don't have a category on file for " + name + ".", sourceType: OFFICIAL, missing: true };
             return ok(`${name} is in the ${event.category} category.`, OFFICIAL);
 
         case 'division.general':
             return ok(`${name} is offered in the ${event.division === 'HS' ? 'High School' : 'Middle School'} division.`, OFFICIAL);
 
         case 'career.general': {
-            const careers = [...new Set(Object.entries(event.careers || {})
-                .sort((a, b) => b[1] - a[1])
-                .map(([k]) => CAREER_LABELS[k] || k))];
-            if (!careers.length) return { text: `I don't have career tags for ${name} yet.`, sourceType: DERIVED, missing: true };
+            const careers = [...new Set(Object.entries(event.careers || {}).sort((a, b) => b[1] - a[1]).map(([k]) => CAREER_LABELS[k] || k))];
+            if (!careers.length) return { text: "I don't have career tags for " + name + " yet.", sourceType: DERIVED, missing: true };
             const list = careers.slice(0, style === 'short' ? 2 : 4).join(', ');
-            return ok(`TSA Hub links ${name} to careers in ${list}.`, DERIVED);
+            return ok(pick([
+                `${name} connects well with careers in ${list}.`,
+                `The skills in ${name} are especially relevant if you're interested in ${list}.`,
+                `TSA Hub links ${name} to career areas like ${list}.`,
+            ], s), DERIVED);
         }
 
         case 'eligibility.general':
-            if (isMissing(el.text)) return { text: `I don't have the official eligibility wording for ${name}.`, sourceType: OFFICIAL, missing: true };
+            if (isMissing(el.text)) return { text: "I don't have the official eligibility wording for " + name + ".", sourceType: OFFICIAL, missing: true };
             return ok(`Official eligibility for ${name}: ${el.text}.`, OFFICIAL);
 
         case 'preconference.general': {
             const pre = preconferenceFor(event);
-            if (!pre.known) return { text: `I don't have preconference submission data loaded for ${name}.`, sourceType: OFFICIAL, missing: true };
-            if (!pre.items.length) return ok(`${name} has no preconference submission listed.`, OFFICIAL);
+            if (!pre.known) return { text: "I don't have preconference submission data for " + name + ".", sourceType: OFFICIAL, missing: true };
+            if (!pre.items.length) return ok(pick([name + " has no preconference submission listed.", name + " doesn't require a preconference submission."], s), OFFICIAL);
             return ok(`${name} preconference submission: ${pre.items.join(' + ')}.`, OFFICIAL);
         }
 
         case 'advisor.general': {
             const adv = advisorApprovalFor(event);
-            if (!adv.known) return { text: `I don't have state advisor approval data loaded for ${name}.`, sourceType: OFFICIAL, missing: true };
+            if (!adv.known) return { text: "I don't have state advisor approval data for " + name + ".", sourceType: OFFICIAL, missing: true };
             return ok(adv.required
-                ? `${name} requires state advisor approval before you register.`
-                : `${name} does not require state advisor approval.`, OFFICIAL);
+                ? pick([`Yes, ${name} requires state advisor approval before you register.`, `You'll need your state advisor's approval for ${name}.`], s)
+                : pick([`${name} doesn't require state advisor approval.`, `No advisor approval needed for ${name}.`], s), OFFICIAL);
         }
 
         case 'material.general':
-            if (isMissing(event.materials)) return { text: `I don't have a materials list for ${name}.`, sourceType: OFFICIAL, missing: true };
+            if (isMissing(event.materials)) return { text: "I don't have a materials list for " + name + ".", sourceType: OFFICIAL, missing: true };
             return ok(`${name} materials: ${event.materials}.`, OFFICIAL);
 
         default:
@@ -263,7 +270,6 @@ export function answerEventIntent(event, intent, { style = 'normal', seed = '' }
     }
 }
 
-// Short phrase describing what a student actually does, from projectType.
 export function workPhrase(event) {
     const types = Array.isArray(event?.projectType) ? event.projectType : [];
     const labels = types.map((t) => WORK_LABEL[t]).filter(Boolean);
@@ -272,4 +278,4 @@ export function workPhrase(event) {
     return `${labels.slice(0, -1).join(', ')} and ${labels[labels.length - 1]}`;
 }
 
-export { CAREER_LABELS, COST_BAND, TIME_BAND, DIFF_BAND, fmtSize, parseRange };
+export { CAREER_LABELS, fmtSize, parseRange };

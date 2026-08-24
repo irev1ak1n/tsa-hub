@@ -9,12 +9,25 @@ import { fallback } from './resolvers/fallback.js';
 import { answerDeadline } from './resolvers/deadlines.js';
 import { answerRule } from './resolvers/rules.js';
 import { answerConference } from './resolvers/conference.js';
+import { answerState } from './resolvers/state.js';
+import { answerGeneral } from './resolvers/general.js';
+import { STATE_TSA } from '../../data/stateTsa.js';
 import { followupsFor } from './suggestions/followups.js';
 import { seasonInQuestion, freshnessWarning } from './guards/dataGuards.js';
 import { createState, resetState } from './conversation/state.js';
 
 // Confidence thresholds. Above ANSWER we respond, between CLARIFY and ANSWER we
 // ask one short question, below CLARIFY we fall back.
+
+// Detect a US state name in a message. Returns the canonical name or null.
+function detectStateName(text) {
+    const t = (text || '').toLowerCase();
+    for (const name of Object.keys(STATE_TSA)) {
+        if (t.includes(name.toLowerCase())) return name;
+    }
+    return null;
+}
+
 const ANSWER = 0.62;
 const CLARIFY = 0.4;
 
@@ -26,7 +39,7 @@ const ALWAYS_SMALLTALK = new Set([
     'capabilities', 'limitations', 'source', 'notsure', 'confusion', 'help',
 ]);
 
-const UNBUILT_DOMAINS = new Set(['state', 'getting-started']);
+const UNBUILT_DOMAINS = new Set([]);
 
 let DEBUG = false;
 export function setDebug(on) { DEBUG = !!on; }
@@ -65,6 +78,23 @@ export function processMessage(input, prevState) {
     if (division) state.activeDivision = division;
     const resolved = resolveEvents(text, { activeDivision: state.activeDivision });
     debug.entities = resolved.events.map((e) => e.id);
+
+    // State name detection — if the message mentions a US state by name and
+    // matches a state intent, answer immediately without needing domain signals.
+    const mentionedState = detectStateName(text);
+    if (mentionedState) state.activeState = mentionedState;
+    const stateIntent = detectIntent(norm, { eventCount: 0, state }).intent;
+    if (stateIntent && stateIntent.startsWith('state.') && (mentionedState || state.activeState)) {
+        const sres = answerState(stateIntent, { stateName: state.activeState });
+        if (sres && !sres.needState) {
+            state.activeDomain = 'state';
+            state.lastIntent = stateIntent;
+            state.lastAnswerType = sres.missing ? 'missing' : 'fact';
+            debug.resolver = 'state-early';
+            return finish(reply(sres.text, { domain: 'state', intent: stateIntent, confidence: 0.9, sourceType: sres.sourceType, suggestions: ['Who is my state advisor?', 'What is my state website?', 'State officer team'] }), state, debug);
+        }
+    }
+
 
     // Small talk is checked before domain routing so short messages such as
     // "thanks" are not inherited into the previous TSA domain.
@@ -120,6 +150,16 @@ export function processMessage(input, prevState) {
     let intent = intentResult.intent;
     let confidence = intentResult.confidence;
 
+    // If the user is in a state conversation and a state intent is in alternatives, prefer it.
+    if (state.activeDomain === 'state' && state.activeState && intentResult.alternatives) {
+        const stateAlt = intentResult.alternatives.find((a) => a.startsWith('state.'));
+        if (stateAlt) {
+            intent = stateAlt;
+            confidence = 0.85;
+            debug.inheritedContext = 'state-domain-preference';
+        }
+    }
+
     // "What about Software Development?" carries an event but no topic of its
     // own, so it inherits whatever the user last asked.
     const eventOnly = intentResult.eventOnly && resolved.events.length > 0;
@@ -153,6 +193,12 @@ export function processMessage(input, prevState) {
             const eventId = state.activeEvent?.id || null;
             const res = answerRule(norm.tokens, { eventId, seed: text });
             if (res) { state.activeDomain = 'rules'; debug.resolver = 'rules-fallback'; return finish(reply(res.text, { domain: 'rules', sourceType: res.sourceType, source: res.source }), state, debug); }
+        }
+        if (domain.domain === 'state') {
+            const mentioned = detectStateName(text);
+            if (mentioned) state.activeState = mentioned;
+            const res = answerState('state.general', { stateName: state.activeState });
+            if (res) { state.activeDomain = 'state'; debug.resolver = 'state-fallback'; return finish(reply(res.text, { domain: 'state', sourceType: res.sourceType }), state, debug); }
         }
         if (UNBUILT_DOMAINS.has(domain.domain) && domain.confidence >= 0.6) {
             debug.resolver = 'unsupported-domain';
@@ -201,6 +247,36 @@ export function processMessage(input, prevState) {
             debug.resolver = 'rules'; return finish(reply(res.text, { domain: 'rules', intent, confidence, sourceType: res.sourceType, source: res.source, suggestions: ['Can we use AI?', 'What is the dress code?', 'What about citations?'] }), state, debug);
         }
         debug.resolver = 'rules-miss'; return finish(fallback('tsa-unsupported', { seed: text }), state, debug);
+    }
+
+    // General/getting-started intents.
+    if (intent && intent.startsWith('general.')) {
+        const res = answerGeneral(intent, norm.tokens, text);
+        if (res) {
+            state.activeDomain = 'general';
+            state.lastIntent = intent;
+            state.lastAnswerType = 'fact';
+            debug.resolver = 'general';
+            return finish(reply(res.text, { domain: 'general', intent, confidence, sourceType: res.sourceType, suggestions: ['What is TSA?', 'How do competitions work?', 'How do I get started?'] }), state, debug);
+        }
+    }
+
+    // State intents.
+    if (intent && intent.startsWith('state.')) {
+        // Try to detect a state name in the message, fall back to conversation state.
+        const mentioned = detectStateName(text);
+        if (mentioned) state.activeState = mentioned;
+        const res = answerState(intent, { stateName: state.activeState });
+        if (res) {
+            state.activeDomain = 'state';
+            state.lastIntent = intent;
+            state.lastAnswerType = res.missing ? 'missing' : 'fact';
+            if (res.needState) {
+                state.pendingClarification = { need: 'state', intent };
+            }
+            debug.resolver = 'state';
+            return finish(reply(res.text, { domain: 'state', intent, confidence, sourceType: res.sourceType, suggestions: ['Who is my state advisor?', 'What is my state website?', 'State officer team'] }), state, debug);
+        }
     }
 
     if (REQUIRES_TWO_EVENTS.has(intent)) {
@@ -279,6 +355,36 @@ function answerWithIntent(intent, state, norm, rawText, confidence = 0.8) {
             debug.resolver = 'rules'; return finish(reply(res.text, { domain: 'rules', intent, confidence, sourceType: res.sourceType, source: res.source, suggestions: ['Can we use AI?', 'What is the dress code?', 'What about citations?'] }), state, debug);
         }
         return fallback('tsa-unsupported', { seed: rawText });
+    }
+
+    // General/getting-started intents.
+    if (intent && intent.startsWith('general.')) {
+        const res = answerGeneral(intent, norm.tokens, text);
+        if (res) {
+            state.activeDomain = 'general';
+            state.lastIntent = intent;
+            state.lastAnswerType = 'fact';
+            debug.resolver = 'general';
+            return finish(reply(res.text, { domain: 'general', intent, confidence, sourceType: res.sourceType, suggestions: ['What is TSA?', 'How do competitions work?', 'How do I get started?'] }), state, debug);
+        }
+    }
+
+    // State intents.
+    if (intent && intent.startsWith('state.')) {
+        // Try to detect a state name in the message, fall back to conversation state.
+        const mentioned = detectStateName(text);
+        if (mentioned) state.activeState = mentioned;
+        const res = answerState(intent, { stateName: state.activeState });
+        if (res) {
+            state.activeDomain = 'state';
+            state.lastIntent = intent;
+            state.lastAnswerType = res.missing ? 'missing' : 'fact';
+            if (res.needState) {
+                state.pendingClarification = { need: 'state', intent };
+            }
+            debug.resolver = 'state';
+            return finish(reply(res.text, { domain: 'state', intent, confidence, sourceType: res.sourceType, suggestions: ['Who is my state advisor?', 'What is my state website?', 'State officer team'] }), state, debug);
+        }
     }
 
     if (REQUIRES_TWO_EVENTS.has(intent)) {

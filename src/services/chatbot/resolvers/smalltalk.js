@@ -1,58 +1,44 @@
 import { pick } from '../core/variation.js';
 
-// Conversational responses. Some entries are control intents that the engine
-// acts on rather than answering directly.
-
 const GREETING = [
-    'Hey. What would you like to know about TSA?',
-    'Hi. Ask me about events, rules, deadlines, or getting started.',
-    'Hello. What can I help you find?',
+    'Hey! What do you want to know about TSA?',
+    'Hi! I can help with events, rules, deadlines, and getting started.',
+    'Hey! Ask me anything about TSA events or requirements.',
+    'Hello! What can I help you find?',
 ];
-
-const THANKS_GENERIC = ['Anytime.', 'Happy to help.', 'Of course.'];
-
-const BYE = ['See you. Good luck with your events.', 'Take care.'];
-
-const HOW_ARE_YOU = ['Doing fine, thanks. What can I help you with?'];
-
+const THANKS_GENERIC = [
+    'Of course. Let me know if you have more questions.',
+    'Anytime. Want to check another requirement?',
+    'No problem. I can also help compare events or check rules.',
+    'Happy to help.',
+];
+const BYE = ['See you. Good luck with your events!', 'Take care! Come back anytime.', 'Good luck this season!'];
+const HOW_ARE_YOU = ['Doing fine! What can I help you with?', 'All good here. What TSA question do you have?'];
 const IDENTITY = [
-    "I'm the TSA Hub Assistant. I answer TSA questions using TSA Hub's structured event data and official TSA resources.",
+    "I'm the TSA Hub Assistant. I use TSA Hub's structured data and official TSA resources to answer questions. I'm not a generative AI, so I won't make anything up.",
 ];
-
 const CAPABILITIES = [
-    'I can help with competitive events, requirements, event comparisons, rules, deadlines, conferences, careers connected to events, and getting started with TSA.',
+    'I can help with competitive events, team sizes, costs, deadlines, rules, conference info, careers connected to events, state TSA info, and getting started.',
+    'I cover events, requirements, comparisons, rules, deadlines, conference details, state info, and careers. Ask me anything in those areas.',
 ];
-
 const LIMITATIONS = [
-    "I only cover TSA. I won't guess at anything I don't have data for, and I'll tell you when information is missing or might be out of date.",
+    "I only cover TSA topics. I won't guess at anything I don't have data for, and I'll tell you when something is missing or might be out of date.",
 ];
-
 const SOURCE = [
-    "My answers come from TSA Hub's event data and official TSA resources loaded into the app. When something is a TSA Hub classification rather than an official rule, I say so.",
+    "My answers come from TSA Hub's event database and official TSA resources. When something is a TSA Hub classification rather than an official rule, I say so.",
 ];
-
 const ARE_YOU_AI = [
-    "I'm not a generative AI. I'm a rule based assistant that reads TSA Hub's structured data, so my answers stay consistent and I don't invent facts.",
+    "I'm not a generative AI. I'm a rule-based assistant that reads TSA Hub's structured data, so my answers stay consistent and I don't invent facts.",
 ];
-
 const WHO_BUILT = ['I was built as part of TSA Hub to help students navigate TSA competitions.'];
-
-const CONFUSION = [
-    "Let me try again. Which part should I clarify?",
-];
-
-const HELP = [
-    'Ask me about an event, a requirement, a deadline, or a comparison. For example, "Can I compete alone in Webmaster?"',
-];
-
-const NOT_SURE = [
-    "I only state what's in the data. If I said something is a TSA Hub classification, that's our rating, not an official TSA ruling.",
-];
-
+const CONFUSION = ['No worries. Which part should I explain differently?', 'Sure, I can try to make that clearer. What part didn\'t make sense?'];
+const HELP = ['You can ask about an event, a requirement, a deadline, or compare two events. For example, "Can I compete alone in Webmaster?"'];
+const NOT_SURE = ["I only state what's in the data. If I said it's a TSA Hub classification, that's our rating, not an official TSA judgment."];
 const OFF_TOPIC = [
     "I'm focused on TSA, but I can help with events, rules, deadlines, conferences, or getting started.",
-    "That's outside what I cover. I can help with TSA events, requirements, deadlines, or careers though.",
-    "I stick to TSA questions. Ask me about an event, a rule, or a deadline and I'm all yours.",
+    "That's outside what I cover, but if it's about TSA, I'll do my best.",
+    "I stick to TSA questions. Want help with an event or requirement instead?",
+    "I can't help with that one, but I'm all yours for TSA questions.",
 ];
 
 const RULES = [
@@ -71,18 +57,14 @@ const RULES = [
     { intent: 'areyouai', re: /(are you (an )?(ai|bot|robot|human|real)|chatgpt|gpt|language model)/, variants: ARE_YOU_AI },
     { intent: 'whobuilt', re: /(who (made|built|created) you|who are you built by)/, variants: WHO_BUILT },
     { intent: 'identity', re: /(who are you|what are you|your name)/, variants: IDENTITY },
-    { intent: 'capabilities', re: /^(what can you (do|help)|how can you help|what do you know about|what are you able)/, variants: CAPABILITIES },
+    { intent: 'capabilities', re: /^(what can you (do|help)|how can you help|what do you know about|what are you able|what can you help me with)[?\s.]*$/, variants: CAPABILITIES },
     { intent: 'limitations', re: /(what can(no|')t you|your limits|limitations)/, variants: LIMITATIONS },
     { intent: 'source', re: /(where did you get|what('| i)s your source|how do you know|source for that|according to)/, variants: SOURCE },
     { intent: 'notsure', re: /(are you sure|is that right|are you certain|really\?)/, variants: NOT_SURE },
     { intent: 'confusion', re: /(i (don'?t|do not) (understand|get it)|confused|makes no sense|huh\?)/, variants: CONFUSION },
-    { intent: 'help', re: /^(help|what now|what should i ask)[\s?!.]*$/, variants: HELP },
+    { intent: 'help', re: /^(help|what now|what should i ask)[?\s.]*$/, variants: HELP },
 ];
 
-/**
- * Detect small talk or a control intent.
- * Returns { intent, control, text } or null.
- */
 export function detectSmallTalk(norm, state) {
     const text = norm.rawJoined;
     if (!text) return null;
@@ -98,17 +80,17 @@ export function detectSmallTalk(norm, state) {
     return null;
 }
 
-// Light context awareness, used sparingly so it does not feel canned.
 function contextualize(intent, text, state) {
     if (intent === 'thanks' && state?.activeEvent?.name) {
-        return `${text} You can ask me anything else about ${state.activeEvent.name}.`;
+        return pick([
+            `${text} You can ask me anything else about ${state.activeEvent.name}.`,
+            `${text} Want to know something else about ${state.activeEvent.name}?`,
+        ], state.activeEvent.name);
     }
-    if (intent === 'thanks' && state?.activeDomain === 'rules') {
-        return `${text} I can also help you find another rule or requirement.`;
-    }
+    if (intent === 'thanks' && state?.activeDomain === 'rules') return `${text} I can also help you find another rule.`;
+    if (intent === 'thanks' && state?.activeDomain === 'deadlines') return `${text} I can also check other dates for you.`;
+    if (intent === 'thanks' && state?.activeDomain === 'state') return `${text} Want to check another state detail?`;
     return text;
 }
 
-export function offTopicReply(seed) {
-    return pick(OFF_TOPIC, seed);
-}
+export function offTopicReply(seed) { return pick(OFF_TOPIC, seed); }

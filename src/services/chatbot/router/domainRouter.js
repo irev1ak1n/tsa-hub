@@ -9,11 +9,11 @@ const DOMAIN_SIGNALS = {
         'preconference', 'submission', 'advisor', 'eligibility', 'compare'],
     rules: ['rule', 'requirement', 'dress', 'code', 'penalty', 'penalties', 'judging',
         'judge', 'judges', 'citation', 'citations', 'cite', 'prohibited', 'allowed', 'appeal', 'ai', 'artificial', 'citation', 'citations', 'cite', 'copyright'],
-    deadlines: ['deadline', 'due', 'register', 'registration', 'submit', 'submission'],
+    deadlines: ['deadline', 'due', 'register', 'registration', 'submit', 'submission', 'state', 'states', 'regionals', 'nationals'],
     conference: ['conference', 'nationals', 'regionals', 'store', 'shuttle', 'transport', 'session', 'badge', 'pin'],
     careers: ['career', 'major', 'college', 'profession'],
-    state: ['state', 'chapter', 'delegation', 'officer', 'advisor'],
-    'getting-started': ['start', 'started', 'begin', 'join'],
+    state: ['chapter', 'delegation', 'officer', 'advisor'],
+    'getting-started': ['start', 'started', 'begin', 'join', 'scholarship', 'achievement', 'leadership', 'award', 'awards', 'history', 'mission', 'tsa'],
 };
 
 // Topics we will not attempt, used only to phrase a friendly redirect.
