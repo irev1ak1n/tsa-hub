@@ -10,16 +10,16 @@ export const CALENDAR_SYNC = {
         "start": "2025-01-01",
         "end": "2030-12-31"
     },
-    "lastSyncAt": "2026-08-25T02:46:24.203Z",
+    "lastSyncAt": "2026-08-25T20:18:52.467Z",
     "countsByYear": {
         "2025": 95,
-        "2026": 95,
-        "2027": 6,
-        "2028": 0,
-        "2029": 0,
-        "2030": 0
+        "2026": 96,
+        "2027": 8,
+        "2028": 2,
+        "2029": 2,
+        "2030": 2
     },
-    "totalEvents": 196
+    "totalEvents": 205
 };
 
 export const CALENDAR_EVENTS = [
@@ -2079,7 +2079,7 @@ export const CALENDAR_EVENTS = [
         }
     },
     {
-        "id": "20fb101b-a923-4894-af2d-80e68a588475",
+        "id": "20fb101b-a923-4894-af2d-80e68a588475:2026-05-01",
         "title": "National TSA awards, recognitions, and scholarships deadline",
         "startDate": "2026-05-01",
         "endDate": "2026-05-01",
@@ -2499,7 +2499,7 @@ export const CALENDAR_EVENTS = [
         }
     },
     {
-        "id": "51510d98-aabc-4915-a51c-cb6cde1158bf",
+        "id": "51510d98-aabc-4915-a51c-cb6cde1158bf:2026-06-01",
         "title": "American Red Cross contributions due",
         "startDate": "2026-06-01",
         "endDate": "2026-06-01",
@@ -2799,6 +2799,21 @@ export const CALENDAR_EVENTS = [
         }
     },
     {
+        "id": "45ab1208-1356-4783-a058-97e198348291",
+        "title": "TEAMS Registration",
+        "startDate": "2026-08-25",
+        "endDate": "2026-08-25",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/08/25/default-calendar/teams-registration",
+            "sourceType": "calendar"
+        }
+    },
+    {
         "id": "53b0ab2b-faee-4d6e-bac8-0e8fe53a2334",
         "title": "National TSA's 48th Anniversary",
         "startDate": "2026-09-14",
@@ -2949,6 +2964,36 @@ export const CALENDAR_EVENTS = [
         }
     },
     {
+        "id": "20fb101b-a923-4894-af2d-80e68a588475:2027-05-01",
+        "title": "National TSA awards, recognitions, and scholarships deadline",
+        "startDate": "2027-05-01",
+        "endDate": "2027-05-01",
+        "allDay": true,
+        "category": "event",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/05/01/conference-calendar/national-tsa-awards--recognitions--and-scholarships-deadline",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "51510d98-aabc-4915-a51c-cb6cde1158bf:2027-06-01",
+        "title": "American Red Cross contributions due",
+        "startDate": "2027-06-01",
+        "endDate": "2027-06-01",
+        "allDay": true,
+        "category": "important-date",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/06/01/default-calendar/american-cancer-society-contributions-due",
+            "sourceType": "calendar"
+        }
+    },
+    {
         "id": "bb675dcc-3a6a-4565-85a5-49f64e59d3ca",
         "title": "2027 National TSA Conference",
         "startDate": "2027-06-23",
@@ -2960,6 +3005,96 @@ export const CALENDAR_EVENTS = [
         "source": {
             "provider": "National TSA",
             "url": "https://tsaweb.org/events/2027/06/23/default-calendar/2025-national-tsa-conference",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "20fb101b-a923-4894-af2d-80e68a588475:2028-05-01",
+        "title": "National TSA awards, recognitions, and scholarships deadline",
+        "startDate": "2028-05-01",
+        "endDate": "2028-05-01",
+        "allDay": true,
+        "category": "event",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/05/01/conference-calendar/national-tsa-awards--recognitions--and-scholarships-deadline",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "51510d98-aabc-4915-a51c-cb6cde1158bf:2028-06-01",
+        "title": "American Red Cross contributions due",
+        "startDate": "2028-06-01",
+        "endDate": "2028-06-01",
+        "allDay": true,
+        "category": "important-date",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/06/01/default-calendar/american-cancer-society-contributions-due",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "20fb101b-a923-4894-af2d-80e68a588475:2029-05-01",
+        "title": "National TSA awards, recognitions, and scholarships deadline",
+        "startDate": "2029-05-01",
+        "endDate": "2029-05-01",
+        "allDay": true,
+        "category": "event",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/05/01/conference-calendar/national-tsa-awards--recognitions--and-scholarships-deadline",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "51510d98-aabc-4915-a51c-cb6cde1158bf:2029-06-01",
+        "title": "American Red Cross contributions due",
+        "startDate": "2029-06-01",
+        "endDate": "2029-06-01",
+        "allDay": true,
+        "category": "important-date",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/06/01/default-calendar/american-cancer-society-contributions-due",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "20fb101b-a923-4894-af2d-80e68a588475:2030-05-01",
+        "title": "National TSA awards, recognitions, and scholarships deadline",
+        "startDate": "2030-05-01",
+        "endDate": "2030-05-01",
+        "allDay": true,
+        "category": "event",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/05/01/conference-calendar/national-tsa-awards--recognitions--and-scholarships-deadline",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "51510d98-aabc-4915-a51c-cb6cde1158bf:2030-06-01",
+        "title": "American Red Cross contributions due",
+        "startDate": "2030-06-01",
+        "endDate": "2030-06-01",
+        "allDay": true,
+        "category": "important-date",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/06/01/default-calendar/american-cancer-society-contributions-due",
             "sourceType": "calendar"
         }
     }
