@@ -127,13 +127,32 @@
 .cal-events { display: flex; flex-direction: column; gap: 8px; }
 .cal-event {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 12px;
     padding: 12px 14px;
     border-radius: var(--radius);
     background: var(--surface);
     border: 1px solid var(--line);
+    font-family: inherit;
+    transition: background 0.12s ease, border-color 0.12s ease;
 }
+.cal-event:hover { background: var(--surface-2); border-color: color-mix(in srgb, var(--ig-blue) 35%, var(--line)); }
+.cal-event:focus-visible { outline: 2px solid var(--ig-blue); outline-offset: 2px; }
+
+/* Status badges */
+.cal-badge {
+    flex: 0 0 auto;
+    font-family: var(--font-system);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    padding: 3px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+.cal-badge.is-today { background: color-mix(in srgb, var(--ig-blue) 25%, transparent); color: var(--ig-blue); }
+.cal-badge.is-ongoing { background: color-mix(in srgb, #29c46a 22%, transparent); color: #29c46a; }
+.cal-badge.is-upcoming { background: var(--surface-2); color: var(--muted); }
 .cal-event-time {
     flex: 0 0 auto;
     font-family: var(--font-system);
