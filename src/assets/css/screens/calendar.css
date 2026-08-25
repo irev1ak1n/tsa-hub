@@ -7,6 +7,35 @@
 .cal-page { position: relative; }
 .cal-h1 { color: #ffffff; margin: 0 0 4px; }
 
+/* Month view stretches the grid to use the available viewport height
+   instead of sitting compressed above a big block of empty page — every
+   other view keeps its natural, content-sized height. The offsets below
+   are an approximation of the chrome above/below the grid (nav rail
+   padding, mobile tab bar, safe-area insets); they don't need to be exact,
+   just close enough that the grid's bottom lands near the usable viewport
+   edge instead of stopping halfway down the page. */
+.cal-page--fill {
+    display: flex;
+    flex-direction: column;
+    /* Only the chrome OUTSIDE .cal-page needs to be subtracted here — the
+       title/switcher/nav above the grid are themselves inside this flex
+       column, so they're already accounted for by taking their own natural
+       space before .cal-month-area's flex:1 claims whatever's left. This is
+       just .content's own top/bottom padding on desktop. */
+    min-height: calc(100dvh - 90px);
+}
+@media (max-width: 919.5px) {
+    /* Mobile also reserves space for the fixed bottom tab bar. */
+    .cal-page--fill { min-height: calc(100dvh - 125px); }
+}
+/* min-height: 0 on every link of this flex chain overrides the default
+   min-height:auto flex items get, which otherwise clamps each level to its
+   own content size and silently blocks flex-grow from ever handing it the
+   container's free space. */
+.cal-month-area { flex: 1; display: flex; flex-direction: column; min-height: 320px; }
+.cal-month-wrap { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.cal-month-wrap .cal-month { flex: 1; min-height: 0; }
+
 /* View switcher — thin bordered strip, not a heavy filled block */
 .cal-view-switcher {
     display: flex;
@@ -112,6 +141,7 @@
 .cal-bar-title { overflow: hidden; text-overflow: ellipsis; }
 
 .cal-week-row-overflow {
+    position: absolute; left: 0; right: 0;
     display: grid; grid-template-columns: repeat(7, 1fr);
     padding: 0 3px;
 }

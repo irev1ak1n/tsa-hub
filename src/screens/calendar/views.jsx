@@ -63,7 +63,15 @@ function layoutWeekRow(rowDates, items) {
 
 export function MonthView({ year, month, today, selected, items, itemsByDate, firstDay, onSelectDay, onOpenItem }) {
     const grid = useMemo(() => monthMatrix(year, month, firstDay), [year, month, firstDay]);
-    const weeks = useMemo(() => Array.from({ length: 6 }, (_, i) => grid.slice(i * 7, i * 7 + 7)), [grid]);
+    // Most months need 6 rows, but some fit entirely in 5 — drop a trailing
+    // row that's 100% outside the target month so those months get taller,
+    // more evenly-spaced rows instead of a wasted blank sixth row.
+    const weeks = useMemo(() => {
+        const all = Array.from({ length: 6 }, (_, i) => grid.slice(i * 7, i * 7 + 7));
+        const last = all[all.length - 1];
+        if (last.every((d) => d.getMonth() !== month)) return all.slice(0, 5);
+        return all;
+    }, [grid, month]);
     const todayKey = ymd(today);
     const weekdays = weekdayLabels(firstDay);
 
@@ -74,7 +82,7 @@ export function MonthView({ year, month, today, selected, items, itemsByDate, fi
     }, [items, grid]);
 
     return (
-        <div>
+        <div className="cal-month-wrap">
             <div className="cal-grid cal-weekdays">
                 {weekdays.map((w) => <div key={w} className="cal-weekday">{w}</div>)}
             </div>
@@ -82,10 +90,10 @@ export function MonthView({ year, month, today, selected, items, itemsByDate, fi
                 {weeks.map((rowDates, wi) => {
                     const { segments, laneCount, overflowByCol } = layoutWeekRow(rowDates, visibleItems);
                     const hasOverflow = overflowByCol.some((n) => n > 0);
-                    const rowHeight = HEADER_H + (laneCount ? laneCount * (LANE_H + LANE_GAP) : 0) + (hasOverflow ? OVERFLOW_H : 0) + 6;
+                    const minRowHeight = HEADER_H + (laneCount ? laneCount * (LANE_H + LANE_GAP) : 0) + (hasOverflow ? OVERFLOW_H : 0) + 6;
 
                     return (
-                        <div key={wi} className="cal-week-row" style={{ minHeight: rowHeight }}>
+                        <div key={wi} className="cal-week-row" style={{ flex: 1, minHeight: minRowHeight }}>
                             <div className="cal-week-row-cells">
                                 {rowDates.map((d) => {
                                     const key = ymd(d);
@@ -132,7 +140,7 @@ export function MonthView({ year, month, today, selected, items, itemsByDate, fi
                             </div>
 
                             {hasOverflow && (
-                                <div className="cal-week-row-overflow">
+                                <div className="cal-week-row-overflow" style={{ top: HEADER_H + laneCount * (LANE_H + LANE_GAP) }}>
                                     {rowDates.map((d, i) => (
                                         <span key={i} className="cal-overflow-cell">
                                             {overflowByCol[i] > 0 && <button type="button" className="cal-more" onClick={() => onSelectDay(d)}>+{overflowByCol[i]}</button>}

@@ -123,7 +123,7 @@ export default function Calendar() {
     const selectedDayItems = selectedDate ? (itemsByDate[ymd(selectedDate)] || []) : [];
 
     return (
-        <div className="cal-page">
+        <div className={`cal-page ${viewMode === 'month' ? 'cal-page--fill' : ''}`}>
             <div className="section">
                 <div className="rs-eyebrow">Calendar</div>
                 <h1 className="cal-h1">{headerLabel}</h1>
@@ -180,17 +180,19 @@ export default function Calendar() {
             )}
 
             {viewMode === 'month' && (
-                <MonthView
-                    year={anchor.getFullYear()}
-                    month={anchor.getMonth()}
-                    today={today}
-                    selected={selectedDate && isSameMonth(selectedDate, anchor) ? selectedDate : null}
-                    items={mergedItems}
-                    itemsByDate={itemsByDate}
-                    firstDay={0}
-                    onSelectDay={openDayPanel}
-                    onOpenItem={openDetails}
-                />
+                <div className="cal-month-area">
+                    <MonthView
+                        year={anchor.getFullYear()}
+                        month={anchor.getMonth()}
+                        today={today}
+                        selected={selectedDate && isSameMonth(selectedDate, anchor) ? selectedDate : null}
+                        items={mergedItems}
+                        itemsByDate={itemsByDate}
+                        firstDay={0}
+                        onSelectDay={openDayPanel}
+                        onOpenItem={openDetails}
+                    />
+                </div>
             )}
 
             {viewMode === 'week' && (
