@@ -185,6 +185,7 @@ export default function Calendar() {
                     month={anchor.getMonth()}
                     today={today}
                     selected={selectedDate && isSameMonth(selectedDate, anchor) ? selectedDate : null}
+                    items={mergedItems}
                     itemsByDate={itemsByDate}
                     firstDay={0}
                     onSelectDay={openDayPanel}
@@ -214,9 +215,11 @@ export default function Calendar() {
                 />
             )}
 
-            <button type="button" className="cal-fab" onClick={() => openCreate()} aria-label="Add event or reminder">
-                <Icon name="plus" size={22} />
-            </button>
+            <div className="cal-fab-anchor">
+                <button type="button" className="cal-fab" onClick={() => openCreate()} aria-label="Add event or reminder">
+                    <Icon name="plus" size={22} />
+                </button>
+            </div>
 
             <DayPanel
                 date={selectedDate}

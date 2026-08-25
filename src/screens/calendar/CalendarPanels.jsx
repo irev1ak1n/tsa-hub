@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Icon } from '../../components/UI.jsx';
 import { formatTime, parseYmd, ymd } from '../../utils/date.js';
 import { KIND_LABEL } from '../../utils/calendarItems.js';
+import { DEFAULT_PERSONAL_COLOR, PRESET_EVENT_COLORS, resolveItemColor } from '../../utils/color.js';
 
 const WEEKDAYS_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -25,23 +26,7 @@ function formatDateRange(item) {
     return label;
 }
 
-// ── Compact chip shown inside day cells / lists ─────────────────────────
-export function ItemChip({ item, onClick, compact }) {
-    const kindClass = item.kind === 'official' ? 'is-official' : item.kind === 'personal-event' ? 'is-personal' : 'is-reminder';
-    return (
-        <button
-            type="button"
-            className={`cal-chip ${kindClass} ${item.completed ? 'is-completed' : ''}`}
-            onClick={(e) => { e.stopPropagation(); onClick(item); }}
-            title={item.title}
-        >
-            {item.kind === 'personal-reminder' && <Icon name="circle-check" size={11} />}
-            <span className="cal-chip-label">{compact ? item.title : `${!item.allDay && item.startTime ? formatTime(item.startTime) + ' ' : ''}${item.title}`}</span>
-        </button>
-    );
-}
-
-// ── Day detail panel ─────────────────────────────────────────────────────
+// ── Day detail panel — same modal shell as the rest of the app ──────────
 export function DayPanel({ date, items, onClose, onOpenItem, onAdd }) {
     if (!date) return null;
     const official = items.filter((i) => i.kind === 'official');
@@ -49,19 +34,19 @@ export function DayPanel({ date, items, onClose, onOpenItem, onAdd }) {
     const reminders = items.filter((i) => i.kind === 'personal-reminder');
 
     return (
-        <div className="cal-panel-backdrop" onClick={onClose}>
-            <div className="cal-panel" onClick={(e) => e.stopPropagation()}>
-                <div className="cal-panel-head">
+        <div className="rec-modal-backdrop" onClick={onClose}>
+            <div className="rec-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="rec-modal-head">
                     <div>
                         <div className="cal-panel-weekday">{WEEKDAYS_FULL[date.getDay()]}</div>
-                        <div className="cal-panel-date">{MONTHS[date.getMonth()]} {date.getDate()}, {date.getFullYear()}</div>
+                        <h3 className="rec-modal-title">{MONTHS[date.getMonth()]} {date.getDate()}, {date.getFullYear()}</h3>
                     </div>
                     <button className="rec-modal-close" onClick={onClose} aria-label="Close">×</button>
                 </div>
 
-                <div className="cal-panel-body">
+                <div className="rec-modal-body">
                     <button type="button" className="cal-add-btn" onClick={onAdd}>
-                        <Icon name="plus" size={16} /> Add for this day
+                        <Icon name="plus" size={14} /> Add for this day
                     </button>
 
                     {items.length === 0 && (
@@ -99,11 +84,11 @@ export function DayPanel({ date, items, onClose, onOpenItem, onAdd }) {
 }
 
 function ItemRow({ item, onClick }) {
-    const kindClass = item.kind === 'official' ? 'is-official' : item.kind === 'personal-event' ? 'is-personal' : 'is-reminder';
+    const { bg } = resolveItemColor(item);
     const timeLabel = item.allDay ? 'All day' : item.startTime ? `${formatTime(item.startTime)}${item.endTime ? ` – ${formatTime(item.endTime)}` : ''}` : '';
     return (
-        <button type="button" className={`cal-item-row ${kindClass} ${item.completed ? 'is-completed' : ''}`} onClick={onClick}>
-            <span className="cal-item-row-dot" />
+        <button type="button" className={`cal-item-row ${item.completed ? 'is-completed' : ''}`} onClick={onClick}>
+            <span className="cal-item-row-dot" style={{ background: bg }} />
             <span className="cal-item-row-text">
                 <span className="cal-item-row-title">{item.title}</span>
                 {timeLabel && <span className="cal-item-row-time">{timeLabel}</span>}
@@ -120,12 +105,16 @@ export function ItemDetailsModal({ item, onClose, onEdit, onDelete, onToggleComp
     if (!item) return null;
 
     const editable = item.kind !== 'official';
+    const { bg } = resolveItemColor(item);
 
     return (
         <div className="rec-modal-backdrop" onClick={onClose}>
             <div className="rec-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="rec-modal-head">
-                    <h3 className="rec-modal-title">{item.title}</h3>
+                    <h3 className="rec-modal-title">
+                        <span className="cal-title-dot" style={{ background: bg }} />
+                        {item.title}
+                    </h3>
                     <button className="rec-modal-close" onClick={onClose} aria-label="Close">×</button>
                 </div>
                 <div className="rec-modal-body">
@@ -217,11 +206,12 @@ function blankDraft(type, defaultDate, defaultStartTime) {
         allDay: type === 'reminder' ? false : !hasStartTime,
         startDate: defaultDate,
         endDate: defaultDate,
-        startTime: type === 'reminder' ? (defaultStartTime || '') : (defaultStartTime || ''),
+        startTime: defaultStartTime || '',
         endTime: hasStartTime ? addHour(defaultStartTime) : '',
         location: '',
         notes: '',
         completed: false,
+        color: DEFAULT_PERSONAL_COLOR,
     };
 }
 
@@ -237,7 +227,32 @@ function draftFromItem(raw) {
         location: raw.location || '',
         notes: raw.notes || '',
         completed: !!raw.completed,
+        color: raw.color || DEFAULT_PERSONAL_COLOR,
     };
+}
+
+function ColorPicker({ value, onChange }) {
+    return (
+        <div className="cal-field">
+            <span>Event color</span>
+            <div className="cal-color-row">
+                {PRESET_EVENT_COLORS.map((c) => (
+                    <button
+                        key={c.value}
+                        type="button"
+                        className={`cal-swatch ${value.toLowerCase() === c.value.toLowerCase() ? 'is-active' : ''}`}
+                        style={{ background: c.value }}
+                        onClick={() => onChange(c.value)}
+                        aria-label={c.label}
+                        title={c.label}
+                    />
+                ))}
+                <label className="cal-swatch cal-swatch-custom" style={{ background: value }} title="Custom color">
+                    <input type="color" value={value} onChange={(e) => onChange(e.target.value)} aria-label="Custom color" />
+                </label>
+            </div>
+        </div>
+    );
 }
 
 export function ItemEditorModal({ open, editing, defaultDate, defaultStartTime, defaultType, onSave, onCancel }) {
@@ -276,6 +291,7 @@ export function ItemEditorModal({ open, editing, defaultDate, defaultStartTime, 
             clean.allDay = !clean.startTime;
             clean.endDate = clean.startDate;
             clean.endTime = '';
+            delete clean.color;
         }
         onSave(clean);
     }
@@ -357,6 +373,10 @@ export function ItemEditorModal({ open, editing, defaultDate, defaultStartTime, 
                         <span>Notes (optional)</span>
                         <textarea rows={3} value={draft.notes} onChange={(e) => set({ notes: e.target.value })} />
                     </label>
+
+                    {draft.type === 'event' && (
+                        <ColorPicker value={draft.color} onChange={(color) => set({ color })} />
+                    )}
 
                     {editing && draft.type === 'reminder' && (
                         <label className="cal-field cal-field-row">
