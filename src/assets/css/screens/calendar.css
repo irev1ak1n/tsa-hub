@@ -79,6 +79,18 @@
 }
 .cal-today-btn:hover { background: var(--surface-2); }
 
+/* Month view's compact nav row — small arrows + a subtle Today link instead
+   of a big full-width Today bar. */
+.cal-nav--compact { justify-content: flex-start; }
+.cal-today-link {
+    margin-left: auto;
+    padding: 0 12px; height: 34px;
+    border: 1px solid var(--line); border-radius: 8px; background: transparent;
+    color: var(--muted); font-family: var(--font-system); font-size: 12px; font-weight: 700;
+    letter-spacing: .02em; cursor: pointer; transition: background 0.12s ease, color 0.12s ease;
+}
+.cal-today-link:hover { background: var(--surface-2); color: var(--ink); }
+
 /* Shared weekday header row */
 .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
 .cal-weekdays { margin-bottom: 4px; }
@@ -89,16 +101,21 @@
 
 .cal-empty { font-family: var(--font-system); font-size: 14px; color: var(--muted); margin: 0; }
 
-/* ── Month view — week rows with spanning event bars ────────────────── */
-.cal-month { display: flex; flex-direction: column; }
+/* ── Month view — real boxed day cells with spanning event bars ──────── */
+.cal-month {
+    display: flex; flex-direction: column;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
 .cal-week-row {
     position: relative;
     border-top: 1px solid var(--line);
 }
-.cal-week-row:last-child { border-bottom: 1px solid var(--line); }
+.cal-week-row:first-child { border-top: 0; }
 .cal-week-row-cells { display: grid; grid-template-columns: repeat(7, 1fr); height: 100%; }
 .cal-day-cell {
-    padding: 3px 4px 0;
+    padding: 6px 6px 0;
     border-right: 1px solid var(--line);
     cursor: pointer;
     background: transparent;

@@ -61,7 +61,7 @@ function layoutWeekRow(rowDates, items) {
     return { segments, laneCount: lanes.length, overflowByCol };
 }
 
-export function MonthView({ year, month, today, selected, items, itemsByDate, firstDay, onSelectDay, onOpenItem }) {
+export function MonthView({ year, month, today, selected, items, itemsByDate, firstDay, onSelectDay }) {
     const grid = useMemo(() => monthMatrix(year, month, firstDay), [year, month, firstDay]);
     // Most months need 6 rows, but some fit entirely in 5 — drop a trailing
     // row that's 100% outside the target month so those months get taller,
@@ -129,7 +129,7 @@ export function MonthView({ year, month, today, selected, items, itemsByDate, fi
                                             type="button"
                                             className={`cal-bar ${roundCls} ${seg.item.completed ? 'is-completed' : ''}`}
                                             style={{ gridColumn: `${seg.colStart + 1} / ${seg.colEnd + 2}`, gridRow: seg.lane + 1, background: bg, color: fg }}
-                                            onClick={(e) => { e.stopPropagation(); onOpenItem(seg.item); }}
+                                            onClick={(e) => { e.stopPropagation(); onSelectDay(rowDates[seg.colStart]); }}
                                             title={seg.item.title}
                                         >
                                             {!seg.item.allDay && seg.item.startTime && <span className="cal-bar-time">{formatTime(seg.item.startTime)}</span>}
