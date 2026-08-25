@@ -4,8 +4,15 @@
    same family as Resources → State Advisor's .rs-modal) — no separate
    gray/blue surface system for the calendar.
    ============================================================================ */
-.cal-page { position: relative; }
+.cal-page { position: relative; padding-bottom: 24px; }
 .cal-h1 { color: #ffffff; margin: 0 0 4px; }
+
+/* The helper hint (first-time / empty-month only) sits directly above the
+   floating + button, so only WHEN it's showing do we need extra bottom
+   padding to guarantee a gap between them — once the user has added
+   anything the hint disappears and the grid reclaims that space. */
+.cal-page--has-helper { padding-bottom: 66px; }
+.cal-helper-text { margin: 14px 0 12px; line-height: 1.5; }
 
 /* Month view stretches the grid to use the available viewport height
    instead of sitting compressed above a big block of empty page — every
@@ -22,10 +29,11 @@
        column, so they're already accounted for by taking their own natural
        space before .cal-month-area's flex:1 claims whatever's left. This is
        just .content's own top/bottom padding on desktop. */
-    min-height: calc(100dvh - 90px);
+    min-height: calc(100dvh - 60px);
 }
 @media (max-width: 919.5px) {
-    /* Mobile also reserves space for the fixed bottom tab bar. */
+    /* Mobile also reserves space for the fixed bottom tab bar, which the
+       floating + button must clear even when no helper text is showing. */
     .cal-page--fill { min-height: calc(100dvh - 125px); }
 }
 /* min-height: 0 on every link of this flex chain overrides the default
@@ -115,7 +123,10 @@
 .cal-week-row:first-child { border-top: 0; }
 .cal-week-row-cells { display: grid; grid-template-columns: repeat(7, 1fr); height: 100%; }
 .cal-day-cell {
-    padding: 6px 6px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 7px 4px 0;
     border-right: 1px solid var(--line);
     cursor: pointer;
     background: transparent;
@@ -126,13 +137,18 @@
 .cal-day-cell:focus-visible { outline: 2px solid var(--ig-blue); outline-offset: -2px; }
 .cal-day-cell.is-outside .cal-day-num { color: rgba(255, 255, 255, 0.25); }
 .cal-day-cell.is-selected { background: rgba(255, 255, 255, 0.05); }
+/* Dedicated, reserved header area for the date number — always centered at
+   the top of the cell, above where event bars are allowed to start (see
+   HEADER_H in views.jsx, which keeps bars clear of this whole area). */
 .cal-day-num {
     display: inline-flex; align-items: center; justify-content: center;
-    min-width: 20px; height: 20px; padding: 0 4px;
+    flex: 0 0 auto;
+    width: 24px; height: 24px;
     font-family: var(--font-system); font-size: 12px; font-weight: 700; color: var(--ink);
     border-radius: 50%;
 }
 .cal-day-cell.is-today .cal-day-num { background: var(--red-600); color: #fff; }
+.cal-day-cell.is-selected .cal-day-num { box-shadow: 0 0 0 1px var(--line-strong); }
 
 .cal-week-row-bars {
     position: absolute; left: 0; right: 0; display: grid;

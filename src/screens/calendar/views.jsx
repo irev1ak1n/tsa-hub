@@ -10,7 +10,10 @@ const MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'S
 // only at week-row boundaries (never repeated as one pill per day).
 // ============================================================================
 const MAX_LANES = 3;
-const HEADER_H = 22;
+// Reserved header height for the date-number row — taller than the number
+// itself (see .cal-day-num) so event bars never start close enough to
+// overlap it, even with cell padding included.
+const HEADER_H = 34;
 const LANE_H = 18;
 const LANE_GAP = 2;
 const OVERFLOW_H = 14;

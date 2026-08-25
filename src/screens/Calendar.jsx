@@ -121,9 +121,10 @@ export default function Calendar() {
 
     const scheduleDates = useMemo(() => buildScheduleDates(anchor, 14, 180), [anchor]);
     const selectedDayItems = selectedDate ? (itemsByDate[ymd(selectedDate)] || []) : [];
+    const showHelperText = !loading && personalItems.length === 0 && viewMode === 'month';
 
     return (
-        <div className={`cal-page ${viewMode === 'month' ? 'cal-page--fill' : ''}`}>
+        <div className={`cal-page ${viewMode === 'month' ? 'cal-page--fill' : ''} ${showHelperText ? 'cal-page--has-helper' : ''}`}>
             <div className="section">
                 <div className="rs-eyebrow">Calendar</div>
                 <h1 className="cal-h1">{headerLabel}</h1>
@@ -207,6 +208,12 @@ export default function Calendar() {
                 </div>
             )}
 
+            {showHelperText && (
+                <p className="cal-helper-text muted small">
+                    You can add your own events and reminders by tapping any day or the + button. Everything you add stays saved on this device.
+                </p>
+            )}
+
             {viewMode === 'week' && (
                 <WeekView
                     anchor={anchor}
@@ -260,12 +267,6 @@ export default function Calendar() {
                 onSave={handleSave}
                 onCancel={closeEditor}
             />
-
-            {!loading && personalItems.length === 0 && viewMode === 'month' && (
-                <p className="muted small" style={{ marginTop: 16 }}>
-                    Tap a day, or the + button, to add your own events and reminders — they stay on this device only.
-                </p>
-            )}
         </div>
     );
 }
