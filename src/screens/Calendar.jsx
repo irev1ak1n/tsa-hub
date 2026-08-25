@@ -144,20 +144,7 @@ export default function Calendar() {
                 ))}
             </div>
 
-            {viewMode === 'month' && (
-                <div className="cal-nav cal-nav--compact">
-                    <button type="button" className="cal-nav-btn" onClick={goPrev} aria-label="Previous month">
-                        <span style={{ display: 'inline-flex', transform: 'rotate(180deg)' }}>
-                            <Icon name="chevron-right" size={20} />
-                        </span>
-                    </button>
-                    <button type="button" className="cal-nav-btn" onClick={goNext} aria-label="Next month">
-                        <Icon name="chevron-right" size={20} />
-                    </button>
-                    <button type="button" className="cal-today-link" onClick={goToday}>Today</button>
-                </div>
-            )}
-            {(viewMode === 'year' || viewMode === 'week') && (
+            {(viewMode === 'year' || viewMode === 'month' || viewMode === 'week') && (
                 <div className="cal-nav">
                     <button type="button" className="cal-nav-btn" onClick={goPrev} aria-label="Previous">
                         <span style={{ display: 'inline-flex', transform: 'rotate(180deg)' }}>
