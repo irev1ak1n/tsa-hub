@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { EVENTS } from '../../data/events.js';
 import { COMPETITION_REQUIREMENTS } from '../../data/competitionRequirements.js';
-import { EVENT_THEMES, hasThemeResources } from '../../data/eventThemes.js';
+import { EVENT_THEMES, hasFullDetails } from '../../data/eventThemes.js';
 import { Icon } from '../../components/UI.jsx';
 
 const CAREER_LABELS = {
@@ -143,7 +143,7 @@ function getThemesForEvent(event) {
 // Single theme block with optional "Access full details" button
 function ThemeBlock({ theme, onOpenPage }) {
     const noTheme = theme.status === 'no-theme';
-    const hasResources = hasThemeResources(theme._id);
+    const showAccessBtn = hasFullDetails(theme._id);
 
     const headline = theme.theme || null;
     const blurb = theme.description || theme.topic || theme.problemStatement || theme.challenge || null;
@@ -152,12 +152,12 @@ function ThemeBlock({ theme, onOpenPage }) {
     return (
         <div className="eth-theme-block">
             {noTheme ? (
-                <p className="eth-theme-no-theme">No theme available for this season.</p>
+                <p className="eth-theme-no-theme">No theme or problem has been published by National TSA for the 2026–2027 season.</p>
             ) : (
                 <>
                     {headline && <div className="eth-modal-headline">{headline}</div>}
-                    {short && <p className="rec-modal-desc" style={{ margin: '4px 0 0' }}>{short}</p>}
-                    {hasResources && (
+                    {short && <p className="rec-modal-desc">{short}</p>}
+                    {showAccessBtn && (
                         <button type="button" className="eth-access-btn" onClick={() => onOpenPage(theme._id)}>
                             <Icon name="file-text" size={15} />
                             <span>Access full details</span>
@@ -212,15 +212,16 @@ export default function EventInfoModal({ event, onClose }) {
                     {themes.length > 0 && (
                         <div className="rec-modal-section">
                             <div className="rec-modal-section-title">Theme &amp; Problem</div>
-                            {themes.map((theme) => (
-                                <div key={theme._id}>
-                                    {/* Division label only when both exist */}
-                                    {multiDiv && (
-                                        <div className="eth-div-label">{theme.division === 'HS' ? 'High School' : 'Middle School'}</div>
-                                    )}
-                                    <ThemeBlock theme={theme} onOpenPage={openThemePage} />
-                                </div>
-                            ))}
+                            <div>
+                                {themes.map((theme) => (
+                                    <div key={theme._id} className="eth-theme-block">
+                                        {multiDiv && (
+                                            <div className="eth-div-label">{theme.division === 'HS' ? 'High School' : 'Middle School'}</div>
+                                        )}
+                                        <ThemeBlock theme={theme} onOpenPage={openThemePage} />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     )}
 

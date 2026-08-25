@@ -171,15 +171,22 @@ html[data-theme="light"] .eth-no-theme {
    EventInfoModal additions — theme preview + access button
    ============================================================ */
 
-/* Theme headline inside modal — bold white, not accent */
+/* Theme headline inside modal */
 .eth-modal-preview {
     margin-top: 2px;
 }
 .eth-modal-headline {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--c-text);
-    margin-bottom: 4px;
+    margin: 0 0 5px;
+    line-height: 1.35;
+}
+.eth-modal-preview .rec-modal-desc {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--c-text);
+    margin: 0;
 }
 
 /* "Access full details" button — neutral, not accent-colored */
@@ -217,23 +224,35 @@ html[data-theme="light"] .eth-access-btn:hover {
 }
 
 /* ── Dual-division theme blocks in modal ── */
+
+.eth-theme-block {
+    margin-top: 16px;
+}
+.eth-theme-block:first-child {
+    margin-top: 4px;
+}
+
+/* Division label — small uppercase muted text, clear separation */
 .eth-div-label {
     font-size: 10px;
     font-weight: 700;
     letter-spacing: .08em;
     text-transform: uppercase;
     color: var(--c-text-muted);
-    margin: 14px 0 6px;
+    margin-bottom: 6px;
 }
-.eth-div-label:first-child {
-    margin-top: 2px;
-}
+
+/* Separator line between HS and MS blocks */
 .eth-theme-block + .eth-theme-block {
-    margin-top: 4px;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255,255,255,.07);
 }
-.eth-theme-block {
-    padding-bottom: 2px;
+
+html[data-theme="light"] .eth-theme-block + .eth-theme-block {
+    border-top-color: #e4e4ea;
 }
+
 .eth-theme-no-theme {
     font-size: 13px;
     color: var(--c-text-muted);

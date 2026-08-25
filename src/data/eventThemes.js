@@ -161,10 +161,40 @@ export const EVENT_THEMES = {
         season: '2026-2027',
         division: 'MS',
         name: 'Drone Challenge (UAV)',
-        theme: 'Humanitarian Aid and Rescue',
+        theme: 'Operation Lifeline — Humanitarian Aid Response',
+        description: 'A major disaster has isolated communities, damaged infrastructure, disrupted communications, and created hazardous conditions. UAV teams are deployed as part of Operation Lifeline to assess priority zones, reposition a relief-point marker, clear lightweight debris, and navigate vertical and horizontal damaged access routes.',
+        sections: [
+            {
+                heading: 'Mission Overview',
+                list: [
+                    'M1 — Emergency Zone Landing: precision landings on designated areas (15 pts)',
+                    'M2 — Relief Point Relocation: probe or controlled pushing action to move a lightweight marker from one pedestal to another (25 pts max)',
+                    'M3 — Debris Containment: use propeller wash or a controlled pushing action to move ping-pong balls into a holding area (30 pts max)',
+                    'M4 — Debris Field Navigation: descend into a collapsed structure from above and exit through a side opening (25 pts max)',
+                    'M5 — Emergency Access Corridor: ascend/descend through openings in a vertical wall obstacle (25 pts max)',
+                ],
+            },
+            {
+                heading: 'The Flight Mission',
+                content: 'Each team gets three (3) flight attempts, each with a one (1) minute time limit from the designated start zone. The two highest attempt scores are added together for the team\'s total; the lowest is dropped. Each team member must pilot at least one attempt. Up to fifteen (15) bonus points are available.',
+            },
+            {
+                heading: 'Safety Regulations',
+                list: [
+                    'All drone operators must wear safety glasses and high-visibility safety vests.',
+                    'Power cannot be applied to the propellers unless the drone is within the airspace.',
+                    'When a drone is outside the competition tent, all batteries must be disconnected from the drone stack (flight controller, receiver, and ESCs) unless instructed otherwise at the Hot Table.',
+                    'UAVs may be flown only within the designated competition or practice fields.',
+                ],
+            },
+            {
+                heading: 'Penalties',
+                content: 'If the spotter retrieves a detached drone part during an attempt (rather than after scoring), a 20% rules violation is applied in Tier 1.',
+            },
+        ],
         resources: [
             {
-                title: 'Official Theme PDF',
+                title: 'Official Theme PDF (Operation Lifeline — full mission details, obstacle build instructions, scoring sheet)',
                 url: 'https://tsaweb.org/docs/default-source/competitions/themes-and-problems-2026-2027/middle-school/2027-ms-drone-theme.pdf?sfvrsn=26c64b18_1',
                 type: 'pdf',
             },
@@ -194,9 +224,26 @@ export const EVENT_THEMES = {
         season: '2026-2027',
         division: 'MS',
         name: 'Mechanical Engineering',
+        theme: '2027 Design Challenge',
+        description: 'Teams design a device that launches cornhole bags at a regulation cornhole board from 9 feet away. Both team members must each launch half of the bags, one per firing range, within the allotted time.',
+        sections: [
+            {
+                heading: 'Field & Scoring Zone',
+                list: [
+                    'Firing distance: 9 ft from the front of the firing line to the front of the cornhole board.',
+                    'Cornhole board: regulation size, 4 ft × 2 ft.',
+                    'Scoring area: the 2 ft × 4 ft board plus a 1 ft perimeter on the floor around its front and sides.',
+                    'Two firing ranges (approx. 4 ft × 6 ft each) positioned on either side of the field, 9 ft from the scoring zone.',
+                ],
+            },
+            {
+                heading: 'Team Procedure',
+                content: 'Team member 1 launches four (4) bags from Firing Range 1; team member 2 launches four (4) bags from Firing Range 2, within the allotted time.',
+            },
+        ],
         resources: [
             {
-                title: 'Official Problem Statement PDF',
+                title: 'Official Problem Statement PDF (full dimensions & diagram)',
                 url: 'https://tsaweb.org/docs/default-source/competitions/themes-and-problems-2026-2027/middle-school/2027-mechanical-engineering-problem.pdf?sfvrsn=cd827ca6_1',
                 type: 'pdf',
             },
@@ -291,9 +338,59 @@ export const EVENT_THEMES = {
         season: '2026-2027',
         division: 'MS',
         name: 'Robotics',
+        theme: '2027 Robotics — Middle School',
+        description: 'Design, build, and operate a robot that maneuvers through field obstacles to collect Scoring Objects and score them into designated Goals within the Scoring Zone. One robot competes at a time, with a maximum run time of ten (10) minutes.',
+        sections: [
+            {
+                heading: 'Field Setup & Layout',
+                list: [
+                    'Competition field: approx. 10\' × 10\' square enclosed by a 1-inch PVC pipe perimeter.',
+                    'Starting Zone: 16" × 16", taped, serves as the start/reset point.',
+                    'Scoring Zone: taped area containing the Goals.',
+                    'Four Obstacle Zones, each with a distinct terrain obstacle (The Meadow, The Forest, The Table, Hurdles) — identical for every team.',
+                    'Optional Ending Zone bonus area defined by a 24" × 36" plywood "Hills and Valleys" surface.',
+                ],
+            },
+            {
+                heading: 'Scoring Objects & Goals',
+                list: [
+                    'Twelve (12) Scoring Objects total — 3 each of Wooden Eggs, Cones, Rings, and Foam Dice — worth 10 points each when placed in the matching Goal.',
+                    'Wooden Eggs → Egg Carton; Foam Dice → 6-quart storage bin; Cones → stacked on the Base Cone; Rings → PVC Ring Post Stand.',
+                    'Optional End Zone Bonus: 15 points for ending the run completely inside the Hills and Valleys plywood.',
+                ],
+            },
+            {
+                heading: 'Procedure',
+                list: [
+                    'Check-in, safety inspection, and pit/practice setup on arrival.',
+                    'Mandatory drivers\' meeting (max 30 minutes) before runs.',
+                    'Ten (10) minute running clock per run, started by judges.',
+                    'Top twelve (12) preliminary teams advance to a ten (10) minute semifinal interview; combined run + interview scores determine final standings.',
+                ],
+            },
+            {
+                heading: 'Key Rules',
+                list: [
+                    'Robots must fit a 16" × 16" × 16" cube at the start; may expand after the run begins.',
+                    'Must be one single entity — no detachable sub-assemblies or secondary mini-bots.',
+                    'A robot may possess only one (1) Scoring Object at a time.',
+                    'Robots must maintain contact with the field surface at all times (except during a bonus hang); no jumping, flying, or hovering.',
+                    'Untethered remote control only (line-of-sight or FPV).',
+                ],
+            },
+            {
+                heading: 'Penalties',
+                list: [
+                    'Delay, Human Interaction, and Field Perimeter penalties: −10 points each.',
+                    'Over-Possession, Obstacle, and Scoring Zone penalties: −5 points each.',
+                    'Tree Obstacle penalty: −1 point per fallen tree.',
+                    'Severe safety violations result in disqualification and a score of zero for the attempt.',
+                ],
+            },
+        ],
         resources: [
             {
-                title: 'Official Theme PDF',
+                title: 'Official Theme PDF (full rules, field build instructions, scoring sheet)',
                 url: 'https://tsaweb.org/docs/default-source/competitions/themes-and-problems-2026-2027/middle-school/2027-robotics-ms.pdf?sfvrsn=b5f63725_2',
                 type: 'pdf',
             },
@@ -319,14 +416,59 @@ export const EVENT_THEMES = {
         season: '2026-2027',
         division: 'MS',
         name: 'Structural Engineering',
+        theme: '2027 Middle School Design Brief',
+        description: 'Design a balsa structure that supports the greatest load possible — applied on the top and in the center — using the fewest materials. A substructure element is not permitted; the solution must transfer the load from the test block to the top of the abutments as efficiently as possible.',
+        sections: [
+            {
+                heading: 'Dimensions',
+                list: [
+                    'Length: minimum 10", maximum 11"',
+                    'Width: minimum 2", maximum 3"',
+                    'Height: minimum 6", maximum 7"',
+                    'Substructure: not permitted in 2027',
+                    'Test block: 6" long × 2" wide × 3/4" tall, placed on top in the center',
+                    'Abutment span: 9"',
+                    'Tolerance: +/- 1/8" on length, width, and height',
+                ],
+            },
+            {
+                heading: 'Building Materials',
+                content: 'Only 1/8" × 1/8" balsa strips are permitted, wood only (no treated, conditioned, or coated balsa) — maximum 14 linear feet total. No other construction materials may be used. Hot-melt glue is not allowed for the pre-built or on-site semifinal structures.',
+            },
+            {
+                heading: 'Key Specifications',
+                list: [
+                    'A 1/2" test-rod opening must pass vertically through the center of the solution.',
+                    'The solution may not contact any abutment surface other than the top.',
+                    'No part of the solution may extend above the bottom of the test block, and it must not contact the test block except on its bottom.',
+                    'Laminations (two+ pieces glued with grain running the same direction) are not allowed.',
+                    'Lap joints are allowed, but must be between 15° and 165°.',
+                    'Gussets, or excess glue that emulates a gusset, are not allowed.',
+                ],
+            },
+            {
+                heading: 'Automatic Disqualifications',
+                list: [
+                    'Use of any material other than 1/8" × 1/8" balsa sticks.',
+                    'Any lamination, or treated/conditioned/coated balsa.',
+                    'Use of gussets or over-gluing that emulates a gusset.',
+                    'The solution contacts any abutment surface other than the top, at any time.',
+                    'The solution contacts any test-block surface other than its bottom.',
+                ],
+            },
+            {
+                heading: 'Documentation & Check-In',
+                content: 'A three-view drawing (front, top, right-side) on paper no larger than 11"×17", and a parts list with lengths/sizes/quantities, must be submitted in a clear report cover alongside the signed Team Verification Form inside a single plastic storage box (max 18"×16"×12").',
+            },
+        ],
         resources: [
             {
-                title: 'Design Brief PDF',
+                title: 'Design Brief PDF (full dimensions, specifications, and diagrams)',
                 url: 'https://tsaweb.org/docs/default-source/competitions/themes-and-problems-2026-2027/middle-school/2027-ms-structural-engineering-design-brief.pdf?sfvrsn=24b8197d_1',
                 type: 'pdf',
             },
             {
-                title: 'Verification Form PDF',
+                title: 'Team Verification Form PDF (required signed form for check-in)',
                 url: 'https://tsaweb.org/docs/default-source/competitions/themes-and-problems-2026-2027/middle-school/ms-structural-engineering-verification-form.pdf?sfvrsn=dcf0cd01_1',
                 type: 'pdf',
             },
@@ -363,6 +505,19 @@ export const EVENT_THEMES = {
         season: '2026-2027',
         division: 'HS',
         name: 'Architectural Design',
+        theme: '2027 Design Problem — Family-Themed Restaurant',
+        description: 'The restaurant industry constantly evolves to lure customers, with theme restaurants creating unique, immersive dining experiences built around a concept — cultural, historical, environmental, or storytelling. Teams design a family-themed restaurant of their own choosing that meets the official design considerations and constraints.',
+        requirements: [
+            'Conduct research on restaurant types, design, planning, and construction.',
+            'Select a location and apply the building codes and materials of Orange County, Florida (the site need not be a real property).',
+            'Maximum land space: two (2) acres; the solution and study model need not use the entire space.',
+            'Must include, at minimum: a foyer, waiting area, seating for a maximum of 150 customers, restrooms, office space, food preparation, storage, and food delivery pick-up.',
+            'Vehicle parking must be included in the planning and drawings, but the study model should focus on the restaurant itself.',
+            'The design must avoid all copyright infringement.',
+            'The finished design may be on one floor or up to three floors.',
+            'No wine, bar, bar service, violence, or weapons — and appropriate attire for employees and guests (per TSA general rules).',
+            'Maximum 20" × 20" site board for the study model.',
+        ],
         resources: [
             {
                 title: 'Official Design Problem PDF',
@@ -477,10 +632,36 @@ export const EVENT_THEMES = {
         season: '2026-2027',
         division: 'HS',
         name: 'Drone Challenge (UAV)',
-        theme: 'Humanitarian Aid and Rescue',
+        theme: 'Operation Lifeline — Humanitarian Aid & Rescue',
+        description: 'Teams design, build, assemble, document, and test-fly a UAV capable of completing a series of humanitarian aid and disaster-response missions in an approximately 10 ft × 20 ft flight area, demonstrating engineering design, strategic mission planning, precision flight, and efficient mission execution.',
+        sections: [
+            {
+                heading: 'Mission Summary',
+                list: [
+                    'Mission 1 — Infrastructure Inspection: locate and verify markers inside a multi-level structure using the UAV\'s FPV camera (5–25 pts).',
+                    'Mission 2 — Rescue Figure Recovery: lift the Rescue Figure and deliver it to the Safe Zone at Home Base (10–20 pts).',
+                    'Mission 3 — Emergency Medical Delivery: deliver Medical Supply Pods to designated treatment locations (15–35 pts).',
+                    'Mission 4 — Hazardous Material Mitigation: navigate a Hazard Passage and relocate Chemical Containment Pods (2–30 pts).',
+                    'Mission 5 — Communications Beacon Activation: navigate a Communication Passage and activate the beacon (5–20 pts).',
+                ],
+            },
+            {
+                heading: 'The Flight Mission',
+                content: 'Mission time is ten (10) minutes on a running clock. Teams may attempt missions in any order and are not required to complete every mission. Each mission must be verbally declared to an Event Official before starting; completed missions may not be re-attempted. Declaring "Flight Complete" before time expires earns 10 bonus points.',
+            },
+            {
+                heading: 'Regulations',
+                list: [
+                    'All batteries must be disconnected whenever the UAV is outside the competition tent — no exceptions; violations cause disqualification.',
+                    'Drone operators must wear safety glasses and high-visibility safety vests.',
+                    'Propeller guards are required.',
+                    'UAVs may only fly within designated competition or practice fields.',
+                ],
+            },
+        ],
         resources: [
             {
-                title: 'Official Theme PDF',
+                title: 'Official Theme PDF (Operation Lifeline — full mission brief, scoring, and obstacle build details)',
                 url: 'https://tsaweb.org/docs/default-source/competitions/themes-and-problems-2026-2027/high-school/2027-hs-drone-challenge-theme.pdf?sfvrsn=476818b7_1',
                 type: 'pdf',
             },
@@ -653,9 +834,60 @@ export const EVENT_THEMES = {
         season: '2026-2027',
         division: 'HS',
         name: 'Robotics',
+        theme: '2027 Robotics — High School',
+        description: 'Design, build, and operate a robot that maneuvers through field obstacles to collect Scoring Objects and score them into designated Goals within the Scoring Zone. One robot competes at a time, with a maximum run time of ten (10) minutes.',
+        sections: [
+            {
+                heading: 'Field Setup & Layout',
+                list: [
+                    'Competition field: approx. 10\' × 10\' square enclosed by a 1-inch PVC pipe perimeter.',
+                    'Starting Zone: 16" × 16", taped, serves as the start/reset point.',
+                    'Scoring Zone: taped area containing the Goals.',
+                    'Four Obstacle Zones, each with a distinct terrain obstacle (Whoop-de-doos, Hills and Valley, The Forest, The Table) — identical for every team.',
+                    'Ending Zone defined by a 24" × 24" plywood sheet, with a Hanging Bar bonus obstacle.',
+                ],
+            },
+            {
+                heading: 'Scoring Objects & Goals',
+                list: [
+                    'Twelve (12) Scoring Objects total — 3 each of Wooden Eggs, Small Bean Bags, Cones, and Rings — worth 10 points each when placed in the matching Goal.',
+                    'Wooden Eggs → Egg Carton; Bean Bags → 6-quart storage bin; Cones → stacked on the Base Cone; Rings → PVC Ring Post Stand.',
+                    'Optional End Zone Bonus: 10 points for ending completely inside the 24"×24" plywood.',
+                    'Optional Hanging Bonus: 10 additional points for hanging free of the floor from the Hanging Bar at the end of the run (stackable with the End Zone Bonus for 20 points total).',
+                ],
+            },
+            {
+                heading: 'Procedure',
+                list: [
+                    'Check-in, safety inspection, and pit/practice setup on arrival.',
+                    'Mandatory drivers\' meeting (max 30 minutes) before runs.',
+                    'Ten (10) minute running clock per run, started by judges.',
+                    'Top twelve (12) preliminary teams advance to a ten (10) minute semifinal interview; combined run + interview scores determine final standings.',
+                ],
+            },
+            {
+                heading: 'Key Rules',
+                list: [
+                    'Robots must fit a 16" × 16" × 16" cube at the start; may expand after the run begins.',
+                    'Must be one single entity — no detachable sub-assemblies or secondary mini-bots.',
+                    'A robot may possess only one (1) Scoring Object at a time.',
+                    'Robots must maintain contact with the field surface at all times (except during the Hanging Bonus); no jumping, flying, or hovering.',
+                    'Untethered remote control only (line-of-sight or FPV).',
+                ],
+            },
+            {
+                heading: 'Penalties',
+                list: [
+                    'Delay, Human Interaction, and Field Perimeter penalties: −10 points each.',
+                    'Over-Possession, Obstacle, and Scoring Zone penalties: −5 points each.',
+                    'Tree Obstacle penalty: −1 point per fallen tree.',
+                    'Severe safety violations result in disqualification and a score of zero for the attempt.',
+                ],
+            },
+        ],
         resources: [
             {
-                title: 'Official Theme PDF',
+                title: 'Official Theme PDF (full rules, field build instructions, scoring sheet)',
                 url: 'https://tsaweb.org/docs/default-source/competitions/themes-and-problems-2026-2027/high-school/2027-hs-robotics.pdf?sfvrsn=6c629180_2',
                 type: 'pdf',
             },
@@ -719,9 +951,54 @@ export const EVENT_THEMES = {
         season: '2026-2027',
         division: 'HS',
         name: 'Structural Design and Engineering',
+        theme: '2027 High School Problem Statement',
+        description: 'Design a balsa structure that supports the greatest load possible — applied on the top and in the center — using the fewest materials. A substructure element is not permitted; the solution must transfer the load from the test block to the top of the abutments as efficiently as possible.',
+        sections: [
+            {
+                heading: 'Dimensions',
+                list: [
+                    'Length: minimum 10", maximum 11"',
+                    'Width: minimum 2", maximum 3"',
+                    'Height: minimum 8", maximum 9"',
+                    'Substructure: not permitted in 2027',
+                    'Test block: 6" long × 2" wide × 3/4" tall, placed on top in the center',
+                    'Abutment span: 9"',
+                    'Tolerance: +/- 1/16" on length, width, and height',
+                ],
+            },
+            {
+                heading: 'Building Materials',
+                content: 'Only 1/8" × 1/8" balsa strips are permitted, wood only (no treated, conditioned, or coated balsa) — maximum 14 linear feet total. No other construction materials may be used. Hot-melt glue is not allowed for the pre-built or on-site semifinal structures.',
+            },
+            {
+                heading: 'Key Specifications',
+                list: [
+                    'A 1/2" test-rod opening must pass vertically through the center of the solution.',
+                    'The solution may not contact any abutment surface other than the top.',
+                    'No part of the solution may extend above the bottom of the test block, and it must not contact the test block except on its bottom.',
+                    'Laminations (two+ pieces glued with grain running the same direction) are not allowed.',
+                    'Lap joints are allowed, but must be between 15° and 165°.',
+                    'Gussets, or excess glue that emulates a gusset, are not allowed.',
+                ],
+            },
+            {
+                heading: 'Automatic Disqualifications',
+                list: [
+                    'Use of any material other than 1/8" × 1/8" balsa sticks.',
+                    'Any lamination, or treated/conditioned/coated balsa.',
+                    'Use of gussets or over-gluing that emulates a gusset.',
+                    'The solution contacts any abutment surface other than the top, at any time.',
+                    'The solution contacts any test-block surface other than its bottom.',
+                ],
+            },
+            {
+                heading: 'Documentation & Check-In',
+                content: 'A title page, a three-view drawing (front, top, right-side) on paper no larger than 11"×17", a parts list, and a Resources & AI Reflection (max 4 pages) must be submitted in a clear report cover inside a single plastic storage box (max 18"×16"×12").',
+            },
+        ],
         resources: [
             {
-                title: 'Official Problem Statement PDF',
+                title: 'Official Problem Statement PDF (full dimensions, specifications, and diagrams)',
                 url: 'https://tsaweb.org/docs/default-source/competitions/themes-and-problems-2026-2027/high-school/2027-structural-design-and-engineering-problem-statement.pdf?sfvrsn=56397e65_1',
                 type: 'pdf',
             },
@@ -844,6 +1121,28 @@ export const EVENT_THEMES = {
     'artificial-intelligence-ai': { season: '2026-2027', division: 'HS', name: 'Artificial Intelligence (AI)', status: 'no-theme' },
     'automated-manufacturing-systems': { season: '2026-2027', division: 'HS', name: 'Automated Manufacturing Systems', status: 'no-theme' },
     'hs-cybersecurity': { season: '2026-2027', division: 'HS', name: 'Cybersecurity', status: 'no-theme' },
+
+    // Skill/knowledge-test and other events confirmed against the official
+    // 2026-2027 National TSA Themes & Problems listing as not carrying an
+    // annual theme/problem — verified individually, not defaulted.
+    'board-game-design':          { season: '2026-2027', division: 'HS', name: 'Board Game Design', status: 'no-theme' },
+    'cad-architecture':           { season: '2026-2027', division: 'HS', name: 'Computer-Aided Design (CAD), Architecture', status: 'no-theme' },
+    'cad-engineering':            { season: '2026-2027', division: 'HS', name: 'Computer-Aided Design (CAD), Engineering', status: 'no-theme' },
+    'extemporaneous-speech':      { season: '2026-2027', division: 'HS', name: 'Extemporaneous Speech', status: 'no-theme' },
+    'flight-endurance':           { season: '2026-2027', division: 'HS', name: 'Flight Endurance', status: 'no-theme' },
+    'forensic-science':           { season: '2026-2027', division: 'HS', name: 'Forensic Science', status: 'no-theme' },
+    'future-tech-teacher':        { season: '2026-2027', division: 'HS', name: 'Future Technology and Engineering Teacher', status: 'no-theme' },
+    'on-demand-video':            { season: '2026-2027', division: 'HS', name: 'On Demand Video', status: 'no-theme' },
+    'technology-problem-solving': { season: '2026-2027', division: 'HS', name: 'Technology Problem Solving', status: 'no-theme' },
+
+    'ms-community-service-video': { season: '2026-2027', division: 'MS', name: 'Community Service Video', status: 'no-theme' },
+    'ms-cad-foundations':         { season: '2026-2027', division: 'MS', name: 'Computer-Aided Design (CAD) Foundations', status: 'no-theme' },
+    'ms-electrical-applications': { season: '2026-2027', division: 'MS', name: 'Electrical Applications', status: 'no-theme' },
+    'ms-flight':                  { season: '2026-2027', division: 'MS', name: 'Flight', status: 'no-theme' },
+    'ms-inventions':              { season: '2026-2027', division: 'MS', name: 'Inventions and Innovations', status: 'no-theme' },
+    'ms-leadership-strategies':   { season: '2026-2027', division: 'MS', name: 'Leadership Strategies', status: 'no-theme' },
+    'ms-problem-solving':         { season: '2026-2027', division: 'MS', name: 'Problem Solving', status: 'no-theme' },
+    'ms-technical-design':        { season: '2026-2027', division: 'MS', name: 'Technical Design', status: 'no-theme' },
 };
 
 export function getEventTheme(eventId) {
@@ -862,4 +1161,19 @@ export function hasThemeContent(eventId) {
 export function hasThemeResources(eventId) {
     const t = EVENT_THEMES[eventId];
     return !!(t?.resources?.length);
+}
+
+// Returns true if the event has more current-season content than fits in the
+// modal preview (sections, requirements, lists, resources, or a description
+// long enough to have been truncated) — i.e. "Access full details" is worth showing.
+export function hasFullDetails(eventId) {
+    const t = EVENT_THEMES[eventId];
+    if (!t || t.status === 'no-theme') return false;
+    if (t.resources?.length) return true;
+    if (t.sections?.length) return true;
+    if (t.requirements?.length) return true;
+    if (t.list?.length) return true;
+    const blurb = t.description || t.topic || t.problemStatement || t.challenge || '';
+    if (blurb.length > 200) return true;
+    return false;
 }

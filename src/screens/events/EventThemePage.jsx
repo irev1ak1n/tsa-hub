@@ -39,7 +39,7 @@ export default function EventThemePage() {
             {noTheme ? (
                 <div className="eth-no-theme">
                     <Icon name="calendar" size={22} />
-                    <span>No theme available for this season.</span>
+                    <span>No theme or problem has been published by National TSA for the 2026–2027 season.</span>
                 </div>
             ) : (
                 <div className="eth-body">
