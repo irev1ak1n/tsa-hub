@@ -1,248 +1,254 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Icon } from '../components/UI.jsx';
-import { CALENDAR_EVENTS, CALENDAR_SYNC } from '../data/tsaCalendar.js';
-import { now, ymd, parseYmd, sameDay, eventStatus } from '../utils/date.js';
+import { CALENDAR_EVENTS } from '../data/tsaCalendar.js';
+import { now, ymd, addDays, isSameMonth } from '../utils/date.js';
+import { mergeCalendarItems, indexItemsByDate } from '../utils/calendarItems.js';
+import { usePersonalCalendar } from '../hooks/usePersonalCalendar.js';
+import { MonthView, YearView, WeekView, ScheduleView, buildScheduleDates } from './calendar/views.jsx';
+import { DayPanel, ItemDetailsModal, ItemEditorModal } from './calendar/CalendarPanels.jsx';
 
-const MONTHS = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const VIEWS = [
+    { id: 'year', label: 'Year' },
+    { id: 'month', label: 'Month' },
+    { id: 'week', label: 'Week' },
+    { id: 'schedule', label: 'Schedule' },
 ];
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const VIEW_STORAGE_KEY = 'tsa-hub-calendar-view';
 
-const CATEGORY_LABEL = {
-    'constant-contact': 'Constant Contact',
-    'important-date': 'Important Date',
-    conference: 'National TSA Conference',
-    event: 'Event',
-};
-
-// Build the 6-row (42-cell) grid for a given month.
-function buildGrid(year, month) {
-    const first = new Date(year, month, 1);
-    const startOffset = first.getDay(); // 0 = Sunday
-    const start = new Date(year, month, 1 - startOffset);
-    const cells = [];
-    for (let i = 0; i < 42; i++) {
-        const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
-        cells.push(d);
-    }
-    return cells;
-}
-
-// Group events by "YYYY-MM-DD" — a multi-day event appears under every date
-// in its span so the grid and day list both find it.
-function indexEventsByDate(events) {
-    const map = {};
-    for (const ev of events) {
-        const start = parseYmd(ev.startDate);
-        const end = parseYmd(ev.endDate || ev.startDate);
-        if (!start || !end) continue;
-        let cursor = start;
-        // Guard against a corrupt/inverted range instead of looping forever.
-        let guard = 0;
-        while (cursor <= end && guard < 400) {
-            const key = ymd(cursor);
-            (map[key] ||= []).push(ev);
-            cursor = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate() + 1);
-            guard++;
-        }
-    }
-    return map;
-}
-
-function formatDateRange(ev) {
-    const start = parseYmd(ev.startDate);
-    const end = parseYmd(ev.endDate || ev.startDate);
-    if (!start) return '';
-    const startLabel = `${MONTHS[start.getMonth()]} ${start.getDate()}, ${start.getFullYear()}`;
-    if (!end || sameDay(start, end)) return startLabel;
-    const sameMonth = start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
-    const endLabel = sameMonth
-        ? `${end.getDate()}, ${end.getFullYear()}`
-        : `${MONTHS[end.getMonth()]} ${end.getDate()}, ${end.getFullYear()}`;
-    return `${startLabel} – ${endLabel}`;
-}
-
-function StatusBadge({ status }) {
-    if (status === 'PAST') return null;
-    const cls = status === 'TODAY' ? 'cal-badge is-today' : status === 'ONGOING' ? 'cal-badge is-ongoing' : 'cal-badge is-upcoming';
-    const label = status === 'TODAY' ? 'Today' : status === 'ONGOING' ? 'Ongoing' : 'Upcoming';
-    return <span className={cls}>{label}</span>;
-}
-
-function EventDetailModal({ event, onClose }) {
-    if (!event) return null;
-    const status = eventStatus(event.startDate, event.endDate || event.startDate);
-    return (
-        <div className="rec-modal-backdrop" onClick={onClose}>
-            <div className="rec-modal" onClick={(e) => e.stopPropagation()}>
-                <div className="rec-modal-head">
-                    <h3 className="rec-modal-title">{event.title}</h3>
-                    <button className="rec-modal-close" onClick={onClose} aria-label="Close">×</button>
-                </div>
-                <div className="rec-modal-body">
-                    <div className="rec-modal-section" style={{ marginTop: 0 }}>
-                        <div className="rec-fact">
-                            <span className="rec-fact-label">Date</span>
-                            <span className="rec-fact-value">{formatDateRange(event)}</span>
-                        </div>
-                        <div className="rec-fact">
-                            <span className="rec-fact-label">Category</span>
-                            <span className="rec-fact-value">{CATEGORY_LABEL[event.category] || event.category}</span>
-                        </div>
-                        {event.location && (
-                            <div className="rec-fact">
-                                <span className="rec-fact-label">Location</span>
-                                <span className="rec-fact-value">{event.location}</span>
-                            </div>
-                        )}
-                        <div className="rec-fact">
-                            <span className="rec-fact-label">Status</span>
-                            <span className="rec-fact-value"><StatusBadge status={status} /> {status === 'PAST' ? 'Past' : ''}</span>
-                        </div>
-                    </div>
-
-                    {event.description && (
-                        <div className="rec-modal-section">
-                            <div className="rec-modal-section-title">Description</div>
-                            <p className="rec-modal-desc" style={{ margin: 0 }}>{event.description}</p>
-                        </div>
-                    )}
-
-                    {event.source?.url && (
-                        <div className="rec-modal-section">
-                            <div className="rec-modal-section-title">Official Resources</div>
-                            <a
-                                href={event.source.url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="eth-resource-row"
-                            >
-                                <span className="eth-resource-ico"><Icon name="external-link" size={14} /></span>
-                                <span className="eth-resource-text">
-                                    <span className="eth-resource-title">View on National TSA</span>
-                                    <span className="eth-resource-label">{event.source.provider}</span>
-                                </span>
-                                <Icon name="external-link" size={14} />
-                            </a>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
+function loadDefaultView() {
+    try {
+        const saved = localStorage.getItem(VIEW_STORAGE_KEY);
+        if (saved && VIEWS.some((v) => v.id === saved)) return saved;
+    } catch { /* localStorage unavailable — fall through to default */ }
+    return 'month';
 }
 
 export default function Calendar() {
     const today = useMemo(() => now(), []);
-    const [view, setView] = useState({ year: today.getFullYear(), month: today.getMonth() });
-    const [selected, setSelected] = useState(today);
-    const [openEvent, setOpenEvent] = useState(null);
-
-    const eventsByDate = useMemo(() => indexEventsByDate(CALENDAR_EVENTS), []);
     const todayKey = ymd(today);
 
-    const cells = useMemo(() => buildGrid(view.year, view.month), [view]);
+    const [viewMode, setViewMode] = useState(loadDefaultView);
+    const [anchor, setAnchor] = useState(today); // current navigation reference date
+    const [selectedDate, setSelectedDate] = useState(null); // day panel
+    const [openItemId, setOpenItemId] = useState(null); // details modal
+    const [editor, setEditor] = useState({ open: false, editingId: null, defaultDate: todayKey, defaultStartTime: '', defaultType: 'event' });
 
-    const goMonth = (delta) => {
-        setView((v) => {
-            const d = new Date(v.year, v.month + delta, 1);
-            return { year: d.getFullYear(), month: d.getMonth() };
+    const { items: personalItems, loading, error, createItem, updateItem, removeItem, toggleComplete, clearError } = usePersonalCalendar();
+
+    useEffect(() => {
+        try { localStorage.setItem(VIEW_STORAGE_KEY, viewMode); } catch { /* ignore */ }
+    }, [viewMode]);
+
+    const mergedItems = useMemo(() => mergeCalendarItems(CALENDAR_EVENTS, personalItems), [personalItems]);
+    const itemsByDate = useMemo(() => indexItemsByDate(mergedItems), [mergedItems]);
+
+    const openItem = openItemId ? mergedItems.find((i) => i.id === openItemId) || null : null;
+    const editingRaw = editor.editingId ? personalItems.find((p) => p.id === editor.editingId) || null : null;
+    const editingNormalized = editingRaw ? { ...editingRaw } : null;
+
+    function goToday() {
+        setAnchor(today);
+        setSelectedDate(today);
+    }
+
+    function goPrev() {
+        setAnchor((a) => {
+            if (viewMode === 'year') return new Date(a.getFullYear() - 1, a.getMonth(), 1);
+            if (viewMode === 'month') return new Date(a.getFullYear(), a.getMonth() - 1, 1);
+            if (viewMode === 'week') return addDays(a, -7);
+            return addDays(a, -30); // schedule: shift the visible window back
         });
-    };
-    const goToday = () => {
-        setView({ year: today.getFullYear(), month: today.getMonth() });
-        setSelected(today);
-    };
+    }
+    function goNext() {
+        setAnchor((a) => {
+            if (viewMode === 'year') return new Date(a.getFullYear() + 1, a.getMonth(), 1);
+            if (viewMode === 'month') return new Date(a.getFullYear(), a.getMonth() + 1, 1);
+            if (viewMode === 'week') return addDays(a, 7);
+            return addDays(a, 30);
+        });
+    }
 
-    const selectedKey = ymd(selected);
-    const selectedEvents = (eventsByDate[selectedKey] || [])
-        .slice()
-        .sort((a, b) => (a.startDate < b.startDate ? -1 : a.startDate > b.startDate ? 1 : a.id < b.id ? -1 : 1));
+    function openDayPanel(date) {
+        setSelectedDate(date);
+    }
+    function openDetails(item) {
+        setOpenItemId(item.id);
+    }
+    function closeDetails() {
+        setOpenItemId(null);
+    }
+
+    function openCreate(defaultDate = selectedDate || today, defaultStartTime = '', defaultType = 'event') {
+        setEditor({ open: true, editingId: null, defaultDate: ymd(defaultDate), defaultStartTime, defaultType });
+    }
+    function openEdit(item) {
+        if (item.kind === 'official') return; // read-only
+        closeDetails();
+        setEditor({ open: true, editingId: item.raw.id, defaultDate: item.startDate, defaultStartTime: item.startTime || '', defaultType: item.raw.type });
+    }
+    function closeEditor() {
+        setEditor((e) => ({ ...e, open: false, editingId: null }));
+    }
+
+    async function handleSave(draft) {
+        if (editor.editingId) {
+            await updateItem(editor.editingId, { ...editingRaw, ...draft });
+        } else {
+            await createItem(draft);
+        }
+        closeEditor();
+    }
+
+    async function handleDelete(item) {
+        if (item.kind === 'official') return;
+        await removeItem(item.raw.id);
+        closeDetails();
+    }
+
+    async function handleToggleComplete(item) {
+        if (item.kind !== 'personal-reminder') return;
+        await toggleComplete(item.raw.id);
+    }
+
+    const headerLabel = viewMode === 'year'
+        ? String(anchor.getFullYear())
+        : viewMode === 'month'
+            ? `${MONTHS[anchor.getMonth()]} ${anchor.getFullYear()}`
+            : viewMode === 'week'
+                ? `${MONTHS[anchor.getMonth()]} ${anchor.getFullYear()}`
+                : 'Schedule';
+
+    const scheduleDates = useMemo(() => buildScheduleDates(anchor, 14, 180), [anchor]);
+    const selectedDayItems = selectedDate ? (itemsByDate[ymd(selectedDate)] || []) : [];
 
     return (
         <div className="cal-page">
             <div className="section">
                 <div className="rs-eyebrow">Calendar</div>
-                <h1 className="cal-h1">{MONTHS[view.month]} {view.year}</h1>
-                <p className="muted small" style={{ margin: 0 }}>
-                    Synced from the official National TSA calendar
-                    {CALENDAR_SYNC?.lastSyncAt ? ` · last synced ${new Date(CALENDAR_SYNC.lastSyncAt).toLocaleDateString()}` : ''}
-                </p>
+                <h1 className="cal-h1">{headerLabel}</h1>
+                <p className="muted small" style={{ margin: 0 }}>Official TSA dates and your personal schedule</p>
             </div>
 
-            {/* Month navigation */}
-            <div className="cal-nav">
-                <button type="button" className="cal-nav-btn" onClick={() => goMonth(-1)} aria-label="Previous month">
-                    <span style={{ display: 'inline-flex', transform: 'rotate(180deg)' }}>
-                        <Icon name="chevron-right" size={20} />
-                    </span>
-                </button>
-                <button type="button" className="cal-today-btn" onClick={goToday}>Today</button>
-                <button type="button" className="cal-nav-btn" onClick={() => goMonth(1)} aria-label="Next month">
-                    <Icon name="chevron-right" size={20} />
-                </button>
-            </div>
-
-            {/* Weekday header */}
-            <div className="cal-grid cal-weekdays">
-                {WEEKDAYS.map((w) => (
-                    <div key={w} className="cal-weekday">{w}</div>
+            <div className="cal-view-switcher">
+                {VIEWS.map((v) => (
+                    <button
+                        key={v.id}
+                        type="button"
+                        className={viewMode === v.id ? 'is-active' : ''}
+                        onClick={() => setViewMode(v.id)}
+                    >
+                        {v.label}
+                    </button>
                 ))}
             </div>
 
-            {/* Day grid */}
-            <div className="cal-grid">
-                {cells.map((d) => {
-                    const key = ymd(d);
-                    const inMonth = d.getMonth() === view.month;
-                    const isToday = key === todayKey;
-                    const isSelected = sameDay(d, selected);
-                    const hasEvents = (eventsByDate[key] || []).length > 0;
-                    const cls = [
-                        'cal-cell',
-                        inMonth ? '' : 'is-outside',
-                        isToday ? 'is-today' : '',
-                        isSelected ? 'is-selected' : '',
-                    ].filter(Boolean).join(' ');
-                    return (
-                        <button key={key} type="button" className={cls} onClick={() => setSelected(d)}>
-                            <span className="cal-cell-num">{d.getDate()}</span>
-                            {hasEvents && <span className="cal-dot" />}
-                        </button>
-                    );
-                })}
-            </div>
-
-            {/* Selected day + events */}
-            <div className="cal-day-label">
-                {WEEKDAYS[selected.getDay()]}, {MONTHS[selected.getMonth()]} {selected.getDate()}
-            </div>
-
-            {selectedEvents.length === 0 ? (
-                <p className="cal-empty">No official TSA events for this day.</p>
-            ) : (
-                <div className="cal-events">
-                    {selectedEvents.map((ev) => {
-                        // Status is always relative to *today*, not the selected day.
-                        const status = eventStatus(ev.startDate, ev.endDate || ev.startDate, todayKey);
-                        return (
-                            <button
-                                key={ev.id}
-                                type="button"
-                                className="cal-event"
-                                onClick={() => setOpenEvent(ev)}
-                                style={{ width: '100%', textAlign: 'left', cursor: 'pointer' }}
-                            >
-                                <span className="cal-event-title" style={{ flex: 1 }}>{ev.title}</span>
-                                <StatusBadge status={status} />
-                            </button>
-                        );
-                    })}
+            {viewMode !== 'schedule' && (
+                <div className="cal-nav">
+                    <button type="button" className="cal-nav-btn" onClick={goPrev} aria-label="Previous">
+                        <span style={{ display: 'inline-flex', transform: 'rotate(180deg)' }}>
+                            <Icon name="chevron-right" size={20} />
+                        </span>
+                    </button>
+                    <button type="button" className="cal-today-btn" onClick={goToday}>Today</button>
+                    <button type="button" className="cal-nav-btn" onClick={goNext} aria-label="Next">
+                        <Icon name="chevron-right" size={20} />
+                    </button>
+                </div>
+            )}
+            {viewMode === 'schedule' && (
+                <div className="cal-nav">
+                    <button type="button" className="cal-today-btn" onClick={goToday} style={{ flex: 'none', padding: '0 20px' }}>Today</button>
                 </div>
             )}
 
-            <EventDetailModal event={openEvent} onClose={() => setOpenEvent(null)} />
+            {error && (
+                <div className="notice" style={{ marginBottom: 12 }}>
+                    <span aria-hidden="true">⚠</span>
+                    <span>{error}</span>
+                    <button type="button" className="cal-add-inline" onClick={clearError} aria-label="Dismiss">×</button>
+                </div>
+            )}
+
+            {viewMode === 'year' && (
+                <YearView
+                    year={anchor.getFullYear()}
+                    today={today}
+                    itemsByDate={itemsByDate}
+                    onSelectMonth={(m) => { setAnchor(new Date(anchor.getFullYear(), m, 1)); setViewMode('month'); }}
+                />
+            )}
+
+            {viewMode === 'month' && (
+                <MonthView
+                    year={anchor.getFullYear()}
+                    month={anchor.getMonth()}
+                    today={today}
+                    selected={selectedDate && isSameMonth(selectedDate, anchor) ? selectedDate : null}
+                    itemsByDate={itemsByDate}
+                    firstDay={0}
+                    onSelectDay={openDayPanel}
+                    onOpenItem={openDetails}
+                />
+            )}
+
+            {viewMode === 'week' && (
+                <WeekView
+                    anchor={anchor}
+                    today={today}
+                    itemsByDate={itemsByDate}
+                    firstDay={0}
+                    onSelectDay={openDayPanel}
+                    onCreateAt={(date, time) => openCreate(date, time, 'event')}
+                    onOpenItem={openDetails}
+                />
+            )}
+
+            {viewMode === 'schedule' && (
+                <ScheduleView
+                    dates={scheduleDates}
+                    today={today}
+                    itemsByDate={itemsByDate}
+                    onOpenItem={openDetails}
+                    onAddForDay={(d) => openCreate(d)}
+                />
+            )}
+
+            <button type="button" className="cal-fab" onClick={() => openCreate()} aria-label="Add event or reminder">
+                <Icon name="plus" size={22} />
+            </button>
+
+            <DayPanel
+                date={selectedDate}
+                items={selectedDayItems}
+                onClose={() => setSelectedDate(null)}
+                onOpenItem={openDetails}
+                onAdd={() => openCreate(selectedDate)}
+            />
+
+            <ItemDetailsModal
+                item={openItem}
+                onClose={closeDetails}
+                onEdit={openEdit}
+                onDelete={handleDelete}
+                onToggleComplete={handleToggleComplete}
+            />
+
+            <ItemEditorModal
+                open={editor.open}
+                editing={editingNormalized}
+                defaultDate={editor.defaultDate}
+                defaultStartTime={editor.defaultStartTime}
+                defaultType={editor.defaultType}
+                onSave={handleSave}
+                onCancel={closeEditor}
+            />
+
+            {!loading && personalItems.length === 0 && viewMode === 'month' && (
+                <p className="muted small" style={{ marginTop: 16 }}>
+                    Tap a day, or the + button, to add your own events and reminders — they stay on this device only.
+                </p>
+            )}
         </div>
     );
 }
