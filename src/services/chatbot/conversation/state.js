@@ -13,6 +13,7 @@ export function createState() {
         pendingClarification: null, // { need, intent, candidates }
         answerStyle: 'normal',      // short | normal | detailed
         turn: 0,
+        misunderstandingCount: 0,   // consecutive genuine misunderstandings — see engine.js trackMisunderstanding
     };
 }
 

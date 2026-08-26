@@ -43,6 +43,10 @@ const OFF_TOPIC = [
 
 const RULES = [
     { intent: 'restart', re: /^(start over|restart|reset|new chat|clear)\b/, control: true },
+    // Explicit ask for a human — opens the support flow immediately,
+    // independent of the consecutive-misunderstanding counter in engine.js.
+    { intent: 'requestSupport', re: /\b(contact support|customer support|talk to (a |)(human|someone|person)|speak to (a )?(human|person)|human please|real person)\b/, control: true },
+    { intent: 'keepTrying', re: /^(keep trying|i'?ll keep trying)\b/, control: true },
     { intent: 'style.simple', re: /(explain|say|put) (it |that )?(more )?simpl|simpler|in simple terms|dumb it down/, control: true },
     { intent: 'style.detail', re: /(tell me more|more detail|explain more|go deeper|elaborate)/, control: true },
     { intent: 'style.short', re: /(short answer|keep it short|be brief|shorter|tldr)/, control: true },

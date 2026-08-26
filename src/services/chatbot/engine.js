@@ -509,13 +509,55 @@ function handleControl(intent, norm, state) {
         }
         case 'deny':
             return { response: reply('No problem. What did you mean?'), state: { ...state, pendingClarification: null } };
+        case 'requestSupport': {
+            // A direct ask ("contact support", "human please") is a final
+            // action, not another question — hand over real contact info
+            // immediately rather than looping back into another offer.
+            const next = { ...state, misunderstandingCount: 0 };
+            return {
+                response: reply(
+                    "No problem — you can reach TSA Hub support at general@tsaweb.org or 703-860-9000. Your chapter advisor can also help directly with anything state-specific.",
+                ),
+                state: next,
+            };
+        }
+        case 'keepTrying':
+            return { response: reply("Sure — what would you like to know?"), state: { ...state, misunderstandingCount: 0 } };
         default:
             return null;
     }
 }
 
+// Consecutive GENUINE misunderstandings only — kind 'unknown' / 'tsa-unsupported'
+// (the Coach truly has no idea what was asked). Clarifications that
+// successfully identified what more is needed (which state, MS or HS, which
+// event, a missing date) and "I don't have that specific data" answers are
+// NOT misunderstandings and reset the counter, same as any normally
+// answered question. See fallback.js for the 'kind' values this reads.
+const MISUNDERSTANDING_KINDS = new Set(['unknown', 'tsa-unsupported']);
+
+const MISUNDERSTANDING_TEXT = [
+    null, // index 0 unused
+    "I'm not totally sure what you mean. What are you trying to figure out?",
+    "I'm still missing part of what you're asking. Is this about an event, a rule, a deadline, your state TSA, or something else?",
+];
+const SUPPORT_OFFER_TEXT = "I'm still having trouble understanding what you need. Would you like me to send your question to the TSA Hub support team?";
+
+function trackMisunderstanding(response, state) {
+    if (!MISUNDERSTANDING_KINDS.has(response.kind)) {
+        state.misunderstandingCount = 0;
+        return response;
+    }
+    const n = (state.misunderstandingCount = (state.misunderstandingCount || 0) + 1);
+    if (n >= 3) {
+        state.misunderstandingCount = 0; // takes 3 more before offering again
+        return { ...response, text: SUPPORT_OFFER_TEXT, suggestions: ['Contact support', 'Keep trying'], supportOffer: true };
+    }
+    return { ...response, text: MISUNDERSTANDING_TEXT[n] };
+}
+
 function finish(response, state, debug) {
-    const out = { ...response };
+    const out = { ...trackMisunderstanding(response, state) };
     if (DEBUG) {
         out.debug = { ...debug, result: out.text?.slice(0, 60) };
         // eslint-disable-next-line no-console
