@@ -22,6 +22,12 @@ export const STATE_TSA = {
             { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://www.arkansastsa.org/stateofficers24' },
         ],
     },
+    'California': {
+        name: 'California TSA',
+        links: [
+            { img: instagramIcon, title: 'Official California TSA Instagram', desc: 'Announcements, event highlights, and student stories.', url: 'https://www.instagram.com/californiatsaofficial/' },
+        ],
+    },
     'Colorado': {
         name: 'Colorado TSA',
         links: [
@@ -135,6 +141,25 @@ export const STATE_TSA = {
             { img: facebookIcon, title: 'Official Kentucky TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/thekytsa/' },
             { role: 'advisor', icon: 'user', title: 'State Advisor', desc: 'Contact your state advisor for official guidance and questions.', contact: { name: 'Cailee Hutchens', email: 'cailee.hutchens@education.ky.gov', phone: '606-369-1430' } },
             { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://kentuckytsa.org/state-officers' },
+        ],
+    },
+    'Louisiana': {
+        name: 'Louisiana TSA',
+        links: [
+            { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official Louisiana TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'https://www.ltsa.org/LTSA%20MAIN%20PAGE.html' },
+            { img: facebookIcon, title: 'Official Louisiana TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/p/LTSA-The-Louisiana-Technology-Students-Association-100064860185579/' },
+        ],
+    },
+    'Maryland': {
+        name: 'Maryland TSA',
+        links: [
+            { img: instagramIcon, title: 'Official Maryland TSA Instagram', desc: 'Announcements, event highlights, and student stories.', url: 'https://www.instagram.com/marylandtsa/' },
+        ],
+    },
+    'Michigan': {
+        name: 'Michigan TSA',
+        links: [
+            { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official Michigan TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'https://www.mi-tsa.org/' },
         ],
     },
     'Mississippi': {
@@ -305,7 +330,7 @@ export const STATE_TSA = {
         links: [
             { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official Texas TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'https://www.texastsa.org/' },
             { img: instagramIcon, title: 'Official Texas TSA Instagram', desc: 'Announcements, event highlights, and student stories.', url: 'https://www.instagram.com/texastsa/' },
-            { img: facebookIcon, title: 'Official Texas TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/groups/2204630200/' },
+            { img: facebookIcon, title: 'Official Texas TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/TexasTSA/' },
             { role: 'advisor', icon: 'user', title: 'State Advisor', desc: 'Contact your state advisor for official guidance and questions.', contact: { name: 'Pamela Cook', email: 'executive.director@texastsa.org', phone: '915-731-4244' } },
             { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://texastsa.org/state-officers/' },
         ],
@@ -334,6 +359,7 @@ export const STATE_TSA = {
         links: [
             { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official Washington TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'https://www.washingtontsa.org/' },
             { img: instagramIcon, title: 'Official Washington TSA Instagram', desc: 'Announcements, event highlights, and student stories.', url: 'https://www.instagram.com/wa_tsa/' },
+            { img: facebookIcon, title: 'Official Washington TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/washingtontsa' },
             { role: 'advisor', icon: 'user', title: 'State Advisor', desc: 'Contact your state advisor for official guidance and questions.', contact: { name: 'Jennifer Smith', email: 'jsmith@washingtontsa.org', phone: '541-490-8466' } },
             { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://www.washingtontsa.org/state-officers' },
         ],
@@ -342,6 +368,8 @@ export const STATE_TSA = {
         name: 'West Virginia TSA',
         links: [
             { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official West Virginia TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'http://www.wvtsaweb.org/' },
+            { img: instagramIcon, title: 'Official West Virginia TSA Instagram', desc: 'Announcements, event highlights, and student stories.', url: 'https://www.instagram.com/westvirginiatsa/' },
+            { img: facebookIcon, title: 'Official West Virginia TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/WestVirginiaTsa/' },
             { role: 'advisor', icon: 'user', title: 'State Advisor', desc: 'Contact your state advisor for official guidance and questions.', contact: { name: 'Nicole Shipman', email: 'nshipman@k12.wv.us', phone: '304-639-6542' } },
             { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://www.wvtsaweb.org/state-officers/' },
         ],
