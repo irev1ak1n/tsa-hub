@@ -15,6 +15,12 @@ const PHRASES = [
     { intent: 'team.maximum', re: /(maximum|at most|up to|largest|biggest) .*(team|people|member)/, c: 0.9 },
     { intent: 'team.general', re: /how (big|many) .*(team|people|member)/, c: 0.9 },
     { intent: 'team.general', re: /\bteam size\b/, c: 0.92 },
+    // Messy real-student phrasing that asks a team-size question without
+    // "how many/big" — e.g. "can all 4 of us do it" or "is that too many".
+    { intent: 'team.general', re: /\bcan (all|both|the) (\d+|two|three|four|five|six|seven) ?(of )?(us|them|we)\b.{0,25}\b(do|be on|join|compete|enter)\b/, c: 0.88 },
+    { intent: 'team.general', re: /\bcan (all|both) (of )?(us|them|we)\b.{0,25}\b(do|be on|join|compete|enter)\b/, c: 0.88 },
+    { intent: 'team.general', re: /\bis (that|this) too many\b/, c: 0.85 },
+    { intent: 'team.general', re: /\bif there('?s| is) \d+ of us\b/, c: 0.85 },
     { intent: 'cost.isExpensive', re: /\b(is|are) .*(expensive|pricey|cheap|affordable)\b/, c: 0.9 },
     { intent: 'cost.general', re: /how much .*(cost|price|pay|spend)/, c: 0.92 },
     { intent: 'time.general', re: /how (long|much time)/, c: 0.9 },
@@ -72,7 +78,14 @@ const PHRASES = [
     { intent: 'general.how-competitions-work', re: /\bhow (do|does) (tsa )?(competitions?|events?) work/, c: 0.88 },
     { intent: 'rule.search', re: /\bcitation/, c: 0.85 },
     { intent: 'conference.search', re: /\bshuttle/, c: 0.85 },
-    { intent: 'rule.search', re: /\b(rule|rules|allowed|prohibited|can (i|we) use|dress code|citation|plagiarism|ai|artificial intelligence|original work|penalties|judging|grievance|disqualif)/, c: 0.82 },
+    // NOTE: deliberately no bare "ai"/"artificial intelligence" alternative
+    // here — that hijacked "What is Artificial Intelligence (AI)?" (an exact
+    // event name) into an unrelated rule citation, since this phrase beat
+    // overview.general's confidence by a hair. Genuine AI-policy questions
+    // ("can we use ai", "is ai allowed") already match via "can (i|we) use" /
+    // "allowed" below, and the rules-domain fallback in engine.js still
+    // searches on the raw tokens (including ai/artificial) for anything else.
+    { intent: 'rule.search', re: /\b(rule|rules|allowed|prohibited|can (i|we) use|dress code|citation|plagiarism|original work|penalties|judging|grievance|disqualif)/, c: 0.82 },
     { intent: 'compare.general', re: /\b(compare|versus|vs\.?)\b/, c: 0.9 },
 
     { intent: 'compare.general', re: /(difference between|what'?s the difference)/, c: 0.9 },

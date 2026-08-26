@@ -22,6 +22,9 @@ export const CONFERENCE_2026_HEADER = {
     eyebrow: 'National Conference Guide',
     title: '2026 National Conference',
     dateLabel: 'June 22\u201326, 2026',
+    // Machine-readable end date so callers (like the Coach) can tell this
+    // conference has already happened instead of presenting it as current.
+    endDate: '2026-06-26',
     venue: 'Gaylord National Resort and Convention Center',
     location: 'National Harbor, Maryland',
     theme: 'Unity Through Community',

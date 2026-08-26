@@ -37,6 +37,15 @@ function parseEligibilityText(text) {
     if (range) return { min: Number(range[3]), max: Number(range[4]), individual: /individual/i.test(t) };
     const exact = t.match(/team of (\w+) \((\d+)\)/);
     if (exact) return { min: Number(exact[2]), max: Number(exact[2]), individual: /individual/i.test(t) };
+    // "maximum of six (6) individuals; individual entries are permitted" is an
+    // upper bound with solo entry allowed, not an exact size — treating it as
+    // exact would tell a group of 2-5 they need exactly 6. Only special-case
+    // this when individual entries are explicitly permitted, since that is
+    // the only shape confirmed in the data; otherwise fall through unchanged.
+    const maxOnly = t.match(/maximum of (\w+) \((\d+)\)/);
+    if (maxOnly && /individual entries? (are|is) permitted/i.test(t)) {
+        return { min: 1, max: Number(maxOnly[2]), individual: true };
+    }
     const simple = t.match(/\((\d+)\) (individuals?|members?|team members?)/);
     if (simple) return { min: Number(simple[1]), max: Number(simple[1]), individual: /individual/i.test(t) };
     return null;

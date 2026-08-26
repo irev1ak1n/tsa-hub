@@ -1,6 +1,20 @@
 import { CONFERENCE_2026_HEADER, CONFERENCE_2026 } from '../../../data/conference2026.js';
+import { NATIONALS } from '../../../data/meta.js';
 
 function lower(s) { return (s || '').toLowerCase(); }
+
+// The only conference guide loaded is 2026's. Once its dates have passed, do
+// not answer "when/where is the conference" as if that were still current —
+// that contradicts the forward-looking date deadline.nationals already gives.
+function conferenceIsPast() {
+    const end = CONFERENCE_2026_HEADER.endDate;
+    if (!end) return false;
+    return new Date() > new Date(`${end}T23:59:59`);
+}
+
+function pastConferenceNotice() {
+    return `The most recent conference guide I have loaded is for the ${CONFERENCE_2026_HEADER.title} (${CONFERENCE_2026_HEADER.dateLabel}), which has already happened. I don't have official details for the next National TSA Conference yet — the date on file is ${NATIONALS.date} (${NATIONALS.note || 'check tsaweb.org for confirmation'}), but venue and theme haven't been loaded.`;
+}
 
 // Find the best matching topic and section by keyword.
 function searchConference(tokens) {
@@ -39,18 +53,22 @@ function sectionToText(sec) {
 }
 
 export function answerConference(intent, tokens) {
+    const past = conferenceIsPast();
     switch (intent) {
         case 'conference.when':
+            if (past) return { text: pastConferenceNotice(), sourceType: 'official', missing: true };
             return {
                 text: `The ${CONFERENCE_2026_HEADER.title} runs ${CONFERENCE_2026_HEADER.dateLabel} at ${CONFERENCE_2026_HEADER.venue}, ${CONFERENCE_2026_HEADER.location}. Theme: "${CONFERENCE_2026_HEADER.theme}".`,
                 sourceType: 'official',
             };
         case 'conference.where':
+            if (past) return { text: pastConferenceNotice(), sourceType: 'official', missing: true };
             return {
                 text: `${CONFERENCE_2026_HEADER.venue}, ${CONFERENCE_2026_HEADER.location}.`,
                 sourceType: 'official',
             };
         case 'conference.theme':
+            if (past) return { text: pastConferenceNotice(), sourceType: 'official', missing: true };
             return {
                 text: `The 2026 conference theme is "${CONFERENCE_2026_HEADER.theme}".`,
                 sourceType: 'official',
@@ -59,8 +77,9 @@ export function answerConference(intent, tokens) {
         default: {
             const hit = searchConference(tokens);
             if (!hit) return null;
+            const prefix = past ? `Note: this is from the ${CONFERENCE_2026_HEADER.title} guide (${CONFERENCE_2026_HEADER.dateLabel}, already past) — details for the next conference aren't loaded yet, but logistics like this often stay similar. ` : '';
             return {
-                text: sectionToText(hit.section),
+                text: prefix + sectionToText(hit.section),
                 sourceType: 'official',
                 source: { title: hit.topic.title, section: hit.section?.heading },
             };

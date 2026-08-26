@@ -11,7 +11,7 @@ import { answerRule } from './resolvers/rules.js';
 import { answerConference } from './resolvers/conference.js';
 import { answerState } from './resolvers/state.js';
 import { answerGeneral } from './resolvers/general.js';
-import { STATE_TSA } from '../../data/stateTsa.js';
+import { STATE_TSA, US_STATES } from '../../data/stateTsa.js';
 import { followupsFor } from './suggestions/followups.js';
 import { seasonInQuestion, freshnessWarning } from './guards/dataGuards.js';
 import { createState, resetState } from './conversation/state.js';
@@ -20,9 +20,13 @@ import { createState, resetState } from './conversation/state.js';
 // ask one short question, below CLARIFY we fall back.
 
 // Detect a US state name in a message. Returns the canonical name or null.
+// Checks every real US state name (not just the ones with STATE_TSA data),
+// so "what's the website for Wyoming" gets an honest "not on file" answer
+// from answerState() instead of a generic "which state?" that ignores the
+// state the user clearly already named.
 function detectStateName(text) {
     const t = (text || '').toLowerCase();
-    for (const name of Object.keys(STATE_TSA)) {
+    for (const name of US_STATES) {
         if (t.includes(name.toLowerCase())) return name;
     }
     return null;
@@ -104,7 +108,13 @@ export function processMessage(input, prevState) {
         return finish(reply(small.text, { domain: 'smalltalk', intent: small.intent, confidence: 0.9 }), state, debug);
     }
 
-    const domain = detectDomain(norm, state, { eventCount: resolved.events.length });
+    // A purely fuzzy event match (edit-distance guess, e.g. "weather" ~
+    // "teacher") is too weak on its own to suppress off-topic detection —
+    // otherwise "whats weather tomorrow" answers with an unrelated TSA event
+    // instead of recognizing it isn't a TSA question at all. Confident
+    // matches (exact name/alias/compact/word-overlap) still count normally.
+    const confidentEventCount = resolved.fuzzy ? 0 : resolved.events.length;
+    const domain = detectDomain(norm, state, { eventCount: confidentEventCount });
     debug.domain = domain.domain;
     debug.domainConfidence = domain.confidence;
 
@@ -117,6 +127,19 @@ export function processMessage(input, prevState) {
             const intent = pending.intent || state.lastIntent || 'overview.general';
             debug.resolver = 'clarification-resolved';
             return finish(answerWithIntent(intent, state, norm, text), state, debug);
+        }
+        // A bare division reply ("middle school") to a division-ambiguity
+        // clarification names no event on its own, so resolveEvents finds
+        // nothing above — pick the candidate matching the stated division.
+        if (division && pending.candidates?.length) {
+            const match = pending.candidates.find((c) => c.division === division);
+            if (match) {
+                state = applyEvents(state, [match]);
+                state.pendingClarification = null;
+                const intent = pending.intent || state.lastIntent || 'overview.general';
+                debug.resolver = 'clarification-resolved-by-division';
+                return finish(answerWithIntent(intent, state, norm, text), state, debug);
+            }
         }
         if (resolved.ambiguous) {
             debug.resolver = 'clarification-still-ambiguous';
@@ -382,136 +405,20 @@ function applyEvents(state, events) {
     return next;
 }
 
+// Handles the two intent families NOT already resolved earlier in
+// processMessage (event comparisons and single-event answers). Every other
+// intent family (deadline./conference./rule./general./state./career.byMajor/
+// advisor.meaning) is fully handled in processMessage itself before this is
+// ever called — processMessage either returns unconditionally for those
+// intents, or (for deadline/conference/general/state specifically) only
+// falls through here when its own resolver attempt already returned falsy,
+// which a duplicate identical attempt can't turn into a truthy result. This
+// function used to re-implement all of those branches too; that dead code
+// was removed after it accumulated two separate ReferenceErrors (undefined
+// `debug`, then undefined `text`) that nothing ever caught because nothing
+// ever executed it.
 function answerWithIntent(intent, state, norm, rawText, confidence = 0.8) {
     const asked = seasonInQuestion(rawText);
-
-    // Deadline intents.
-    if (intent && intent.startsWith('deadline.')) {
-        const res = answerDeadline(intent, { state: state.activeState });
-        if (res) {
-            state.activeDomain = 'deadlines';
-            state.lastIntent = intent;
-            state.lastAnswerType = 'fact';
-            debug.resolver = 'deadlines'; return finish(reply(res.text, { domain: 'deadlines', intent, confidence, sourceType: res.sourceType, suggestions: ['When is nationals?', 'When are regionals?'] }), state, debug);
-        }
-    }
-
-    // Conference intents.
-    if (intent && intent.startsWith('conference.')) {
-        const res = answerConference(intent, norm.tokens);
-        if (res) {
-            state.activeDomain = 'conference';
-            state.lastIntent = intent;
-            state.lastAnswerType = 'fact';
-            debug.resolver = 'conference'; return finish(reply(res.text, { domain: 'conference', intent, confidence, sourceType: res.sourceType, suggestions: ['When is the conference?', 'Where is it?', 'What is the theme?'] }), state, debug);
-        }
-    }
-
-    // Rule intents.
-    if (intent && intent.startsWith('rule.')) {
-        const eventId = state.activeEvent?.id || null;
-        const res = answerRule(norm.tokens, { eventId, seed: rawText });
-        if (res) {
-            state.activeDomain = 'rules';
-            state.lastIntent = intent;
-            state.lastAnswerType = 'fact';
-            debug.resolver = 'rules'; return finish(reply(res.text, { domain: 'rules', intent, confidence, sourceType: res.sourceType, source: res.source, suggestions: ['Can we use AI?', 'What is the dress code?', 'What about citations?'] }), state, debug);
-        }
-        return fallback('tsa-unsupported', { seed: rawText });
-    }
-
-    // General/getting-started intents.
-    if (intent && intent.startsWith('general.')) {
-        const res = answerGeneral(intent, norm.tokens, text);
-        if (res) {
-            state.activeDomain = 'general';
-            state.lastIntent = intent;
-            state.lastAnswerType = 'fact';
-            debug.resolver = 'general';
-            return finish(reply(res.text, { domain: 'general', intent, confidence, sourceType: res.sourceType, suggestions: ['What is TSA?', 'How do competitions work?', 'How do I get started?'] }), state, debug);
-        }
-    }
-
-    // State intents.
-    if (intent && intent.startsWith('state.')) {
-        // Try to detect a state name in the message, fall back to conversation state.
-        const mentioned = detectStateName(text);
-        if (mentioned) state.activeState = mentioned;
-        const res = answerState(intent, { stateName: state.activeState });
-        if (res) {
-            state.activeDomain = 'state';
-            state.lastIntent = intent;
-            state.lastAnswerType = res.missing ? 'missing' : 'fact';
-            if (res.needState) {
-                state.pendingClarification = { need: 'state', intent };
-            }
-            debug.resolver = 'state';
-            return finish(reply(res.text, { domain: 'state', intent, confidence, sourceType: res.sourceType, suggestions: ['Who is my state advisor?', 'What is my state website?', 'State officer team'] }), state, debug);
-        }
-    }
-
-    // "what events are best for software developer major" — search by career tag
-    if (intent === 'career.byMajor') {
-        const text_lower = text.toLowerCase();
-        const CAREER_MAP = {
-            'software': 'software', 'software dev': 'software', 'software developer': 'software',
-            'app dev': 'software', 'web dev': 'web-dev', 'web developer': 'web-dev',
-            'data science': 'data-science', 'data scientist': 'data-science', 'data analyst': 'data-science',
-            'ai': 'ai', 'machine learning': 'ai', 'artificial intelligence': 'ai',
-            'cybersecurity': 'cybersecurity', 'cyber': 'cybersecurity',
-            'robotics': 'robotics', 'engineering': 'mechanical-eng',
-            'aerospace': 'aerospace', 'aviation': 'aerospace',
-            'architecture': 'architecture', 'civil': 'civil-eng',
-            'manufacturing': 'manufacturing', 'design': 'design', 'graphic': 'design',
-            'marketing': 'marketing', 'business': 'business',
-            'film': 'media-film', 'video': 'media-film', 'media': 'media-film', 'music': 'media-film',
-            'medicine': 'medicine', 'medical': 'medicine', 'health': 'medicine',
-            'education': 'education', 'teaching': 'education', 'fashion': 'fashion',
-            'research': 'research-science', 'science': 'research-science', 'biology': 'biotech',
-        };
-        let careerKey = null;
-        for (const [word, key] of Object.entries(CAREER_MAP)) {
-            if (text_lower.includes(word)) { careerKey = key; break; }
-        }
-        const careerLabel = careerKey ? careerKey.replace(/-/g, ' ') : 'that field';
-        const CAREER_EVENTS = {
-            'software': 'Software Development, Webmaster, Coding, Data Science and Analytics, and Cybersecurity (HS). In Middle School: Coding, Data Science, Cybersecurity, and Microcontroller Design.',
-            'web-dev': 'Webmaster and Software Development (HS), or Website Design (MS).',
-            'data-science': 'Data Science and Analytics (HS and MS), Coding, and Software Development.',
-            'ai': 'Artificial Intelligence (AI) and Data Science and Analytics (HS).',
-            'cybersecurity': 'Cybersecurity (HS and MS) and Coding.',
-            'mechanical-eng': 'Engineering Design, Animatronics, Robotics, Manufacturing Prototype, and Drone Challenge (HS).',
-            'aerospace': 'Drone Challenge, Flight Endurance, Transportation Modeling, and Robotics.',
-            'civil-eng': 'Architectural Design, Structural Design and Engineering, and CAD events.',
-            'architecture': 'Architectural Design, Interior Design, and CAD Architecture.',
-            'design': 'Webmaster, Promotional Design, and CAD events.',
-            'marketing': 'Promotional Design and Fashion Design and Technology.',
-            'business': 'Fashion Design and Technology, Chapter Team, and Promotional Design.',
-            'media-film': 'Digital Video Production, Vlogging, On Demand Video, Audio Podcasting, and Music Production.',
-            'medicine': 'Biotechnology Design and Forensic Science (HS), Medical Technology and Forensic Technology (MS).',
-            'research-science': 'Data Science and Analytics, Biotechnology Design, and Forensic Science.',
-            'game-dev': 'Video Game Design (HS and MS) and Virtual Reality Simulation.',
-            'robotics': 'Robotics, Animatronics, Drone Challenge, and System Control Technology.',
-            'fashion': 'Fashion Design and Technology.',
-        };
-        const eventsText = CAREER_EVENTS[careerKey] || 'Check events in the Engineering, Computing, or Design categories that relate to your field.';
-        const msg = careerKey
-            ? ('For a ' + careerLabel + ' career path, strong TSA events include ' + eventsText)
-            : 'It depends on the career area. Ask me something like "what events connect to software careers" or "what events are good for engineering?"';
-        debug.resolver = 'career.byMajor';
-        return finish(reply(msg, { domain: 'careers', intent, confidence, sourceType: 'derived',
-            suggestions: ['What careers does Software Development lead to?', 'Which events connect to engineering?'] }), state, debug);
-    }
-
-    // advisor.meaning — general explanation, no event needed
-    if (intent === 'advisor.meaning') {
-        debug.resolver = 'advisor.meaning';
-        return finish(reply(
-            'State advisor approval means your state TSA advisor must approve your entry before you can register for that event at the national conference. Events marked with an asterisk (*) require this. Contact your chapter advisor first, and they will work with the state advisor to get approval.',
-            { domain: 'rules', intent, confidence, sourceType: 'official',
-              suggestions: ['Which events need state advisor approval?', 'What do I need to submit?'] }
-        ), state, debug);
-    }
 
     if (REQUIRES_TWO_EVENTS.has(intent)) {
         const res = answerCompare(state.activeEvents.slice(0, 2), intent);

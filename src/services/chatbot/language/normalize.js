@@ -14,14 +14,14 @@ const CONTRACTIONS = {
     "don't": 'do not', "doesn't": 'does not', "can't": 'can not', "won't": 'will not',
     "isn't": 'is not', "aren't": 'are not', "you're": 'you are', "there's": 'there is',
     "i've": 'i have', "i'd": 'i would', "let's": 'let us', "that's": 'that is',
-    "how's": 'how is', "who's": 'who is',
+    "how's": 'how is', "who's": 'who is', "whos": 'who is',
 };
 
 // Generic wording to a canonical token. Never contains event names.
 const SYNONYMS = {
     members: 'team', member: 'team', teammates: 'team', teammate: 'team',
     people: 'team', person: 'team', partners: 'team', partner: 'team',
-    group: 'team', groups: 'team', players: 'team',
+    group: 'team', groups: 'team', players: 'team', ppl: 'team',
     solo: 'individual', alone: 'individual', myself: 'individual',
     individually: 'individual', single: 'individual', yourself: 'individual',
     price: 'cost', costs: 'cost', expensive: 'cost', cheap: 'cost', money: 'cost',
@@ -52,7 +52,10 @@ const SYNONYMS = {
 export function expandContractions(text) {
     let out = (text || '').toLowerCase();
     for (const [k, v] of Object.entries(CONTRACTIONS)) {
-        out = out.split(k).join(v);
+        // Word-boundary-safe: a plain split/join would also rewrite "whos"
+        // inside "whose" (and any future apostrophe-free key inside a longer
+        // real word) into garbage tokens.
+        out = out.replace(new RegExp(`\\b${k}\\b`, 'g'), v);
     }
     return out;
 }

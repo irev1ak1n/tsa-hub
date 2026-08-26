@@ -23,6 +23,14 @@ export function fallback(kind, { seed = '', candidates = [], domain = null } = {
             ], seed), kind };
         case 'ambiguous-event': {
             const names = candidates.map((c) => c.name).filter(Boolean);
+            const divisions = new Set(candidates.map((c) => c.division).filter(Boolean));
+            // Same event name in both divisions ("Audio Podcasting") — "did
+            // you mean X or X?" would be nonsense, ask about division instead.
+            if (names.length >= 2 && new Set(names).size === 1 && divisions.size >= 2) {
+                const divLabel = (d) => (d === 'HS' ? 'High School' : 'Middle School');
+                const divList = [...divisions].map(divLabel).join(' or ');
+                return { text: `Are you asking about the ${divList} version of ${names[0]}? (${divList.replace(' or ', ' and ')} have different details.)`, kind, candidates };
+            }
             const list = names.length === 2 ? names.join(' or ') : names.join(', ');
             return { text: pick([
                 `I found more than one possible match. Did you mean ${list}?`,

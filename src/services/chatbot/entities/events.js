@@ -123,8 +123,57 @@ export function resolveEvents(text, { activeDivision = null } = {}) {
 
     if (!hits.length) return { events: [], candidates: [], ambiguous: false, fuzzy: false };
 
+    // A name that exists in BOTH divisions (e.g. "Audio Podcasting") is
+    // genuinely ambiguous without division context — dedupeByName would
+    // otherwise silently collapse it to whichever division sorted first
+    // (DB order is alphabetical by division, so HS always won), handing back
+    // confident-looking HS content to a middle schooler who never said which
+    // division they meant. Ask instead, unless the caller already knows.
+    if (!activeDivision) {
+        const strongByName = new Map();
+        let bestScore = 0;
+        for (const h of hits) {
+            if (h.score < 0.9) continue;
+            bestScore = Math.max(bestScore, h.score);
+            const key = h.rec.lower;
+            if (!strongByName.has(key)) strongByName.set(key, []);
+            strongByName.get(key).push(h);
+        }
+        for (const group of strongByName.values()) {
+            const divisions = new Set(group.map((h) => h.rec.event.division));
+            // Only treat this as THE division ambiguity when it's the best
+            // candidate on the table — a lower-scoring name collision (e.g.
+            // an alias shared with an unrelated event) must not shadow a
+            // stronger, unambiguous exact match elsewhere in the same query.
+            if (divisions.size >= 2 && group[0].score >= bestScore) {
+                return {
+                    events: [],
+                    candidates: group.map((h) => h.rec.event),
+                    ambiguous: true,
+                    fuzzy: false,
+                    divisionAmbiguous: true,
+                };
+            }
+        }
+    }
+
     const deduped = dedupeByName(hits, activeDivision).sort((a, b) => b.score - a.score);
-    const strong = deduped.filter((h) => h.score >= 0.9);
+    let strong = deduped.filter((h) => h.score >= 0.9);
+
+    // A shorter event name that is a literal substring of a longer strong
+    // match's name (e.g. "Biotechnology" inside "Biotechnology Design")
+    // almost always means the user typed the longer name once, not two
+    // events — drop the substring match. But only when the LONGER name was
+    // itself matched by literal exact substring (how === 'name'), i.e. the
+    // user actually typed it — not when it only got in via a curated alias
+    // (e.g. "dragster" is a listed alias of "Dragster Design"). Otherwise a
+    // plain "What is Dragster?" would lose its own exact match to a shorter
+    // name and get incorrectly resolved as the longer, unrelated event.
+    if (strong.length >= 2) {
+        strong = strong.filter((h) => !strong.some((other) =>
+            other !== h && other.how === 'name' && other.rec.lower.includes(h.rec.lower) && other.rec.lower !== h.rec.lower
+        ));
+    }
 
     // Two or more strong matches is a legitimate multi event message.
     if (strong.length >= 2) {
