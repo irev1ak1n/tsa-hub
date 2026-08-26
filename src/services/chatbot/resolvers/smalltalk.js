@@ -45,7 +45,14 @@ const RULES = [
     { intent: 'restart', re: /^(start over|restart|reset|new chat|clear)\b/, control: true },
     // Explicit ask for a human — opens the support flow immediately,
     // independent of the consecutive-misunderstanding counter in engine.js.
-    { intent: 'requestSupport', re: /\b(contact support|customer support|talk to (a |)(human|someone|person)|speak to (a )?(human|person)|human please|real person)\b/, control: true },
+    { intent: 'requestSupport', re: /\b(contact support|contact tsa hub support|tsa hub support|customer support|tech support|talk to (a |)(human|someone|person)|speak to (a )?(human|person)|human please|real person|can (someone|somebody) help me|i want to talk to (someone|a person|a human)|let me talk to (a person|someone|a human)|this bot (isn'?t|is not) (helping|understanding( me)?|working)|this (isn'?t|is not) (helping|working)|bot isnt understanding)\b/, control: true },
+    // Product/app problem reports also route to TSA Hub Support (section 29)
+    // — the student reporting a bug means TSA Hub, never National TSA.
+    { intent: 'requestSupport', re: /\b(calendar|search( page)?|coach|website|(this |the )?app) (is broken|is crashing|crashes|keeps crashing|is not working|isn'?t working|gives? (me )?(the )?(wrong|same) (answers?|thing))\b/, control: true },
+    { intent: 'requestSupport', re: /\b(who do i tell about|report) a bug\b/, control: true },
+    { intent: 'requestSupport', re: /\bcoach keeps giving me (the )?(wrong|same) (answers?|thing)\b/, control: true },
+    { intent: 'requestSupport', re: /\byou keep giving me the same thing\b/, control: true },
+    { intent: 'requestSupport', re: /^(human|support|help me)[!.?\s]*$/, control: true },
     { intent: 'keepTrying', re: /^(keep trying|i'?ll keep trying)\b/, control: true },
     { intent: 'style.simple', re: /(explain|say|put) (it |that )?(more )?simpl|simpler|in simple terms|dumb it down/, control: true },
     { intent: 'style.detail', re: /(tell me more|more detail|explain more|go deeper|elaborate)/, control: true },

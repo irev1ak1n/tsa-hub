@@ -21,6 +21,32 @@ const PHRASES = [
     { intent: 'team.general', re: /\bcan (all|both) (of )?(us|them|we)\b.{0,25}\b(do|be on|join|compete|enter)\b/, c: 0.88 },
     { intent: 'team.general', re: /\bis (that|this) too many\b/, c: 0.85 },
     { intent: 'team.general', re: /\bif there('?s| is) \d+ of us\b/, c: 0.85 },
+    // Capability-limit requests — an outbound-action VERB directed at a
+    // target ("can you text them", "email my advisor", "call national tsa
+    // for me"). Deliberately requires an action verb, so a plain factual
+    // "what is national tsa's email" (no verb) never lands here — see
+    // contact.nationalInfo below for that case.
+    { intent: 'capability.outboundContact', re: /\b(can|could|will) (you|u) (text|call|phone|dm|message|email)\b/, c: 0.94 },
+    { intent: 'capability.outboundContact', re: /\b(text|call|phone|dm|message|email) (them|him|her|it|tsa|national tsa|my advisor)\b.{0,20}\bfor me\b/, c: 0.92 },
+    { intent: 'capability.outboundContact', re: /\bsend (them|him|her|it) (a |an )?(text|message|dm|email|instagram dm|facebook message)\b/, c: 0.93 },
+    { intent: 'capability.outboundContact', re: /\bmake the (phone )?call\b/, c: 0.9 },
+    { intent: 'capability.outboundContact', re: /\b(can|could) (you|u) (reach out|talk) to (them|him|her|my advisor|tsa|national tsa)\b/, c: 0.9 },
+    { intent: 'capability.outboundContact', re: /\bcontact (them|him|her|my advisor|tsa|national tsa|somebody|someone) for me\b/, c: 0.9 },
+    { intent: 'capability.outboundContact', re: /\b(open gmail and email|send it automatically|can (you|u) send it automatically)\b/, c: 0.9 },
+    { intent: 'capability.outboundContact', re: /\b(text|call|phone|dm|message) (tsa|national tsa|alabama tsa|my advisor)\b/, c: 0.88 },
+    { intent: 'capability.outboundContact', re: /\bemail (my advisor|national tsa|tsa hub)\b/, c: 0.88 },
+    // Confidence above state.advisor's broad "contact.*(state|advisor)"
+    // catch-all below — "can you contact X" is an action request, not the
+    // "who is my advisor" factual question that catch-all exists for.
+    { intent: 'capability.outboundContact', re: /\b(can|could) (you|u) contact (my advisor|them|him|her|tsa|national tsa)\b/, c: 0.95 },
+    // Factual "what is National TSA's contact info" — has real, sourced data
+    // to give, so this is NOT a capability limit.
+    { intent: 'contact.nationalInfo', re: /\b(what'?s?|what is) (national tsa'?s?|the national tsa) (phone|email|number|contact)\b/, c: 0.92 },
+    { intent: 'contact.nationalInfo', re: /\bnational tsa'?s? (phone number|email|contact info|contact information)\b/, c: 0.9 },
+    { intent: 'contact.nationalInfo', re: /\b(contact information|contact info) for national tsa\b/, c: 0.88 },
+    { intent: 'contact.nationalInfo', re: /\b(need|want|trying) to (contact|reach) national tsa\b/, c: 0.88 },
+    { intent: 'contact.nationalInfo', re: /^contact national tsa\b/, c: 0.85 },
+    { intent: 'contact.nationalInfo', re: /\bnational tsa contact\b/, c: 0.9 },
     { intent: 'cost.isExpensive', re: /\b(is|are) .*(expensive|pricey|cheap|affordable)\b/, c: 0.9 },
     { intent: 'cost.general', re: /how much .*(cost|price|pay|spend)/, c: 0.92 },
     { intent: 'time.general', re: /how (long|much time)/, c: 0.9 },

@@ -331,7 +331,7 @@ export default function Coach() {
     setMessages((m) => [
       ...m,
       { role: 'user', text: q },
-      { role: 'bot', text: res.text, suggestions: res.suggestions || [] },
+      { role: 'bot', text: res.text, suggestions: res.suggestions || [], mailto: res.mailto || null },
     ]);
     setInput('');
   }
@@ -457,9 +457,14 @@ export default function Coach() {
                           TSA Assistant
                         </div>
                         <div className="cch-card">{m.text}</div>
-                        {m.suggestions && m.suggestions.length > 0 && (
+                        {(m.mailto || (m.suggestions && m.suggestions.length > 0)) && (
                             <div className="cch-chips">
-                              {m.suggestions.map((s) => (
+                              {m.mailto && (
+                                  <a className="cch-chip cch-chip-mailto" href={m.mailto} target="_blank" rel="noreferrer">
+                                    Open email
+                                  </a>
+                              )}
+                              {(m.suggestions || []).map((s) => (
                                   <button className="cch-chip" key={s} onClick={() => send(s)}>
                                     {s}
                                   </button>

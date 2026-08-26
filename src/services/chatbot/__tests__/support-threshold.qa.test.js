@@ -68,19 +68,23 @@ describe('clarifications are NOT misunderstandings and must not advance the coun
 });
 
 describe('explicit support request bypasses the counter entirely', () => {
-    it('"contact support" on the very first message opens support immediately', () => {
+    // Opens the guided TSA Hub Support flow immediately — never dumps
+    // National TSA's contact info in response to a support request (that
+    // would be the wrong identity; see contacts.js and capability.qa tests).
+    it('"contact support" on the very first message opens the support flow immediately', () => {
         const res = ask('contact support');
-        expect(res.text).toMatch(/support|general@tsaweb\.org/i);
+        expect(res.text).toMatch(/help with/i);
+        expect(res.text).not.toMatch(/general@tsaweb\.org|703-860-9000/);
     });
 
-    it('"can i talk to someone" opens support immediately', () => {
+    it('"can i talk to someone" opens the support flow immediately', () => {
         const res = ask('can i talk to someone');
-        expect(res.text).toMatch(/support|general@tsaweb\.org/i);
+        expect(res.text).toMatch(/help with/i);
     });
 
-    it('"human please" opens support immediately', () => {
+    it('"human please" opens the support flow immediately', () => {
         const res = ask('human please');
-        expect(res.text).toMatch(/support|general@tsaweb\.org/i);
+        expect(res.text).toMatch(/help with/i);
     });
 
     it('clicking "Keep trying" after an offer continues normally and does not re-loop into another offer', () => {
@@ -89,10 +93,26 @@ describe('explicit support request bypasses the counter entirely', () => {
         expect(last.text).not.toMatch(/contact support|send your question/i);
     });
 
-    it('clicking "Contact support" after an offer hands over real contact info', () => {
+    it('clicking "Contact support" after an offer opens the TSA Hub Support draft (auto-filled from context), NOT National TSA contact info', () => {
         const turns = askChain([GIBBERISH, GIBBERISH, GIBBERISH, 'Contact support']);
         const last = turns[turns.length - 1];
-        expect(last.text).toMatch(/general@tsaweb\.org|703-860-9000/);
+        expect(last.text).toMatch(/tsa coach|prepare/i);
+        expect(last.text).not.toMatch(/general@tsaweb\.org|703-860-9000/);
+    });
+
+    it('confirming the draft with "send" prepares a real TSA Hub support email — never claims delivery happened', () => {
+        const turns = askChain([GIBBERISH, GIBBERISH, GIBBERISH, 'Contact support', 'send']);
+        const last = turns[turns.length - 1];
+        expect(last.text).toMatch(/tsastudentshub@gmail\.com/);
+        expect(last.text).not.toMatch(/\bsent\b\.? tsa hub support received/i);
+        expect(last.mailto).toContain('tsastudentshub@gmail.com');
+    });
+
+    it('a real question asked while a draft is pending is still answered normally (regression: the exact UI flow this session fixed)', () => {
+        const turns = askChain([GIBBERISH, GIBBERISH, GIBBERISH, 'Contact support', 'can you text them']);
+        const last = turns[turns.length - 1];
+        expect(last.text).not.toMatch(/not totally sure what you mean/i);
+        expect(last.text).toMatch(/text message/i);
     });
 });
 

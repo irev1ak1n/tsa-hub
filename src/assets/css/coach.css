@@ -460,3 +460,10 @@ html[data-theme="light"] .cch-chip:hover {
     background: #f2f2f5;
     color: #111111;
 }
+
+/* The mailto "Open email" chip is an <a>, not a <button> — match the rest. */
+.cch-chip-mailto {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}

@@ -11,6 +11,8 @@ import { answerRule } from './resolvers/rules.js';
 import { answerConference } from './resolvers/conference.js';
 import { answerState } from './resolvers/state.js';
 import { answerGeneral } from './resolvers/general.js';
+import { answerCapabilityLimit, answerNationalContactInfo } from './resolvers/capability.js';
+import { TSA_HUB_SUPPORT_EMAIL, SUPPORT_CATEGORIES } from '../../data/contacts.js';
 import { STATE_TSA, US_STATES } from '../../data/stateTsa.js';
 import { followupsFor } from './suggestions/followups.js';
 import { seasonInQuestion, freshnessWarning } from './guards/dataGuards.js';
@@ -67,10 +69,39 @@ export function processMessage(input, prevState) {
     const norm = normalize(text);
     const debug = { input: text, normalized: norm.joined };
 
+    // A guided TSA Hub support draft in progress only consumes messages it
+    // genuinely needs (the drafted text itself, or an explicit send/cancel)
+    // — "cancel" always works, and a real question typed while a draft
+    // sits waiting on "send" still gets answered normally rather than
+    // being swallowed as a replacement message (the draft just stays
+    // pending, untouched, until the user actually confirms or cancels it).
+    if (state.supportFlow) {
+        const flow = state.supportFlow;
+        const lower = text.toLowerCase().trim();
+        const isCancel = /\b(cancel|never ?mind|nvm|forget it|stop)\b/.test(lower);
+        // Anchored to the WHOLE message (not just a leading word) — "yes but
+        // also when are nationals" must fall through and answer the real
+        // question, not get swallowed as a bare confirm of the pending draft.
+        const isConfirm = /^(send|yes|confirm|go ahead|do it)[!.\s]*$/.test(lower);
+        const awaitingText = flow.step === 'awaiting_message' || flow.step === 'awaiting_message_after_category';
+        if (isCancel || awaitingText || (flow.step === 'confirm' && isConfirm)) {
+            debug.resolver = `support-flow:${flow.step}`;
+            return finish(handleSupportFlow(text, state), state, debug);
+        }
+        // Otherwise: fall through to normal processing below, draft untouched.
+    }
+
+    // What the user typed the turn before this one — used to auto-draft a
+    // TSA Hub support message from context instead of asking them to
+    // retype a problem they just described (e.g. right after a capability
+    // limit like "can you text them").
+    const prevUserText = state.lastUserText || null;
+    state.lastUserText = text;
+
     // Control intents run first, they change state rather than answer facts.
     const small = detectSmallTalk(norm, state);
     if (small?.control) {
-        const handled = handleControl(small.intent, norm, state);
+        const handled = handleControl(small.intent, norm, state, prevUserText);
         if (handled) {
             debug.resolver = `control:${small.intent}`;
             return finish(handled.response, handled.state, debug);
@@ -196,8 +227,13 @@ export function processMessage(input, prevState) {
         debug.inheritedContext = `intent:${intent}`;
     }
 
-    // Nothing TSA about the message and no context to lean on.
-    if (domain.domain === 'unknown' && !resolved.events.length && !state.activeEvent) {
+    // Nothing TSA about the message and no context to lean on. Gated on
+    // `!intent` too — the coarser keyword-based domain classifier not
+    // recognizing a message (e.g. capability requests like "can you text
+    // them" use none of DOMAIN_SIGNALS' words) must never discard an
+    // intent the more specific PHRASES/TOKEN_INTENTS router already found
+    // with real confidence.
+    if (domain.domain === 'unknown' && !intent && !resolved.events.length && !state.activeEvent) {
         debug.resolver = 'unknown-no-context';
         return finish(fallback('unknown'), state, debug);
     }
@@ -270,6 +306,28 @@ export function processMessage(input, prevState) {
             debug.resolver = 'rules'; return finish(reply(res.text, { domain: 'rules', intent, confidence, sourceType: res.sourceType, source: res.source, suggestions: ['Can we use AI?', 'What is the dress code?', 'What about citations?'] }), state, debug);
         }
         debug.resolver = 'rules-miss'; return finish(fallback('tsa-unsupported', { seed: text }), state, debug);
+    }
+
+    // Capability-limit: the request was understood perfectly, the Coach
+    // just can't perform an outbound action itself. Not a misunderstanding —
+    // response carries no `kind`, so it never touches misunderstandingCount.
+    if (intent === 'capability.outboundContact') {
+        const res = answerCapabilityLimit(text);
+        state.activeDomain = 'capability';
+        state.lastIntent = intent;
+        state.lastAnswerType = 'fact';
+        debug.resolver = 'capability';
+        return finish(reply(res.text, { domain: 'capability', intent, confidence, sourceType: 'official', suggestions: res.suggestions }), state, debug);
+    }
+
+    // Factual National TSA contact info — real, sourced data, not a limit.
+    if (intent === 'contact.nationalInfo') {
+        const res = answerNationalContactInfo();
+        state.activeDomain = 'capability';
+        state.lastIntent = intent;
+        state.lastAnswerType = 'fact';
+        debug.resolver = 'contact-national';
+        return finish(reply(res.text, { domain: 'capability', intent, confidence, sourceType: 'official', suggestions: res.suggestions, mailto: res.mailto }), state, debug);
     }
 
     // General/getting-started intents.
@@ -455,7 +513,7 @@ function answerWithIntent(intent, state, norm, rawText, confidence = 0.8) {
     });
 }
 
-function handleControl(intent, norm, state) {
+function handleControl(intent, norm, state, prevUserText) {
     switch (intent) {
         case 'restart':
             return { response: reply('Starting fresh. What would you like to know about TSA?'), state: resetState(state) };
@@ -510,22 +568,100 @@ function handleControl(intent, norm, state) {
         case 'deny':
             return { response: reply('No problem. What did you mean?'), state: { ...state, pendingClarification: null } };
         case 'requestSupport': {
-            // A direct ask ("contact support", "human please") is a final
-            // action, not another question — hand over real contact info
-            // immediately rather than looping back into another offer.
+            // A direct ask ("contact support", "human please") opens the
+            // real TSA Hub Support flow (category -> message -> confirm),
+            // not National TSA's info — those are two different
+            // destinations and must not be conflated (see contacts.js).
             const next = { ...state, misunderstandingCount: 0 };
-            return {
-                response: reply(
-                    "No problem — you can reach TSA Hub support at general@tsaweb.org or 703-860-9000. Your chapter advisor can also help directly with anything state-specific.",
-                ),
-                state: next,
-            };
+            return { response: startSupportFlow(next, prevUserText), state: next };
         }
         case 'keepTrying':
             return { response: reply("Sure — what would you like to know?"), state: { ...state, misunderstandingCount: 0 } };
         default:
             return null;
     }
+}
+
+// --- TSA Hub Support flow ------------------------------------------------
+// Guided draft: (context-aware auto-draft, or one question for the
+// message) -> preview -> explicit "send" before anything is prepared.
+// Never claims delivery happened — the final step hands the user a real
+// mailto: link they have to actually send themselves, since there is no
+// backend email endpoint in this app to deliver through. A real question
+// asked while a draft sits waiting on "send" is answered normally instead
+// of being swallowed (see the isConfirm/isCancel gate in processMessage) —
+// only the confirm/cancel keywords and the direct answer to "what do you
+// need help with" are treated as flow input.
+
+function startSupportFlow(state, prevUserText) {
+    // If the immediately preceding message already explains the problem
+    // (e.g. a capability-limit trigger like "can you text them"), draft
+    // from it directly instead of making the student retype it.
+    const context = prevUserText && prevUserText.length > 3 ? prevUserText : null;
+    if (context) {
+        const category = 'TSA Coach';
+        const message = `TSA Coach didn't fully resolve my question: "${context}"`;
+        state.supportFlow = { step: 'confirm', category, message };
+        return previewReply(category, message);
+    }
+    state.supportFlow = { step: 'awaiting_message' };
+    return reply('What would you like help with? Pick a category or just tell me the issue.', { suggestions: SUPPORT_CATEGORIES.slice(0, 6) });
+}
+
+function matchCategory(text) {
+    const lower = text.toLowerCase();
+    return SUPPORT_CATEGORIES.find((c) => lower.includes(c.toLowerCase())) || 'Something else';
+}
+
+function supportMailto(category, message) {
+    const subject = encodeURIComponent(`TSA Hub Support — ${category}`);
+    const body = encodeURIComponent(`Category: ${category}\n\n${message}\n\n(Sent from TSA Coach)`);
+    return `mailto:${TSA_HUB_SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
+}
+
+function previewReply(category, message) {
+    return reply(
+        `Here's what I'll prepare:\n\nCategory: ${category}\nMessage: "${message}"\n\nType "send" to confirm, or "cancel" to stop.`,
+        { suggestions: ['send', 'cancel'] }
+    );
+}
+
+function handleSupportFlow(text, state) {
+    const flow = state.supportFlow;
+    const lower = text.toLowerCase().trim();
+
+    if (/\b(cancel|never ?mind|nvm|forget it|stop)\b/.test(lower)) {
+        state.supportFlow = null;
+        return reply("No problem — let me know if you need anything else.");
+    }
+
+    if (flow.step === 'awaiting_message') {
+        const trimmed = text.trim();
+        const category = matchCategory(trimmed);
+        // A bare category chip click ("TSA Coach") still needs an actual
+        // message — ask once more instead of drafting "Message: TSA Coach".
+        if (category.toLowerCase() === trimmed.toLowerCase()) {
+            state.supportFlow = { step: 'awaiting_message_after_category', category };
+            return reply(`Got it — ${category}. What would you like to ask or get help with?`);
+        }
+        state.supportFlow = { step: 'confirm', category, message: trimmed };
+        return previewReply(category, trimmed);
+    }
+
+    if (flow.step === 'awaiting_message_after_category') {
+        const message = text.trim();
+        state.supportFlow = { step: 'confirm', category: flow.category, message };
+        return previewReply(flow.category, message);
+    }
+
+    // flow.step === 'confirm', and the early gate in processMessage already
+    // confirmed this text matches the send keyword.
+    const mailto = supportMailto(flow.category, flow.message);
+    state.supportFlow = null;
+    return reply(
+        `Your message is ready — I've prepared an email to TSA Hub support (${TSA_HUB_SUPPORT_EMAIL}). Open it below and hit send from your email app to finish. I can't confirm it's received until you do.`,
+        { mailto, suggestions: [] }
+    );
 }
 
 // Consecutive GENUINE misunderstandings only — kind 'unknown' / 'tsa-unsupported'
