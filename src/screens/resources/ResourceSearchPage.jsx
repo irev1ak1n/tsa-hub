@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext.jsx';
 import { Icon } from '../../components/UI.jsx';
 import { getStateTsa } from '../../data/stateTsa.js';
 import { BackLink } from './resourcesShared.jsx';
-import { buildResourceIndex, matchesResource, SearchResults } from './resourceSearch.jsx';
+import { buildResourceIndex, searchResources, SearchResults } from './resourceSearch.jsx';
 
 export default function ResourceSearch() {
     const { prefs } = useApp();
@@ -33,8 +33,7 @@ export default function ResourceSearch() {
     const removeRecent = (term) => saveRecent(recent.filter((r) => r !== term));
     const clearRecent = () => saveRecent([]);
 
-    const tokens = q.split(/\s+/).filter(Boolean);
-    const results = q ? buildResourceIndex(stateInfo).filter((it) => matchesResource(it, tokens)) : [];
+    const results = q ? searchResources(buildResourceIndex(stateInfo), q) : [];
 
     return (
         <>

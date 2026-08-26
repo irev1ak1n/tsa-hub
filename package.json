@@ -9,7 +9,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "sync:tsa-calendar": "node scripts/syncTsaCalendar.mjs",
-    "test:coach": "vitest run src/services/chatbot/__tests__"
+    "test:coach": "vitest run src/services/chatbot/__tests__",
+    "test:resources-search": "vitest run src/screens/resources/__tests__",
+    "test": "vitest run"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.7",
