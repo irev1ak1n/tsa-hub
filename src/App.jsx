@@ -35,6 +35,11 @@ import Conference2027 from './screens/conference/Conference2027.jsx';
 
 import Calendar from './screens/Calendar.jsx';
 
+import Help from './screens/help/Help.jsx';
+import HelpArticlesIndex from './screens/help/HelpArticlesIndex.jsx';
+import HelpArticle from './screens/help/HelpArticle.jsx';
+import HelpStatus from './screens/help/HelpStatus.jsx';
+
 export default function App() {
     return (
         <AppProvider>
@@ -57,6 +62,11 @@ export default function App() {
                         <Route path="/coach" element={<Coach />} />
 
                         <Route path="/calendar" element={<Calendar />} />
+
+                        <Route path="/help" element={<Help />} />
+                        <Route path="/help/articles" element={<HelpArticlesIndex />} />
+                        <Route path="/help/article/:id" element={<HelpArticle />} />
+                        <Route path="/help/status" element={<HelpStatus />} />
 
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/privacy" element={<PrivacyPolicy />} />

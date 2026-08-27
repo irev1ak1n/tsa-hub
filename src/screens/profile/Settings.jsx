@@ -110,15 +110,9 @@ function SubmitModal({ title, hint, placeholder, doneText, onSubmit, onClose }) 
 export default function Settings() {
     const navigate = useNavigate();
     const { theme, toggleTheme } = useApp();
-    const [note, setNote] = useState('');
     const [modal, setModal] = useState(null); // 'feedback' | 'report' | null
 
     const dark = theme !== 'light';
-
-    function soon(msg) {
-        setNote(msg);
-        setTimeout(() => setNote(''), 2200);
-    }
 
     return (
         <>
@@ -126,13 +120,6 @@ export default function Settings() {
                 <div className="rs-eyebrow">SYSTEM & STYLE</div>
                 <h1 className="cal-h1">Settings</h1>
             </div>
-
-            {note && (
-                <div className="notice info" role="status">
-                    <span aria-hidden="true">ⓘ</span>
-                    <span>{note}</span>
-                </div>
-            )}
 
             {/* Appearance */}
             <div className="set-card">
@@ -158,7 +145,7 @@ export default function Settings() {
             {/* Support */}
             <div className="set-card">
                 <div className="set-card-title">Support</div>
-                <Row icon="help" label="Help Center" soon onClick={() => soon("Help Center isn't available yet.")} />
+                <Row icon="help" label="Help Center" onClick={() => navigate('/help')} />
                 <Row icon="chat" label="Send Feedback" onClick={() => setModal('feedback')} />
                 <Row icon="info" label="Report Incorrect Information" onClick={() => setModal('report')} />
             </div>

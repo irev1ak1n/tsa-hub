@@ -1,0 +1,213 @@
+/* Help Center — reuses rs-* (cards/rows/search/modal) and fb-* (textarea/
+   actions) primitives from resources.css / feedback-modal.css. This file
+   only adds what's genuinely new: the bottom support CTA, search-results
+   empty state, and the small form fields used in the report/contact modals. */
+
+.help-cta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+    margin-bottom: 24px;
+    padding: 18px 20px;
+    border-radius: var(--radius);
+    background: #171717;
+    border: 1px solid var(--card-line, #404040);
+}
+
+.help-cta-ico {
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(206, 17, 38, 0.14);
+    color: var(--red-600, #ce1126);
+}
+
+.help-cta-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.help-cta-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ig-ink, #ffffff);
+    margin: 0 0 2px;
+}
+
+.help-cta-sub {
+    font-family: var(--font-system);
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0;
+}
+
+.help-cta-btn {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 20px;
+    border-radius: var(--radius-sm);
+    background: var(--red-600, #ce1126);
+    color: #ffffff;
+    font-family: var(--font-system);
+    font-size: 14px;
+    font-weight: 600;
+    border: 0;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.help-cta-btn:hover { background: var(--red-700, #a80d1f); }
+
+@media (max-width: 560px) {
+    .help-cta {
+        flex-wrap: wrap;
+    }
+    .help-cta-btn {
+        width: 100%;
+        margin-top: 4px;
+    }
+}
+
+/* Search results ----------------------------------------------------- */
+
+.help-search-empty {
+    text-align: center;
+    padding: 40px 16px;
+}
+
+.help-search-empty p {
+    font-family: var(--font-system);
+    color: var(--muted);
+    font-size: 15px;
+    margin: 0 0 16px;
+}
+
+.help-search-empty-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Form fields shared by the report / contact-support modals ---------- */
+
+.fb-label {
+    display: block;
+    font-family: var(--font-system);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 14px 0 6px;
+}
+
+.fb-label:first-child { margin-top: 0; }
+
+.fb-select,
+.fb-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 14px;
+    border-radius: var(--radius-sm);
+    background: #171717;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-family: var(--font-system);
+    font-size: 15px;
+    outline: none;
+}
+
+.fb-select:focus,
+.fb-input:focus {
+    border-color: color-mix(in srgb, var(--ig-blue) 45%, var(--line));
+}
+
+.fb-input::placeholder { color: var(--muted); }
+
+.fb-preview {
+    background: #171717;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-family: var(--font-system);
+    font-size: 13px;
+    line-height: 19px;
+    color: var(--muted);
+    white-space: pre-wrap;
+    margin-top: 12px;
+}
+
+.fb-preview strong { color: var(--ink); }
+
+/* Contact Support: separates TSA Hub from National TSA clearly ------- */
+
+.help-contact-block + .help-contact-block {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+}
+
+.help-contact-block-title {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--ig-ink, #ffffff);
+    margin: 0 0 4px;
+}
+
+.help-contact-block-sub {
+    font-family: var(--font-system);
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0 0 10px;
+}
+
+.help-contact-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-system);
+    font-size: 14px;
+    color: var(--ink);
+    text-decoration: none;
+    padding: 6px 0;
+}
+
+.help-contact-line svg { color: var(--muted); flex-shrink: 0; }
+
+html[data-theme="light"] .help-cta {
+    background: #ffffff;
+    border-color: #e4e4ea;
+}
+
+html[data-theme="light"] .help-cta-title,
+html[data-theme="light"] .help-contact-block-title {
+    color: #111111;
+}
+
+html[data-theme="light"] .fb-select,
+html[data-theme="light"] .fb-input,
+html[data-theme="light"] .fb-preview {
+    background: #ffffff;
+    border-color: #d0d0da;
+    color: #111111;
+}
+
+html[data-theme="light"] .fb-input::placeholder { color: #8a8a95; }
+
+html[data-theme="light"] .help-contact-block + .help-contact-block {
+    border-top-color: #e4e4ea;
+}
+
+html[data-theme="light"] .help-contact-line { color: #111111; }
