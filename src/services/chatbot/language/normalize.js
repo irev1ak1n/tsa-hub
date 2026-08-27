@@ -15,6 +15,26 @@ const CONTRACTIONS = {
     "isn't": 'is not', "aren't": 'are not', "you're": 'you are', "there's": 'there is',
     "i've": 'i have', "i'd": 'i would', "let's": 'let us', "that's": 'that is',
     "how's": 'how is', "who's": 'who is', "whos": 'who is',
+    // Common student-chat shorthand. Deliberately NOT including single-letter
+    // "r" ("are") — too ambiguous on its own (grades, ratings, etc.) to
+    // blindly expand; "how r u" is already covered directly in smalltalk.js.
+    "u": 'you', "ur": 'your', "pls": 'please', "plz": 'please',
+    "idk": 'i do not know', "rn": 'right now',
+};
+
+// Common misspellings of ordinary (non-event-name) TSA vocabulary — event
+// name typos are handled separately in entities/aliases.js's MISSPELLINGS,
+// closer to where fuzzy matching already covers most of them. These are
+// words the intent/domain regexes key on directly, which have no fuzz
+// tolerance of their own.
+const COMMON_TYPOS = {
+    'confrence': 'conference', 'conferance': 'conference',
+    'reqirements': 'requirements', 'requirments': 'requirements',
+    'deadlne': 'deadline', 'deadine': 'deadline',
+    'competiton': 'competition', 'competion': 'competition',
+    'calender': 'calendar', 'offical': 'official',
+    'advsior': 'advisor', 'advior': 'advisor',
+    'resorces': 'resources', 'scholrship': 'scholarship',
 };
 
 // Generic wording to a canonical token. Never contains event names.
@@ -47,6 +67,20 @@ const SYNONYMS = {
     compare: 'compare', versus: 'compare', vs: 'compare', difference: 'compare',
     differences: 'compare', better: 'compare',
     materials: 'material', material: 'material', supplies: 'material',
+    nats: 'nationals', conf: 'conference', reqs: 'requirement', info: 'overview',
+    // The dress-code rule's own text says "dress"/"attire", never "wear" —
+    // map the word students actually use to the one the data contains.
+    wear: 'dress', wearing: 'dress', outfit: 'dress', uniform: 'dress',
+    clothes: 'dress', clothing: 'dress', attire: 'dress',
+    // NOTE: deliberately NOT mapping "shoes"/"pants"/"sneakers" here — those
+    // are common enough outside any TSA context ("what shoes should I buy
+    // for running") that blanket-mapping them to 'dress' leaked into the
+    // rules DOMAIN signal for completely unrelated messages (domainRouter.js
+    // keys its 'rules' domain on the literal word 'dress'). Every phrase
+    // that actually needs "shoes"/"pants" recognized already pairs it with
+    // "wear", which IS mapped below — so this restriction costs nothing.
+    suit: 'dress', blazer: 'dress', tie: 'dress', skirt: 'dress',
+    skirts: 'dress', casual: 'dress',
 };
 
 export function expandContractions(text) {
@@ -55,6 +89,9 @@ export function expandContractions(text) {
         // Word-boundary-safe: a plain split/join would also rewrite "whos"
         // inside "whose" (and any future apostrophe-free key inside a longer
         // real word) into garbage tokens.
+        out = out.replace(new RegExp(`\\b${k}\\b`, 'g'), v);
+    }
+    for (const [k, v] of Object.entries(COMMON_TYPOS)) {
         out = out.replace(new RegExp(`\\b${k}\\b`, 'g'), v);
     }
     return out;

@@ -14,7 +14,11 @@ const PHRASES = [
     // when the user is actually specific; this only catches the bare form.
     { intent: 'clarify.needAmbiguous', re: /\bwhat (do|would) (i|we) need\b(?!.{0,20}(submit|material|bring|build|pack|wear))/, c: 0.8 },
     // "what would you recommend" — preference-elicitation, not a lookup.
-    { intent: 'clarify.recommend', re: /\b(what would you recommend|can you recommend|recommend (an |)event|help me (choose|pick|decide)( an event)?)\b/, c: 0.88 },
+    // Broad on purpose: this is the single most common real-student shape
+    // ("what should I do/pick", "any ideas", "idk what event to pick",
+    // "something I can do alone") and every one of these should start a
+    // preference conversation rather than fall through to unknown.
+    { intent: 'clarify.recommend', re: /\b(what would you recommend|can you recommend|recommend (an |)event|suggest (an |)event|help me (choose|pick|decide)( an event)?|what (do|would) (you|u) (recommend|pick|choose)|what should i (pick|choose)|which (event|one) should i (do|pick|choose)|which (one|event) (should|would) (i|you) (pick|choose)|what event (should i do|should i choose|is good|is easiest for beginners)|any (recommendations|ideas)\b|what (fits|would fit) me|which (event|one) fits me|what (would be|is) best for me|what should a beginner do|what do you think i should do|what events? would i like|what do you think i('?d| would) like|what should someone like me do|(idk|i do not know) what (event to pick|i wanna do)|i need an event|i need help picking an event|give me some events|anything good for (coding|builders?)|anything without presenting|something (easy to start with|i can do (with friends|alone))|i want something fun|what do most beginners pick)\b/, c: 0.88 },
     { intent: 'team.individual', re: /(can|could) (i|we|you) .*(alone|by myself|individual|solo)/, c: 0.93 },
     { intent: 'team.individual', re: /\b(individual|solo) (entries|entry|competitor|participation) (is|are)?\b/, c: 0.9 },
     { intent: 'team.individual', re: /\b(do|compete|enter|participate) (it )?(alone|solo)\b/, c: 0.92 },
@@ -42,6 +46,13 @@ const PHRASES = [
     { intent: 'capability.outboundContact', re: /\b(open gmail and email|send it automatically|can (you|u) send it automatically)\b/, c: 0.9 },
     { intent: 'capability.outboundContact', re: /\b(text|call|phone|dm|message) (tsa|national tsa|alabama tsa|my advisor)\b/, c: 0.88 },
     { intent: 'capability.outboundContact', re: /\bemail (my advisor|national tsa|tsa hub)\b/, c: 0.88 },
+    // Bare imperative form, no leading "can you" — "call them", "dm them",
+    // "contact them", "reach out to them", "message them".
+    { intent: 'capability.outboundContact', re: /^(call|phone|message|dm|contact|text) (them|him|her|it|tsa)\b/, c: 0.9 },
+    { intent: 'capability.outboundContact', re: /\breach out to (them|him|her|tsa|my advisor)\b/, c: 0.88 },
+    { intent: 'capability.outboundContact', re: /\btalk to (them|him|her) for me\b/, c: 0.88 },
+    { intent: 'capability.outboundContact', re: /\bcan (you|u) send (an |a )?(instagram|facebook) (dm|message)\b/, c: 0.92 },
+    { intent: 'capability.outboundContact', re: /\bcan (you|u) (do it|submit (this|it)) for me\b/, c: 0.85 },
     // Confidence above state.advisor's broad "contact.*(state|advisor)"
     // catch-all below — "can you contact X" is an action request, not the
     // "who is my advisor" factual question that catch-all exists for.
@@ -64,6 +75,7 @@ const PHRASES = [
     { intent: 'overview.general', re: /what (do|would) (i|you|we) (do|actually do)/, c: 0.85 },
     { intent: 'career.general', re: /(what|which) (careers?|jobs?|majors?)/, c: 0.9 },
     { intent: 'career.general', re: /(lead to|connect to|good for) .*(career|job|major|engineering|software)/, c: 0.85 },
+    { intent: 'career.general', re: /\bwhat should i (study|major in)\b|\bcollege major\b|\bcareer path\b|\bdoes this help with (engineering|cs|computer science)\b|\bgood for (computer science|medicine|architecture|engineering)\b|\bwhat can i become\b|\bwould this help college\b/, c: 0.85 },
     { intent: 'preconference.general', re: /(what do i (need to )?submit|preconference|pre-conference)/, c: 0.9 },
     // General question about what advisor approval IS — no event needed
     { intent: 'advisor.meaning', re: /\b(what|explain|mean|how does).*(state )?advis[oe]r approval\b/, c: 0.93 },
@@ -83,12 +95,22 @@ const PHRASES = [
     { intent: 'deadline.states', re: /\b(states?|state)\s*(date|when|deadline)/, c: 0.85 },
     { intent: 'deadline.nationals', re: /\b(when|date|how (many|long)|days).*(national|nationals)\b/, c: 0.92 },
     { intent: 'deadline.all', re: /\b(when|what|all).*(deadline|dates|schedule)\b/, c: 0.85 },
+    // Vague "what's coming up" style deadline asks students actually use —
+    // no explicit "deadline"/"date" word, just a sense of "what's next".
+    { intent: 'deadline.all', re: /\b(whats?|anything) (coming up|next|happening soon|soon)\b/, c: 0.82 },
+    { intent: 'deadline.all', re: /\b(next|important) (important )?dates?\b/, c: 0.82 },
+    { intent: 'deadline.all', re: /\bwhat happens (this|next) (week|month)\b/, c: 0.82 },
+    { intent: 'deadline.all', re: /\b(what did i miss|what('s| has| already)? already passed|calendar stuff|tsa dates)\b/, c: 0.8 },
+    { intent: 'deadline.all', re: /\bwhen is (tsa week|affiliation)\b/, c: 0.85 },
+    { intent: 'deadline.all', re: /\bhow many days until\b/, c: 0.82 },
     { intent: 'conference.when', re: /\bwhen is (the )?conference\b/, c: 0.9 },
     { intent: 'conference.where', re: /\bwhere is (the )?conference\b/, c: 0.9 },
     { intent: 'conference.theme', re: /\bconference theme\b/, c: 0.88 },
-    { intent: 'conference.search', re: /\b(conference|nationals).*(store|shirt|badge|shuttle|transport|session|safety|lost|luggage|app|pin exchange|meet and greet|advisor)/, c: 0.85 },
+    { intent: 'conference.search', re: /\b(conference|nationals).*(store|shirt|badge|shuttle|transport|session|safety|lost|luggage|app|pin exchange|meet and greet|advisor|hotel|stay)/, c: 0.85 },
+    { intent: 'conference.search', re: /\b(what hotel|where do we stay|what happens there)\b/, c: 0.8 },
+    { intent: 'rule.search', re: /\bhow many (move on|advance|people move on)\b/, c: 0.85 },
 
-    { intent: 'state.advisor', re: /\b(who is (the |my )?(state )?advisor|contact.*(state|advisor)|state advisor (website|email|phone|info|page))/, c: 0.92 },
+    { intent: 'state.advisor', re: /\b(who is (the |my )?(state )?advisor|contact.*(state|advisor)|state advisor (website|email|phone|info|page)|who do i (contact|email)\b)/, c: 0.92 },
     { intent: 'state.website', re: /\b(state (tsa )?(website|site|page|url)|my state.*(website|site))/, c: 0.9 },
     { intent: 'state.website', re: /\btsa (website|site|page)\b/, c: 0.85 },
     { intent: 'state.website', re: /^what is the (website|site)\??$/, c: 0.8 },
@@ -119,9 +141,17 @@ const PHRASES = [
     // "allowed" below, and the rules-domain fallback in engine.js still
     // searches on the raw tokens (including ai/artificial) for anything else.
     { intent: 'rule.search', re: /\b(rule|rules|allowed|prohibited|can (i|we) use|dress code|citation|plagiarism|original work|penalties|judging|grievance|disqualif)/, c: 0.82 },
+    // Dress-code phrasing that never says the words "dress code" — real
+    // students ask about the specific garment, not the policy name.
+    // Scoped to actually be about clothing FOR competition — a bare "what
+    // shoes/pants should I ___" with no TSA/wear anchor is just as likely to
+    // be a completely unrelated question, and confidently answering it with
+    // the dress-code rule would be a wrong answer with false authority.
+    { intent: 'rule.search', re: /\bwhat (do|should) i wear\b|\b(tsa|nationals?|conference) (outfit|uniform)\b|\bofficial dress\b|\bdo i need a (suit|blazer|tie)\b|\bcan i wear (sneakers|jeans|a hoodie)\b|\bbusiness casual\b|\bdo (i|girls) (need|wear)( a)? (skirt|the uniform)\b|\bcan girls wear pants\b|\bwhat (shoes|pants) (do i|should i) wear\b/, c: 0.85 },
     { intent: 'compare.general', re: /\b(compare|versus|vs\.?)\b/, c: 0.9 },
 
-    { intent: 'compare.general', re: /(difference between|what'?s the difference)/, c: 0.9 },
+    { intent: 'compare.general', re: /(difference between|what'?s the difference|how are they different)/, c: 0.9 },
+    { intent: 'compare.general', re: /\bwhich (should i choose|one takes more work|one has less presenting)\b/, c: 0.85 },
     { intent: 'compare.difficulty', re: /which (one )?(is )?(harder|easier|more difficult)/, c: 0.92 },
     { intent: 'compare.time', re: /which (one )?(takes|needs) (more|less) time/, c: 0.92 },
     { intent: 'compare.cost', re: /which (one )?(costs?|is) (more|less|cheaper|expensive)/, c: 0.92 },

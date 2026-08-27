@@ -47,6 +47,11 @@ export const MISSPELLINGS = {
     'architechtural design': 'architectural design',
     'podcasing': 'audio podcasting',
     'cybersecuirty': 'cybersecurity',
+    'microcontroler': 'microcontroller',
+    'microcntroller': 'microcontroller',
+    'micro controller': 'microcontroller',
+    'data scince': 'data science',
+    'data sciences': 'data science',
 };
 
 export function aliasesFor(name) {
