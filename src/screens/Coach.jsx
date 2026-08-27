@@ -57,6 +57,7 @@ const TOPICS = [
   {
     id: 'events',
     label: 'Events',
+    intro: "I can explain any TSA event, tell you what the current challenge is, compare events, or help you pick one based on what you like. If you already have an event in mind, tell me its name. If not, I can help narrow it down.",
     tone: 'blue',
     Icon: CalendarIcon,
     pool: [
@@ -98,6 +99,7 @@ const TOPICS = [
   {
     id: 'rules',
     label: 'Rules & Requirements',
+    intro: "I can help with things like team size, materials, submissions, AI use, presentation requirements, and what you can bring to competition. Tell me the event you're working on and what you're unsure about.",
     tone: 'blue',
     Icon: ShieldIcon,
     pool: [
@@ -139,6 +141,7 @@ const TOPICS = [
   {
     id: 'deadlines',
     label: 'Deadlines & Conference',
+    intro: "I can check National TSA dates, conference deadlines, registration dates, TSA Week, and other official calendar items. You can ask something simple like \"what's coming up next?\"",
     tone: 'purple',
     Icon: ClockIcon,
     pool: [
@@ -180,6 +183,7 @@ const TOPICS = [
   {
     id: 'careers',
     label: 'Careers & Majors',
+    intro: "I can connect TSA events to majors and careers and help you find events that fit what you're interested in. Tell me what you enjoy or what career you're thinking about.",
     tone: 'green',
     Icon: CapIcon,
     pool: [
@@ -221,6 +225,7 @@ const TOPICS = [
   {
     id: 'start',
     label: 'Getting Started',
+    intro: "If you're new to TSA, I can help you figure out what competitions are like, choose your first event, understand what you should do next, or prepare for your first conference. You don't need to know where to start.",
     tone: 'orange',
     Icon: RocketIcon,
     pool: [
@@ -262,6 +267,7 @@ const TOPICS = [
   {
     id: 'other',
     label: 'Other',
+    intro: "Sure. Ask me whatever you're trying to figure out about TSA or TSA Hub. You can phrase it normally — if I need more information, I'll ask.",
     tone: 'grey',
     Icon: MenuIcon,
     pool: [
@@ -419,7 +425,7 @@ export default function Coach() {
                             TSA Assistant
                           </div>
                           <div className="cch-card">
-                            Here are some frequently asked questions related to "{m.label}":
+                            {topic?.intro ? `${topic.intro} Here are a few common questions to start with:` : `Here are some frequently asked questions related to "${m.label}":`}
                           </div>
                           {questions.map((q) => (
                               <button className="cch-faq-item" key={q} onClick={() => send(q)}>

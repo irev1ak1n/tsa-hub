@@ -330,6 +330,33 @@ export function processMessage(input, prevState) {
         return finish(reply(res.text, { domain: 'capability', intent, confidence, sourceType: 'official', suggestions: res.suggestions, mailto: res.mailto }), state, debug);
     }
 
+    // "what do i need" — genuinely ambiguous (bring vs submit vs build).
+    // Answer directly only when we already know which the user means;
+    // otherwise ask the specific three-way question instead of a generic
+    // "what do you mean?" or silently re-explaining the event overview.
+    if (intent === 'clarify.needAmbiguous') {
+        const eventName = state.activeEvent?.name;
+        const text2 = eventName
+            ? `Do you mean what you need to bring to competition, what you need to submit beforehand, or what you need to build for ${eventName}?`
+            : "Do you mean what you need to bring to competition, what you need to submit beforehand, or what you need to build — and for which event?";
+        state.activeDomain = 'events';
+        state.lastIntent = intent;
+        debug.resolver = 'clarify-need';
+        return finish(reply(text2, { domain: 'events', intent, confidence, suggestions: ['What do I need to bring?', 'What do I need to submit?', 'What do I need to build?'] }), state, debug);
+    }
+
+    // "what would you recommend" — preference elicitation, not a lookup.
+    // Points to the Smart Recommender for a full ranked list too, since
+    // that tool already does real interest/skill scoring — this doesn't
+    // duplicate that logic, it just starts the conversation.
+    if (intent === 'clarify.recommend') {
+        const text2 = "Yeah, I can help narrow it down. What do you enjoy more: coding, building things, design, speaking, science, or media? And would you rather work alone or with a team?\n\nFor a fuller ranked list based on your interests, Events → Get recommendations scores every event automatically.";
+        state.activeDomain = 'events';
+        state.lastIntent = intent;
+        debug.resolver = 'clarify-recommend';
+        return finish(reply(text2, { domain: 'events', intent, confidence, suggestions: ['I like coding', 'I want a team event', "I don't like presenting"] }), state, debug);
+    }
+
     // General/getting-started intents.
     if (intent && intent.startsWith('general.')) {
         const res = answerGeneral(intent, norm.tokens, text);
@@ -487,7 +514,7 @@ function answerWithIntent(intent, state, norm, rawText, confidence = 0.8) {
         return reply(res.text, {
             domain: 'events', intent, confidence,
             sourceType: res.sourceType,
-            suggestions: followupsFor(intent),
+            suggestions: followupsFor(intent, { justAsked: rawText }),
         });
     }
 
@@ -509,7 +536,7 @@ function answerWithIntent(intent, state, norm, rawText, confidence = 0.8) {
         confidence,
         sourceType: res.sourceType,
         source: event ? { title: event.name, season: event.season, section: intent.split('.')[0] } : null,
-        suggestions: res.missing ? [] : followupsFor(intent, { event }),
+        suggestions: res.missing ? [] : followupsFor(intent, { event, justAsked: rawText }),
     });
 }
 

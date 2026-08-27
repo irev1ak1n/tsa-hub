@@ -8,6 +8,13 @@ const DIFFICULTY_BLOCKERS = [
 
 // Question shapes that carry meaning beyond the keyword.
 const PHRASES = [
+    // Genuinely ambiguous "what do I need" — could mean bring-to-competition,
+    // preconference submission, or what to build. Lower confidence than any
+    // specific "materials"/"submit"/"bring" phrasing below so those still win
+    // when the user is actually specific; this only catches the bare form.
+    { intent: 'clarify.needAmbiguous', re: /\bwhat (do|would) (i|we) need\b(?!.{0,20}(submit|material|bring|build|pack|wear))/, c: 0.8 },
+    // "what would you recommend" — preference-elicitation, not a lookup.
+    { intent: 'clarify.recommend', re: /\b(what would you recommend|can you recommend|recommend (an |)event|help me (choose|pick|decide)( an event)?)\b/, c: 0.88 },
     { intent: 'team.individual', re: /(can|could) (i|we|you) .*(alone|by myself|individual|solo)/, c: 0.93 },
     { intent: 'team.individual', re: /\b(individual|solo) (entries|entry|competitor|participation) (is|are)?\b/, c: 0.9 },
     { intent: 'team.individual', re: /\b(do|compete|enter|participate) (it )?(alone|solo)\b/, c: 0.92 },

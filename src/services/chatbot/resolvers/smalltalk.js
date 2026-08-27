@@ -18,8 +18,8 @@ const IDENTITY = [
     "I'm the TSA Hub Assistant. I use TSA Hub's structured data and official TSA resources to answer questions. I'm not a generative AI, so I won't make anything up.",
 ];
 const CAPABILITIES = [
-    'I can help with competitive events, team sizes, costs, deadlines, rules, conference info, careers connected to events, state TSA info, and getting started.',
-    'I cover events, requirements, comparisons, rules, deadlines, conference details, state info, and careers. Ask me anything in those areas.',
+    "A lot of TSA stuff. I can explain events, tell you the current theme or challenge, check team sizes and requirements, explain official rules, look up deadlines and conference dates, help you choose or compare events, find your state TSA contacts, and connect events to careers or majors.\n\nYou don't need to phrase it formally either — just tell me what you're trying to figure out.",
+    "I cover events (what they are, team size, cost, difficulty, current theme), rules and requirements, deadlines and conference info, state TSA contacts, careers connected to events, and getting started if you're new.\n\nAsk however you'd normally ask — I'll do my best to figure out what you mean.",
 ];
 const LIMITATIONS = [
     "I only cover TSA topics. I won't guess at anything I don't have data for, and I'll tell you when something is missing or might be out of date.",

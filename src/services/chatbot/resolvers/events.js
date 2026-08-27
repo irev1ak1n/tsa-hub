@@ -67,6 +67,19 @@ const CAREER_LABELS = {
     'product-design': 'Manufacturing & Product Design',
 };
 
+// What actually drives real cost for this kind of event, in plain terms —
+// used to turn a bare "low/high cost" label into something actionable.
+function costFactorsFor(event) {
+    const wp = workPhrase(event);
+    if (String(event.materials || '').toLowerCase() === 'yes') {
+        return 'the specific materials or equipment the challenge calls for, since this one is flagged as needing some beyond the basics';
+    }
+    if (wp && /coding|designing/.test(wp) && !/building/.test(wp)) {
+        return 'what software, hosting, or equipment your team already has access to';
+    }
+    return "what supplies, software, or equipment your team already has versus what you'd still need";
+}
+
 const COST_NATURAL = {
     '0-25': ['one of the lower cost events', "generally affordable since most of the work is digital"],
     '25-75': ['relatively affordable', "not too expensive, though you may need a few supplies"],
@@ -189,15 +202,19 @@ export function answerEventIntent(event, intent, { style = 'normal', seed: extra
             const variants = COST_NATURAL[event.costBand];
             if (!variants) return { text: pick(["I don't have cost info for " + name + " yet.", "No cost classification is available for " + name + " right now."], s), sourceType: DERIVED, missing: true };
             const desc = pick(variants, s);
+            // What actually drives real-world cost for this kind of event —
+            // makes the classification useful instead of just a label.
+            const costFactors = costFactorsFor(event);
+            const tail = style === 'short' ? '' : ` Your actual cost really depends on ${costFactors}. Tell me what your team already has, and I can help you figure out what you'd still need to cover.`;
             if (intent === 'cost.isExpensive') {
                 return ok(pick([
-                    `${name} is ${desc}. TSA doesn't publish a fixed price, but TSA Hub places it in that range based on typical materials.`,
-                    `Budget-wise, ${name} is ${desc}. That's TSA Hub's classification, not an official TSA number.`,
+                    `${name} is ${desc}. TSA doesn't publish a fixed price, but TSA Hub places it in that range based on typical materials.${tail}`,
+                    `Budget-wise, ${name} is ${desc}. That's TSA Hub's classification, not an official TSA number.${tail}`,
                 ], s), DERIVED);
             }
             return ok(pick([
-                `TSA doesn't publish a single project price for ${name}. Based on typical materials, TSA Hub classifies it as ${desc}.`,
-                `${name} is ${desc}. That's a TSA Hub estimate, not an official TSA figure.`,
+                `TSA doesn't publish a single project price for ${name}. Based on typical materials, TSA Hub classifies it as ${desc}.${tail}`,
+                `${name} is ${desc}. That's a TSA Hub estimate, not an official TSA figure.${tail}`,
             ], s), DERIVED);
         }
 
@@ -213,9 +230,13 @@ export function answerEventIntent(event, intent, { style = 'normal', seed: extra
         case 'difficulty.general': {
             const variants = DIFF_NATURAL[event.difficulty];
             if (!variants) return { text: "I don't have a difficulty classification for " + name + " yet.", sourceType: DERIVED, missing: true };
+            const wp = workPhrase(event);
+            const context = wp
+                ? ` A lot of that comes down to your own experience with ${wp} — TSA doesn't publish an official difficulty rating, "hard" is relative to what you've done before.`
+                : ` TSA doesn't publish an official difficulty rating, so how hard it feels really depends on your own experience with the skills it involves.`;
             return ok(pick([
-                `${name} is ${pick(variants, s)}. That's TSA Hub's assessment, not an official TSA rating.`,
-                `On TSA Hub's scale, ${name} is ${pick(variants, s + '2')}.`,
+                `${name} is ${pick(variants, s)}.${context} That's TSA Hub's assessment, not an official TSA rating.`,
+                `On TSA Hub's scale, ${name} is ${pick(variants, s + '2')}.${context}`,
             ], s), DERIVED);
         }
 
@@ -270,9 +291,31 @@ export function answerEventIntent(event, intent, { style = 'normal', seed: extra
                 : pick([`${name} doesn't require state advisor approval.`, `No advisor approval needed for ${name}.`], s), OFFICIAL);
         }
 
-        case 'material.general':
-            if (isMissing(event.materials)) return { text: "I don't have a materials list for " + name + ".", sourceType: OFFICIAL, missing: true };
-            return ok(`${name} materials: ${event.materials}.`, OFFICIAL);
+        case 'material.general': {
+            // The `materials` field is a yes/no flag ("does this event need
+            // materials beyond the basics"), not an actual materials list —
+            // rendering it as literal text produced "Webmaster materials: no."
+            // Missing data must never collapse into "no materials required":
+            // null means unknown, "no" means TSA Hub's own read that nothing
+            // extra is flagged, and neither is an official TSA statement.
+            if (isMissing(event.materials)) {
+                return { text: pick([
+                    `I don't have a verified materials list for ${name}. I don't want to guess at an official requirement, but I can check the current-year rules for exactly what to bring or submit if that would help.`,
+                    `No verified materials info is on file for ${name} yet. Rather than guess, I'd point you to the current official rules — want me to look for the submission requirements instead?`,
+                ], s), sourceType: OFFICIAL, missing: true };
+            }
+            const flagged = String(event.materials).trim().toLowerCase() === 'yes';
+            if (!flagged) {
+                return ok(pick([
+                    `TSA Hub doesn't flag ${name} as needing materials or equipment beyond what the challenge itself calls for. That's TSA Hub's read on it, not a line from the official rules — check the current-year guide if you want the official wording.`,
+                    `${name} isn't marked as needing extra materials or equipment on TSA Hub's side. That's our classification, not an official TSA statement, so the current rules are the real source if you need to be sure.`,
+                ], s), DERIVED);
+            }
+            return ok(pick([
+                `TSA Hub flags ${name} as needing materials or equipment beyond the basics, but I don't have the specific list. Want me to check the current official rules for exactly what's required?`,
+                `${name} is marked as needing some materials or equipment, though I don't have the exact list on file — the current-year rules would have the specifics.`,
+            ], s), DERIVED);
+        }
 
         default:
             return null;

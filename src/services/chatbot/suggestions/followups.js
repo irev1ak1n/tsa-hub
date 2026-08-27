@@ -21,12 +21,20 @@ const BY_INTENT = {
     'compare.difficulty': ['Which one takes more time?', 'Which costs less?'],
     'compare.time': ['Which one is harder?', 'Which costs less?'],
     'compare.cost': ['Which one takes more time?', 'Which one is harder?'],
+    'material.general': ['What do I need to bring to competition?', 'What do I need to submit?', 'Show me the official rules'],
+    'clarify.needAmbiguous': ['What do I need to bring?', 'What do I need to submit?', 'What do I need to build?'],
+    'clarify.recommend': ['I like coding', 'I want a team event', "I don't like presenting"],
 };
 
 const DEFAULTS = ['What events involve coding?', 'How do I pick an event?', 'What can you help me with?'];
 
-export function followupsFor(intent, { event = null } = {}) {
+// Follow-ups should point the user somewhere NEW, not back at the exact
+// question they just asked (tapping the chip would just repeat the same
+// answer). `justAsked` is the raw text of the current turn.
+export function followupsFor(intent, { event = null, justAsked = '' } = {}) {
     const base = BY_INTENT[intent] || DEFAULTS;
+    const asked = justAsked.trim().toLowerCase().replace(/[?.!]+$/, '');
+    const filtered = asked ? base.filter((q) => q.trim().toLowerCase().replace(/[?.!]+$/, '') !== asked) : base;
     // Keep them short and never more than three.
-    return base.slice(0, 3);
+    return filtered.slice(0, 3);
 }
