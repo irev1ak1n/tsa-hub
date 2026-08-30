@@ -8,9 +8,15 @@ export const NAME_ALIASES = {
     'software development': ['software dev', 'app development', 'app dev', 'softdev'],
     'coding': ['code event', 'programming event'],
     // NOTE: deliberately no bare "game design" alias — it collides with any
-    // other "___ Game Design" event (e.g. Board Game Design).
-    'video game design': ['video game', 'game dev event'],
-    'audio podcasting': ['podcast', 'podcasting', 'audio podcast'],
+    // other "___ Game Design" event (e.g. Board Game Design). Also
+    // deliberately no bare "video game" alias — "whats a good video game"
+    // is a completely ordinary recreational question, not a mention of the
+    // competitive event; "game dev event" is unambiguous enough to keep.
+    'video game design': ['game dev event'],
+    // Deliberately no bare "podcast" alias — "whats a good podcast to
+    // listen to" is an ordinary recreational question, not a mention of the
+    // event; "podcasting"/"audio podcast" are specific enough to keep.
+    'audio podcasting': ['podcasting', 'audio podcast'],
     'architectural design': ['architecture event', 'arch design'],
     'animatronics': ['animatronic'],
     'digital video production': ['digital video', 'video production'],

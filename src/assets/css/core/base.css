@@ -13,6 +13,32 @@ body {
 
 ::selection { background: rgba(206, 17, 38, 0.4); color: #fff; }
 
+/* Native <select> dropdowns everywhere in the app (Calendar's Reminder
+   field, the Contact Support / Report Incorrect Info category pickers,
+   any future one). The closed control already follows theme tokens per
+   screen, but the OPEN options popup is drawn by the browser itself and
+   only reads color-scheme + each option's own background/color — an
+   unstated or transparent option background falls back to the OS default
+   (white), regardless of how dark the closed control looks. color-scheme
+   itself needs no extra rule here: it's an inherited property already set
+   at :root (dark) and overridden under html[data-theme="light"] in
+   tokens.css, so every select already gets the right one automatically. */
+select option {
+  background-color: var(--surface);
+  color: var(--ink);
+}
+
+select option:disabled {
+  color: var(--muted);
+}
+
+select option:checked,
+select option:hover,
+select option:focus {
+  background-color: var(--red-600);
+  color: #fff;
+}
+
 h1, h2, h3, h4 {
   font-family: var(--font-display);
   color: var(--ink-hi);

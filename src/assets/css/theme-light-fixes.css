@@ -28,7 +28,8 @@ html[data-theme="light"] .set-title {
 
 /* Resources list titles, descriptions, icons, search and back link */
 html[data-theme="light"] .rs-title,
-html[data-theme="light"] .rs-subrow .rs-sub-title {
+html[data-theme="light"] .rs-subrow .rs-sub-title,
+html[data-theme="light"] .rs-event-link {
     color: #111111;
 }
 
@@ -46,6 +47,7 @@ html[data-theme="light"] .rs-subrow .rs-sub-ico {
 
 html[data-theme="light"] .rs-row > svg,
 html[data-theme="light"] .rs-subrow > svg,
+html[data-theme="light"] .rs-event-link svg,
 html[data-theme="light"] .rs-acc-chevron {
     color: rgba(0, 0, 0, 0.45);
 }
@@ -56,6 +58,7 @@ html[data-theme="light"] .rs-back {
 
 html[data-theme="light"] .rs-row:hover,
 html[data-theme="light"] .rs-subrow:hover,
+html[data-theme="light"] .rs-event-link:hover,
 html[data-theme="light"] .rs-acc-btn:hover {
     background: #ececf3;
 }
@@ -348,16 +351,9 @@ html[data-theme="light"] .rs-state-empty {
     color: #4a4a55;
 }
 
-/* Doc pages Privacy and Terms.
-   The wrapper is a dark full bleed block, so repaint the surface light
-   and the text dark. */
-html[data-theme="light"] .doc-page,
-html[data-theme="light"] .doc-wrap,
-html[data-theme="light"] .doc,
-html[data-theme="light"] .doc-body,
-html[data-theme="light"] .doc-bleed {
-    background: #ffffff !important;
-}
+/* Doc pages (Privacy and Terms) now use var(--bg) directly in doc.css, the
+   same page background Settings uses — it already flips correctly for
+   light theme via tokens.css, no override needed here. */
 
 html[data-theme="light"] .doc-eyebrow {
     color: #D01023;

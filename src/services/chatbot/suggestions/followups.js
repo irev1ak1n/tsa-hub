@@ -24,6 +24,16 @@ const BY_INTENT = {
     'material.general': ['What do I need to bring to competition?', 'What do I need to submit?', 'Show me the official rules'],
     'clarify.needAmbiguous': ['What do I need to bring?', 'What do I need to submit?', 'What do I need to build?'],
     'clarify.recommend': ['I like coding', 'I want a team event', "I don't like presenting"],
+    'event.filter.solo': ['How do I pick an event?', 'What are the low cost events?', 'What is a beginner friendly event?'],
+    'event.filter.team': ['How do I pick an event?', 'What events can I do solo?'],
+    'event.filter.costLow': ['What events can I do solo?', 'What is a beginner friendly event?'],
+    'event.filter.beginner': ['What events can I do solo?', 'What are the low cost events?'],
+    'event.filter.lowEquipment': ['What are the low cost events?', 'How do I pick an event?'],
+    'event.filter.noPresent': ['What events can I do solo?', 'How do I pick an event?'],
+    'event.filter.noPreconference': ['How do I pick an event?', 'What are the low cost events?'],
+    'event.filter.interest': ['How do I pick an event?', 'What events can I do solo?'],
+    'event.filter.career': ['How do I pick an event?', 'What is a beginner friendly event?'],
+    'event.filter.materialsNeeded': ['What are the low cost events?', 'How do I pick an event?'],
 };
 
 const DEFAULTS = ['What events involve coding?', 'How do I pick an event?', 'What can you help me with?'];

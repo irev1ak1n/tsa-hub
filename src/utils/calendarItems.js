@@ -11,7 +11,7 @@ import { parseYmd, ymd, timeToMinutes } from './date.js';
 // Normalized item:
 // { id, kind: 'official' | 'personal-event' | 'personal-reminder',
 //   title, startDate, endDate, allDay, startTime, endTime,
-//   location, description, category, completed, sourceUrl, raw }
+//   location, description, category, completed, sourceUrl, reminder, raw }
 
 export function fromOfficial(ev) {
     return {
@@ -28,6 +28,7 @@ export function fromOfficial(ev) {
         category: ev.category,
         completed: false,
         sourceUrl: ev.source?.url || null,
+        reminder: null,
         raw: ev,
     };
 }
@@ -47,6 +48,7 @@ export function fromPersonal(item) {
         category: null,
         completed: !!item.completed,
         sourceUrl: null,
+        reminder: item.reminder || null,
         raw: item,
     };
 }

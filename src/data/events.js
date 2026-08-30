@@ -66,12 +66,26 @@ export function setEvents(rows) {
   EVENTS = rows;
 }
 
+// Normalizes a raw teamSize value (which may arrive as a number, e.g. `2`,
+// or a numeric-looking string, e.g. `"2.0"`) into clean display text.
+// A range like "2-4" is left untouched. Shared with
+// resolvers/events.js (re-exported from there as `fmtSize`) so both the
+// guided-flow team-size label and the free-text answer engine format the
+// same way.
+export function fmtSize(ts) {
+  if (ts == null) return null;
+  const n = Number(ts);
+  if (Number.isFinite(n) && String(ts).indexOf('-') === -1) return String(Math.round(n));
+  return String(ts);
+}
+
 export function teamSizeLabel(event) {
   const e = event?.eligibility;
   if (!e) return null;
-  if (e.teamSize && e.individualOk && e.teamSize !== '1') return `${e.teamSize} (or solo)`;
-  if (e.teamSize === '1') return 'Individual';
-  if (e.teamSize) return `Team of ${e.teamSize}`;
+  const size = e.teamSize != null ? fmtSize(e.teamSize) : e.teamSize;
+  if (size && e.individualOk && size !== '1') return `${size} (or solo)`;
+  if (size === '1') return 'Individual';
+  if (size) return `Team of ${size}`;
   if (e.individualOk) return 'Team or solo';
   return null;
 }

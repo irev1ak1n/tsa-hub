@@ -5,9 +5,10 @@ import Dashboard from './screens/Dashboard.jsx';
 import Events from './screens/events/Events.jsx';
 import EventSearchPage from './screens/events/EventSearchPage.jsx';
 import EventDetail from './screens/events/EventDetail.jsx';
-import EventThemePage from './screens/events/EventThemePage.jsx';
 import Recommender from './screens/events/Recommender.jsx';
 import Resources from './screens/resources/Resources.jsx';
+import ResourcesEventThemes from './screens/resources/ResourcesEventThemes.jsx';
+import EventFullPage from './screens/resources/EventFullPage.jsx';
 import ResourceSearch from './screens/resources/ResourceSearchPage.jsx';
 import CompetitionRequirementPage from './screens/resources/CompetitionRequirementPage.jsx';
 import StudentLeadership from './screens/resources/StudentLeadership.jsx';
@@ -38,7 +39,6 @@ import Calendar from './screens/Calendar.jsx';
 import Help from './screens/help/Help.jsx';
 import HelpArticlesIndex from './screens/help/HelpArticlesIndex.jsx';
 import HelpArticle from './screens/help/HelpArticle.jsx';
-import HelpStatus from './screens/help/HelpStatus.jsx';
 
 export default function App() {
     return (
@@ -51,11 +51,12 @@ export default function App() {
                         <Route path="/events" element={<Events />} />
                         <Route path="/events/search" element={<EventSearchPage />} />
                         <Route path="/events/:id" element={<EventDetail />} />
-                        <Route path="/events/:eventId/theme" element={<EventThemePage />} />
                         <Route path="/recommend" element={<Recommender />} />
 
                         <Route path="/resources" element={<Resources />} />
                         <Route path="/resources/search" element={<ResourceSearch />} />
+                        <Route path="/resources/events/themes" element={<ResourcesEventThemes />} />
+                        <Route path="/resources/events/:id" element={<EventFullPage />} />
                         <Route path="/resources/student-leadership" element={<StudentLeadership />} />
                         <Route path="/resources/leadership-support" element={<LeadershipSupport />} />
 
@@ -66,7 +67,6 @@ export default function App() {
                         <Route path="/help" element={<Help />} />
                         <Route path="/help/articles" element={<HelpArticlesIndex />} />
                         <Route path="/help/article/:id" element={<HelpArticle />} />
-                        <Route path="/help/status" element={<HelpStatus />} />
 
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/privacy" element={<PrivacyPolicy />} />

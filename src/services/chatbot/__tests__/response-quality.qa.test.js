@@ -90,7 +90,10 @@ describe('recommendation clarification is generative, not a dead-end', () => {
     it('"what would you recommend for me" asks a real preference question instead of "not sure what you mean"', () => {
         const res = ask('what would you recommend for me');
         expect(res.text).not.toMatch(/not totally sure what you mean/i);
-        expect(res.text).toMatch(/coding|building|design|speaking|science|media/i);
+        // Preference options are now real, clickable follow-ups + a
+        // Get Recommendations action, not spelled out in the prose itself.
+        expect(res.suggestions.some((s) => /coding|building|team|presenting/i.test(s))).toBe(true);
+        expect(res.actions.some((a) => a.route === '/recommend')).toBe(true);
     });
 
     it('"help me choose an event" and "can you recommend an event" also trigger the same generative clarification', () => {

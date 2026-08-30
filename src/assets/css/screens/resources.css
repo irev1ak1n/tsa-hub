@@ -1458,6 +1458,52 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: #ffffff;
 }
 
+/* ── Events → Event Guide: compact two-column event list ──────────────── */
+.rs-event-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px 16px;
+}
+
+@media (min-width: 640px) {
+    .rs-event-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.rs-event-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 11px 8px;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    text-decoration: none;
+    text-align: left;
+    font-family: var(--font-system);
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: background 0.12s ease;
+}
+
+.rs-event-link:hover {
+    background: var(--surface-2);
+}
+
+.rs-event-link:focus-visible {
+    outline: 2px solid var(--ig-blue);
+    outline-offset: 2px;
+}
+
+.rs-event-link svg {
+    color: rgba(255, 255, 255, 0.55);
+    flex-shrink: 0;
+}
+
 .officer-role {
     font-family: var(--font-system);
     font-size: 12px;

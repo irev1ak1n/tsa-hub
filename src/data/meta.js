@@ -1,3 +1,5 @@
+import { CALENDAR_EVENTS } from './tsaCalendar.js';
+
 export const STATES = [
   'Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware',
   'Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky',
@@ -8,33 +10,55 @@ export const STATES = [
   'Virginia','Washington','West Virginia','Wisconsin','Wyoming','Other / International',
 ];
 
-export const DEFAULT_DATES = {
-  regionals: '2027-02-06',
-  states: '2027-04-09',
-};
+// Nationals is sourced from the same feed the Calendar screen already reads
+// (tsaCalendar.js, kept current by scripts/syncTsaCalendar.mjs) instead of a
+// separately hand-maintained guess — this is what keeps Coach and Calendar
+// in agreement, and means a future calendar sync is the only touch point
+// needed to update Coach's Nationals answer.
+function findNationals2027() {
+  return CALENDAR_EVENTS.find((e) => e.category === 'conference' && /national tsa conference/i.test(e.title || '') && (e.startDate || '').startsWith('2027'));
+}
+const nationalsEvent = findNationals2027();
+export const NATIONALS = nationalsEvent
+  ? { name: 'National TSA Conference', year: 2027, startDate: nationalsEvent.startDate, endDate: nationalsEvent.endDate, location: nationalsEvent.location || null }
+  : { name: 'National TSA Conference', year: 2027, startDate: null, endDate: null, location: null };
 
+export function formatDate(iso) {
+  return new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+export function formatDateRange(startIso, endIso) {
+  const start = new Date(startIso + 'T00:00:00');
+  const end = new Date(endIso + 'T00:00:00');
+  const startStr = start.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+  const endStr = end.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  return `${startStr} through ${endStr}`;
+}
+
+// Every regionals/state-conference value below has an explicit status:
+//   'exact'       — a specific, officially-sourced date
+//   'window'      — a general month/season range, not an exact date
+//   'unannounced' — TSA Hub has no verified information yet
+// IMPORTANT: a legacy-looking exact date is not proof it's official.
+// tsaCalendar.js (the one place in this repo with real, sourced calendar
+// entries) has ZERO state or regional conference entries, so none of the
+// previously-hardcoded per-state ISO dates here had any verifiable
+// provenance — they are intentionally NOT carried forward as 'exact'. Only
+// North Carolina has any confirmed detail at all right now (a general
+// regionals window). When an official date is published for a state,
+// replace its entry here with { status: 'exact', date: 'YYYY-MM-DD' } —
+// this is the one place to update.
 export const STATE_DATES = {
-  'North Carolina': { regionals: '2027-01-30', states: '2027-03-26' },
-  Texas:            { regionals: '2027-02-13', states: '2027-04-15' },
-  Virginia:         { regionals: '2027-02-06', states: '2027-04-23' },
-  California:       { regionals: '2027-02-20', states: '2027-03-19' },
-  Georgia:          { regionals: '2027-01-23', states: '2027-03-11' },
-  Florida:          { regionals: '2027-02-06', states: '2027-02-24' },
-  Pennsylvania:     { regionals: '2027-02-11', states: '2027-04-14' },
-  Ohio:             { regionals: '2027-02-27', states: '2027-04-27' },
-  Washington:       { regionals: '2027-02-06', states: '2027-03-25' },
-  'New Jersey':     { regionals: '2027-01-31', states: '2027-03-31' },
-};
-
-export const NATIONALS = {
-  name: 'National TSA Conference',
-  date: '2027-06-25',
-  note: 'Placeholder date — set the real one when announced.',
+  'North Carolina': { regionals: { status: 'window', label: 'January and February 2027' }, states: { status: 'unannounced' } },
 };
 
 export function datesForState(state) {
-  const d = STATE_DATES[state] || DEFAULT_DATES;
-  return { ...d, nationals: NATIONALS.date };
+  const entry = STATE_DATES[state];
+  return {
+    regionals: entry?.regionals || { status: 'unannounced' },
+    states: entry?.states || { status: 'unannounced' },
+    nationals: NATIONALS,
+  };
 }
 
 export const ANNOUNCEMENTS = [
@@ -92,7 +116,7 @@ export const BADGES = [
   { id: 'profile',   ico: '\u{1F9ED}', name: 'Signed In',        desc: 'Completed your profile' },
   { id: 'first-event', ico: '\u{1F3AF}', name: 'Event Locked',   desc: 'Added your first event' },
   { id: 'three-events', ico: '\u{1F525}', name: 'Triple Threat', desc: 'Competing in 3+ events' },
-  { id: 'first-task', ico: '\u2705',     name: 'On the Board',   desc: 'Completed your first task' },
+  { id: 'first-task', ico: '✅',     name: 'On the Board',   desc: 'Completed your first task' },
   { id: 'ten-tasks',  ico: '\u{1F4AA}',  name: 'Grinder',        desc: 'Completed 10 tasks' },
   { id: 'checklist',  ico: '\u{1F4E6}',  name: 'Ship It',        desc: 'Finished a full deliverables checklist' },
   { id: 'coach-3',    ico: '\u{1F4AC}',  name: 'Rule Lawyer',    desc: 'Asked the coach 3 questions' },

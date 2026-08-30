@@ -1,4 +1,5 @@
 import { COMPETITION_REQUIREMENTS } from '../../../data/competitionRequirements.js';
+import { fmtSize } from '../../../data/events.js';
 import { pick, hash } from '../core/variation.js';
 import { isMissing, checkTeamSizeConsistency, CONFLICT_MESSAGE } from '../guards/dataGuards.js';
 
@@ -6,13 +7,6 @@ const DERIVED = 'derived';
 const OFFICIAL = 'official';
 
 function ok(text, sourceType, extra = {}) { return { text, sourceType, ...extra }; }
-
-function fmtSize(ts) {
-    if (ts == null) return null;
-    const n = Number(ts);
-    if (Number.isFinite(n) && String(ts).indexOf('-') === -1) return String(Math.round(n));
-    return String(ts);
-}
 
 function parseRange(teamSize) {
     const s = fmtSize(teamSize);

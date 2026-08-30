@@ -343,17 +343,31 @@
 .cal-segmented button.is-active { background: var(--red-600); color: #fff; }
 .cal-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; font-family: var(--font-system); }
 .cal-field > span { font-size: 12px; font-weight: 700; color: var(--muted); }
-.cal-field input[type="text"], .cal-field input[type="date"], .cal-field input[type="time"], .cal-field textarea {
+.cal-field input[type="text"], .cal-field input[type="date"], .cal-field input[type="time"], .cal-field textarea, .cal-field select {
     border: 1px solid var(--line); border-radius: 9px; background: transparent; color: var(--ink);
     padding: 9px 11px; font-family: var(--font-system); font-size: 14px; width: 100%;
 }
 .cal-field textarea { resize: vertical; min-height: 60px; }
-.cal-field input:focus, .cal-field textarea:focus { outline: 2px solid var(--ig-blue); outline-offset: 1px; }
+.cal-field input:focus, .cal-field textarea:focus, .cal-field select:focus { outline: 2px solid var(--ig-blue); outline-offset: 1px; }
 .cal-field-row { flex-direction: row; align-items: center; justify-content: space-between; }
 .cal-field-row input[type="checkbox"] { width: 18px; height: 18px; }
 .cal-field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .cal-form-error {
     font-family: var(--font-system); font-size: 13px; color: var(--red-400); margin: 0 0 10px;
+}
+
+/* Reminder / device-calendar inline copy — always honest about current
+   web limitations, never implies a guarantee the browser can't back. */
+.cal-inline-note {
+    font-family: var(--font-system); font-size: 12px; color: var(--muted); margin: 6px 0 0; line-height: 1.4;
+}
+.cal-official-reminder {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    font-family: var(--font-system); font-size: 13px; color: var(--ink);
+}
+.cal-official-reminder select {
+    border: 1px solid var(--line); border-radius: 9px; background: transparent; color: var(--ink);
+    padding: 7px 10px; font-family: var(--font-system); font-size: 13px;
 }
 
 /* Color picker */

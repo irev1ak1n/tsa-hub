@@ -56,7 +56,7 @@ describe('conference date/location grounding (this was a real bug: stale 2026 da
 
     it('"when are nationals this year" (deadline path) always uses the runtime-computed NATIONALS date from meta.js', () => {
         const res = ask('how many days until nationals');
-        expect(res.text).toContain(NATIONALS.date.slice(0, 4)); // year appears
+        expect(res.text).toContain(NATIONALS.startDate.slice(0, 4)); // year appears
     });
 
     if (conferenceAlreadyPast) {
@@ -79,7 +79,7 @@ describe('conference date/location grounding (this was a real bug: stale 2026 da
             if (conferenceWhen.text.includes(CONFERENCE_2026_HEADER.venue)) {
                 expect(conferenceWhen.text).toMatch(/already (happened|past)/i);
             }
-            expect(deadlineWhen.text).toContain(NATIONALS.date.slice(0, 4));
+            expect(deadlineWhen.text).toContain(NATIONALS.startDate.slice(0, 4));
         });
     }
 });

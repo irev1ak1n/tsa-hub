@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Icon } from '../../components/UI.jsx';
 import { QUICK_HELP, POPULAR_TOPICS, MORE_RESOURCES, searchHelp } from '../../data/helpContent.js';
 import { ReportIncorrectInfoModal, ContactSupportModal } from './HelpModals.jsx';
+import { BackLink } from '../resources/resourcesShared.jsx';
 
 function HelpRow({ icon, title, subtitle, onClick }) {
     return (
@@ -35,6 +36,8 @@ export default function Help() {
 
     return (
         <>
+            <BackLink to="/settings" label="Back" />
+
             <div className="section">
                 <div className="rs-eyebrow">Support</div>
                 <h1 className="rs-h1">Help Center</h1>
@@ -104,17 +107,6 @@ export default function Help() {
                     </div>
                 </>
             )}
-
-            <div className="help-cta">
-                <span className="help-cta-ico"><Icon name="headset" size={22} /></span>
-                <span className="help-cta-text">
-                    <span className="help-cta-title">Still need help?</span>
-                    <span className="help-cta-sub">Our team is here to help.</span>
-                </span>
-                <button type="button" className="help-cta-btn" onClick={() => setModal('support')}>
-                    Contact us
-                </button>
-            </div>
 
             {modal === 'report' && <ReportIncorrectInfoModal onClose={() => setModal(null)} />}
             {modal === 'support' && <ContactSupportModal onClose={() => setModal(null)} />}

@@ -6,6 +6,7 @@ import { NATIONAL_CONFERENCE } from '../../data/nationalConference.js';
 import { COMPETITION_RULES } from '../../data/competitionRules.js';
 import { COMPETITION_REQUIREMENTS } from '../../data/competitionRequirements.js';
 import { PROGRAMS } from '../../data/programs.js';
+import { EVENTS } from '../../data/events.js';
 import { STATE_TSA } from '../../data/stateTsa.js';
 import { detectStateInText, STATE_ABBREVIATIONS } from '../../data/stateAbbreviations.js';
 import { editDistance } from '../../services/chatbot/language/normalize.js';
@@ -71,6 +72,7 @@ const RESOURCE_KEYWORDS = {
     'official tsa store': 'store shop merch merchandise apparel clothing gear buy purchase attire',
     'student leadership': 'officers student officers state officers national officers leadership team',
     'tsa leadership & support': 'advisor adviser support contacts board of directors staff national office help',
+    'event guide': 'theme themes problem problems annual challenge current theme design problem prompt by event themes and problems event details requirements submissions resources rules',
 };
 
 function keywordsFor(title) {
@@ -124,6 +126,18 @@ export function buildResourceIndex(stateInfo) {
 
     ABOUT_TSA.forEach((p) =>
         items.push({ group: 'About TSA', title: p.title, icon: p.icon, to: `/resources/about/${p.id}` }));
+
+    items.push({ group: 'Events', title: 'Event Guide', subtitle: 'Explore each competitive event’s current theme, requirements, submissions, resources, team details, and other important information.', icon: 'file-text', to: '/resources/events/themes' });
+
+    EVENTS.forEach((ev) => {
+        items.push({
+            group: 'Events',
+            title: `${ev.name} Theme`,
+            subtitle: `${ev.division === 'MS' ? 'Middle School' : 'High School'} · current annual theme, problem statement, and challenge details`,
+            icon: 'file-text',
+            to: `/resources/events/${ev.id}`,
+        });
+    });
 
     NATIONAL_CONFERENCE.items.forEach((item) => {
         if (item.type === 'link') {

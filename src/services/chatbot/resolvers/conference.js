@@ -1,5 +1,5 @@
 import { CONFERENCE_2026_HEADER, CONFERENCE_2026 } from '../../../data/conference2026.js';
-import { NATIONALS } from '../../../data/meta.js';
+import { NATIONALS, formatDateRange } from '../../../data/meta.js';
 
 function lower(s) { return (s || '').toLowerCase(); }
 
@@ -13,7 +13,10 @@ function conferenceIsPast() {
 }
 
 function pastConferenceNotice() {
-    return `The most recent conference guide I have loaded is for the ${CONFERENCE_2026_HEADER.title} (${CONFERENCE_2026_HEADER.dateLabel}), which has already happened. I don't have official details for the next National TSA Conference yet — the date on file is ${NATIONALS.date} (${NATIONALS.note || 'check tsaweb.org for confirmation'}), but venue and theme haven't been loaded.`;
+    const nextDate = NATIONALS.startDate
+        ? `it's scheduled for ${formatDateRange(NATIONALS.startDate, NATIONALS.endDate)}`
+        : "exact dates haven't been officially announced yet";
+    return `The most recent conference guide I have loaded is for the ${CONFERENCE_2026_HEADER.title} (${CONFERENCE_2026_HEADER.dateLabel}), which has already happened. I don't have official details for the next National TSA Conference loaded yet — ${nextDate}, but venue and theme haven't been loaded.`;
 }
 
 // Find the best matching topic and section by keyword.

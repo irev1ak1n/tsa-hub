@@ -911,13 +911,13 @@ html[data-theme="light"] .rec-tag {
 }
 
 html[data-theme="light"] .rec-modal {
-    background: rgba(255, 255, 255, 0.75);
-    border-color: #404040;
+    background: #ffffff;
+    border-color: #e4e4ea;
 }
 
 html[data-theme="light"] .rec-modal-head {
     background: #ffffff;
-    border-bottom-color: #404040;
+    border-bottom-color: #e4e4ea;
 }
 
 html[data-theme="light"] .rec-breakdown-bar {

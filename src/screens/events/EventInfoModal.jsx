@@ -1,7 +1,8 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { EVENTS } from '../../data/events.js';
 import { COMPETITION_REQUIREMENTS } from '../../data/competitionRequirements.js';
 import { EVENT_THEMES, hasFullDetails } from '../../data/eventThemes.js';
+import { getRelatedEvents } from '../../data/eventDetailAdapter.js';
 import { Icon } from '../../components/UI.jsx';
 
 const CAREER_LABELS = {
@@ -91,23 +92,6 @@ function needsStateAdvisorApproval(eventName, division) {
     return table.rows.some((r) => normName(r[0]) === target);
 }
 
-function relatedEvents(source) {
-    if (!source) return [];
-    const srcInt = Object.keys(source.interests || {});
-    const srcStyle = Array.isArray(source.projectStyle) ? source.projectStyle : [];
-    const scored = EVENTS
-        .filter((e) => e.id !== source.id && e.division === source.division)
-        .map((e) => {
-            const intOverlap = Object.keys(e.interests || {}).filter((k) => srcInt.includes(k)).length;
-            const styleOverlap = (Array.isArray(e.projectStyle) ? e.projectStyle : []).filter((s) => srcStyle.includes(s)).length;
-            const catBonus = e.category === source.category ? 1 : 0;
-            return { e, score: intOverlap * 2 + styleOverlap + catBonus };
-        })
-        .filter((x) => x.score > 0)
-        .sort((a, b) => b.score - a.score);
-    return scored.slice(0, 6).map((x) => x.e.name);
-}
-
 // Find theme entries for an event. Returns array of 1 or 2 entries.
 // If the event exists in both divisions (same name), returns both.
 // Otherwise returns just the one matching the event's own id.
@@ -184,11 +168,11 @@ export default function EventInfoModal({ event, onClose }) {
         .map(([k]) => CAREER_LABELS[k] || k)
         .filter((v, i, arr) => arr.indexOf(v) === i);
 
-    const related = relatedEvents(event);
+    const related = getRelatedEvents(event, EVENTS);
 
     function openThemePage(id) {
         onClose();
-        navigate(`/events/${id}/theme`);
+        navigate(`/resources/events/${id}`);
     }
 
     return (
@@ -254,7 +238,9 @@ export default function EventInfoModal({ event, onClose }) {
                         <div className="rec-modal-section">
                             <div className="rec-modal-section-title">Related Events</div>
                             <div className="rec-tags">
-                                {related.map((n) => <span className="rec-tag" key={n}>{n}</span>)}
+                                {related.map((r) => (
+                                    <Link to={`/resources/events/${r.id}`} className="rec-tag rec-tag-link" key={r.id} onClick={onClose}>{r.name}</Link>
+                                ))}
                             </div>
                         </div>
                     )}

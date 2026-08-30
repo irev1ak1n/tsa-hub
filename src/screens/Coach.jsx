@@ -1,6 +1,32 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { answer, resetConversation } from '../services/chatbot/engine.js';
+import { answer, resetConversation, getActiveState, getConversationState, setConversationState } from '../services/chatbot/engine.js';
+import { EVENTS, getEvent, eventsForDivision, teamSizeLabel } from '../data/events.js';
+import { US_STATES } from '../data/stateTsa.js';
+import { answerEventFilter } from '../services/chatbot/resolvers/eventFilters.js';
+import { preconferenceFor } from '../services/chatbot/resolvers/events.js';
+import {
+  renderStep,
+  createGuidedFlow,
+  applyStep,
+  applyBack,
+  applyReset,
+  applySelect,
+  matchFreeText,
+} from '../services/chatbot/flows/coachFlows.js';
+import { saveCoachSession, loadCoachSession, clearCoachSession } from '../services/coachSession.js';
+import { useApp } from '../context/AppContext.jsx';
+import coachAvatar from '../assets/img/coach.png';
+
+// Single source of truth for the TSA Assistant avatar, used everywhere the
+// "who said this" label is shown in the chat thread.
+function AssistantAvatar() {
+  return (
+      <span className="cch-who-avatar">
+        <img src={coachAvatar} alt="TSA Assistant" />
+      </span>
+  );
+}
 
 // Topic icons, each one colored so the grid reads at a glance.
 function CalendarIcon() {
@@ -310,6 +336,15 @@ const TOPICS = [
 
 const PAGE_SIZE = 4;
 
+// Auto-welcome copy, reflecting Coach's positioning as TSA Hub's search /
+// navigation / help layer rather than a general-purpose chatbot.
+const WELCOME_TEXT = "Hey, I'm TSA Assistant. I can help you find things in TSA Hub. Pick something below, or just type what you're looking for.";
+
+// Module-level, not component state: this must survive Coach unmounting and
+// remounting (navigating away and back) so the greeting only ever plays once
+// per app session. Only a full page reload resets it.
+let coachWelcomed = false;
+
 function slice(pool, page) {
   if (pool.length <= PAGE_SIZE) return pool;
   const start = (page * PAGE_SIZE) % pool.length;
@@ -320,13 +355,120 @@ function slice(pool, page) {
 
 export default function Coach() {
   const navigate = useNavigate();
-  const [messages, setMessages] = useState([]);
+  const { eventsLoading } = useApp();
+
+  // Read once, synchronously, before any other state initializes — this is
+  // what lets a restored conversation land fully-formed on the very first
+  // render, so the welcome effect below never sees an empty `messages` and
+  // never replays for a session that's actually being continued.
+  const [initialSession] = useState(() => {
+    const s = loadCoachSession();
+    // coachWelcomed is module-scoped, so it survives across mounts within
+    // the same SPA lifetime. A truly-expired (or never-existing) session
+    // must still get the FULL delayed welcome, even if the welcome already
+    // played once earlier in this browser tab — otherwise an expired return
+    // would wrongly skip straight to the no-greeting instant home-menu.
+    // Only an explicit-clear-then-quick-return (which saves a fresh,
+    // still-valid, empty session — see clearChat()) should keep skipping
+    // the greeting, and that case has a truthy `s`, so this reset never
+    // fires for it.
+    if (!s) {
+      coachWelcomed = false;
+      // An expired (or never-existing) session must be a genuinely fresh
+      // start, not just an empty-looking chat thread — the engine's own
+      // conversation memory (activeEvent, pendingClarification, etc.) is a
+      // separate, persistent module-level store that survives a Coach
+      // remount on its own and is NOT cleared just by the UI resetting its
+      // messages. Without this, a truly expired session could silently
+      // resume answering as if the old (erased) conversation were still
+      // active.
+      resetConversation();
+    }
+    return s;
+  });
+
+  const [messages, setMessages] = useState(() => initialSession?.messages || []);
   const [input, setInput] = useState('');
+  const [guidedFlow, setGuidedFlow] = useState(() => initialSession?.guidedFlow || null);
+  const [shownEventIds, setShownEventIds] = useState(() => initialSession?.shownEventIds || []);
   const endRef = useRef(null);
+  const inputRef = useRef('');
+
+  // Canonical app data handed to the flow registry — coachFlows.js stays
+  // framework-free and doesn't import any of this itself.
+  const flowData = useMemo(() => ({
+    EVENTS, getEvent, eventsForDivision, teamSizeLabel, answerEventFilter, preconferenceFor,
+    US_STATES, activeState: getActiveState(), shownEventIds,
+  }), [messages, shownEventIds]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [messages]);
+
+  // Restore the engine's full conversation state (activeEvent, activeState,
+  // pendingClarification, etc.) once on mount, and mark the module-level
+  // welcome flag so a successfully-restored session never replays the
+  // greeting. Declared before the welcome effect so it always runs first.
+  useEffect(() => {
+    if (initialSession) {
+      coachWelcomed = true;
+      if (initialSession.engineState) setConversationState(initialSession.engineState);
+    }
+  }, []);
+
+  // Save the latest snapshot exactly once, on unmount (i.e. on actually
+  // leaving Coach) — this is what starts the 5-minute grace window. A ref is
+  // kept in sync every render so the cleanup (which otherwise closes over
+  // stale state) always sees the latest values.
+  const latestRef = useRef();
+  latestRef.current = { messages, guidedFlow, shownEventIds };
+  useEffect(() => () => {
+    saveCoachSession({ ...latestRef.current, engineState: getConversationState() });
+  }, []);
+
+  // A restored session can render its very first paint before the app's
+  // event catalog has finished loading (EVENTS starts empty and is filled in
+  // asynchronously elsewhere) — a fresh session never notices this because
+  // the 2.5s welcome delay comfortably outlasts the fetch, but a restored
+  // guided-flow step showing an event list renders immediately. `EVENTS` is
+  // a plain mutable module array, not reactive state, so once it's actually
+  // populated nothing would otherwise prompt Coach to recompute the step
+  // that already rendered against the empty array. Forcing one extra
+  // render right when loading finishes fixes that with no restore-logic
+  // changes needed.
+  const wasEventsLoading = useRef(eventsLoading);
+  useEffect(() => {
+    if (wasEventsLoading.current && !eventsLoading) {
+      setMessages((m) => [...m]);
+    }
+    wasEventsLoading.current = eventsLoading;
+  }, [eventsLoading]);
+
+  // Fire the auto-welcome once ever this session, after a short delay, only
+  // into a still-empty conversation the user hasn't already started typing
+  // or sending into. On every OTHER fresh/cleared conversation (the welcome
+  // already played once), the guided home menu still seeds immediately, with
+  // no delay and no repeated greeting — the guided tree stays reachable
+  // without ever showing the intro disclaimer twice. Both cases share the
+  // same "home" guided-flow step taps use later.
+  useEffect(() => {
+    if (messages.length > 0) return;
+    if (coachWelcomed) {
+      setGuidedFlow(createGuidedFlow());
+      setMessages([{ role: 'flow', stepId: 'home', context: {}, searchQuery: '' }]);
+      return;
+    }
+    const timer = setTimeout(() => {
+      if (inputRef.current.trim()) return;
+      setMessages((current) => {
+        if (current.length > 0) return current;
+        coachWelcomed = true;
+        setGuidedFlow(createGuidedFlow());
+        return [{ role: 'flow', stepId: 'home', context: {}, intro: WELCOME_TEXT, searchQuery: '' }];
+      });
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, [messages.length]);
 
   // Every message, typed or tapped, goes through this one path so buttons and
   // typing can never drift apart.
@@ -337,9 +479,108 @@ export default function Coach() {
     setMessages((m) => [
       ...m,
       { role: 'user', text: q },
-      { role: 'bot', text: res.text, suggestions: res.suggestions || [], mailto: res.mailto || null },
+      { role: 'bot', text: res.text, suggestions: res.suggestions || [], actions: res.actions || [], mailto: res.mailto || null },
     ]);
     setInput('');
+    inputRef.current = '';
+  }
+
+  // Like send(), but shows the engine's answer without a matching user
+  // bubble — used when free text already got its own bubble and we're just
+  // resolving the guided step it matched, not asking a second question.
+  function appendAnswer(question) {
+    const res = answer(question);
+    setMessages((m) => [
+      ...m,
+      { role: 'bot', text: res.text, suggestions: res.suggestions || [], actions: res.actions || [], mailto: res.mailto || null },
+    ]);
+  }
+
+  function pushFlowMessage(gf) {
+    setMessages((m) => [...m, { role: 'flow', stepId: gf.stepId, context: gf.context, searchQuery: '' }]);
+    // Record any event ids this step is about to preview, so later branch
+    // previews / recommendation regenerations can prefer events the session
+    // hasn't shown yet. Rendering here is cheap and pure — coachFlows.js
+    // steps do no side effects.
+    const rendered = renderStep(gf.stepId, gf.context, flowData);
+    if (rendered.previewEventIds?.length) {
+      setShownEventIds((ids) => [...new Set([...ids, ...rendered.previewEventIds])]);
+    }
+  }
+
+  // Every guided-flow tap echoes the exact label the user tapped as a plain
+  // user bubble — same component/style as a typed message — before the
+  // structured action runs. This never goes through the NLU engine; it's
+  // purely a rendering step so the guided flow reads like a conversation.
+  function pushUserLabel(label) {
+    setMessages((m) => [...m, { role: 'user', text: label }]);
+  }
+
+  // Handles a tap (or a free-text match standing in for one) on a guided-flow
+  // block. NAVIGATE and FLOW_ASK are leaves — they don't move the flow
+  // cursor. FLOW_STEP does, and may itself resolve straight to an answer
+  // (e.g. the state-advisor shortcut when the state is already known).
+  // fromFreeText taps skip the echo — the user's own typed text already
+  // appears as the bubble (added by submitTyped before calling this).
+  function runFlowAction(b, fromFreeText, base) {
+    const action = b.action;
+    if (!fromFreeText) pushUserLabel(b.label);
+    if (action.type === 'NAVIGATE') {
+      navigate(action.route);
+      return;
+    }
+    if (action.type === 'FLOW_ASK') {
+      appendAnswer(action.question);
+      return;
+    }
+    const next = applyStep(base, b, flowData);
+    setGuidedFlow(next);
+    pushFlowMessage(next);
+    if (next.leaf?.type === 'SEND') appendAnswer(next.leaf.question);
+  }
+
+  function handleFlowSelect(kind, itemId, itemLabel, base) {
+    pushUserLabel(itemLabel);
+    const next = applySelect(base, kind, itemId, flowData);
+    setGuidedFlow(next);
+    pushFlowMessage(next);
+    if (next.leaf?.type === 'SEND') appendAnswer(next.leaf.question);
+  }
+
+  function handleFlowBack() {
+    pushUserLabel('Back');
+    const next = applyBack(guidedFlow);
+    setGuidedFlow(next);
+    pushFlowMessage(next);
+  }
+
+  function handleFlowReset() {
+    pushUserLabel('Start over');
+    const next = applyReset();
+    setGuidedFlow(next);
+    pushFlowMessage(next);
+  }
+
+  // The message-bar submit path only: checks whether typed text looks like
+  // an answer to the currently-showing guided step before falling through to
+  // the normal engine. A guided flow is guidance, never a trap — anything
+  // that doesn't match abandons it and answers normally.
+  function submitTyped(text) {
+    const q = (text || '').trim();
+    if (!q) return;
+    if (guidedFlow) {
+      const stepResult = renderStep(guidedFlow.stepId, guidedFlow.context, flowData);
+      const matched = matchFreeText(stepResult, q);
+      if (matched) {
+        setMessages((m) => [...m, { role: 'user', text: q }]);
+        setInput('');
+        inputRef.current = '';
+        runFlowAction(matched, true, guidedFlow);
+        return;
+      }
+      setGuidedFlow(null);
+    }
+    send(q);
   }
 
   // Tapping a topic posts a FAQ block with that topic's questions.
@@ -356,12 +597,22 @@ export default function Coach() {
     setMessages((m) => m.map((msg, i) => (i === index ? { ...msg, page: msg.page + 1 } : msg)));
   }
 
-  // Clearing the screen must also clear the engine's conversation memory,
-  // otherwise the assistant still remembers the previous event.
+  function updateFlowSearch(index, value) {
+    setMessages((m) => m.map((msg, i) => (i === index ? { ...msg, searchQuery: value } : msg)));
+  }
+
+  // Clearing the screen must also clear the engine's conversation memory
+  // and the persisted 5-minute session — otherwise the assistant still
+  // remembers the previous event, or a later return restores the chat this
+  // explicit clear was meant to erase.
   function clearChat() {
     setMessages([]);
     setInput('');
+    inputRef.current = '';
+    setGuidedFlow(null);
+    setShownEventIds([]);
     resetConversation();
+    clearCoachSession();
   }
 
   const started = messages.length > 0;
@@ -421,7 +672,7 @@ export default function Coach() {
                     return (
                         <div className="cch-block" key={i}>
                           <div className="cch-who">
-                            <span className="cch-who-dot" aria-hidden="true" />
+                            <AssistantAvatar />
                             TSA Assistant
                           </div>
                           <div className="cch-card">
@@ -456,13 +707,114 @@ export default function Coach() {
                         </div>
                     );
                   }
+                  if (m.role === 'flow') {
+                    const stepResult = renderStep(m.stepId, m.context, flowData);
+                    const base = { stepId: m.stepId, context: m.context, history: guidedFlow?.history || [] };
+                    // "Current" means this message IS the guided flow's active
+                    // step — not merely the last message in the thread, since
+                    // a FLOW_ASK leaf appends its answer below without moving
+                    // the flow cursor, and Back/Start over should still show.
+                    const isCurrent = guidedFlow && guidedFlow.stepId === m.stepId && JSON.stringify(guidedFlow.context) === JSON.stringify(m.context);
+                    const query = (m.searchQuery || '').trim().toLowerCase();
+                    const rowBlocks = stepResult.blocks.filter((b) => b.kind !== 'chip');
+                    const chipBlocks = stepResult.blocks.filter((b) => b.kind === 'chip');
+                    return (
+                        <div className="cch-block" key={i}>
+                          <div className="cch-who">
+                            <AssistantAvatar />
+                            TSA Assistant
+                          </div>
+                          <div className="cch-card">{m.intro || stepResult.prompt}</div>
+                          {rowBlocks.length > 0 && (
+                              <div className="cch-actions">
+                                {rowBlocks.map((b) => {
+                                  const className = b.kind === 'topic' ? 'cch-topic-block' : 'cch-faq-item';
+                                  return (
+                                      <button className={className} key={b.id} onClick={() => runFlowAction(b, false, base)}>
+                                        <span>
+                                          {b.label}
+                                          {b.kind === 'event-result' && b.meta && <span className="cch-event-result-meta">{b.meta}</span>}
+                                        </span>
+                                        <span className="cch-faq-arrow" aria-hidden="true">
+                                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M5 12h14M13 6l6 6-6 6" />
+                                          </svg>
+                                        </span>
+                                      </button>
+                                  );
+                                })}
+                              </div>
+                          )}
+                          {chipBlocks.length > 0 && (
+                              <div className="cch-chips">
+                                {chipBlocks.map((b) => (
+                                    <button className="cch-chip" key={b.id} onClick={() => runFlowAction(b, false, base)}>{b.label}</button>
+                                ))}
+                              </div>
+                          )}
+                          {stepResult.selector && (
+                              <div className="cch-selector">
+                                <input
+                                    className="cch-selector-search"
+                                    value={m.searchQuery || ''}
+                                    onChange={(e) => updateFlowSearch(i, e.target.value)}
+                                    placeholder={stepResult.selector.placeholder || 'Search...'}
+                                    aria-label={stepResult.selector.placeholder || 'Search'}
+                                />
+                                <div className="cch-selector-list">
+                                  {stepResult.selector.items
+                                      .filter((it) => !query || it.label.toLowerCase().includes(query))
+                                      .slice(0, 60)
+                                      .map((it) => (
+                                          <button className="cch-faq-item" key={it.id} onClick={() => handleFlowSelect(stepResult.selector.kind, it.id, it.label, base)}>
+                                            <span>{it.label}</span>
+                                            <span className="cch-faq-arrow" aria-hidden="true">
+                                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M5 12h14M13 6l6 6-6 6" />
+                                              </svg>
+                                            </span>
+                                          </button>
+                                      ))}
+                                  {stepResult.selector.items.filter((it) => !query || it.label.toLowerCase().includes(query)).length === 0 && (
+                                      <div className="cch-selector-empty">No matches — try a different search.</div>
+                                  )}
+                                </div>
+                              </div>
+                          )}
+                          {isCurrent && (guidedFlow.history.length > 0 || guidedFlow.stepId !== 'home') && (
+                              <div className="cch-chips">
+                                {guidedFlow.history.length > 0 && (
+                                    <button className="cch-chip" onClick={handleFlowBack}>Back</button>
+                                )}
+                                {guidedFlow.stepId !== 'home' && (
+                                    <button className="cch-chip" onClick={handleFlowReset}>Start over</button>
+                                )}
+                              </div>
+                          )}
+                        </div>
+                    );
+                  }
                   return (
                       <div className="cch-block" key={i}>
                         <div className="cch-who">
-                          <span className="cch-who-dot" aria-hidden="true" />
+                          <AssistantAvatar />
                           TSA Assistant
                         </div>
                         <div className="cch-card">{m.text}</div>
+                        {m.actions && m.actions.length > 0 && (
+                            <div className="cch-actions">
+                              {m.actions.map((a, ai) => (
+                                  <button className="cch-faq-item" key={ai} onClick={() => navigate(a.route)}>
+                                    <span>{a.label}</span>
+                                    <span className="cch-faq-arrow" aria-hidden="true">
+                                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M5 12h14M13 6l6 6-6 6" />
+                                      </svg>
+                                    </span>
+                                  </button>
+                              ))}
+                            </div>
+                        )}
                         {(m.mailto || (m.suggestions && m.suggestions.length > 0)) && (
                             <div className="cch-chips">
                               {m.mailto && (
@@ -490,14 +842,17 @@ export default function Coach() {
             className="cch-bar"
             onSubmit={(e) => {
               e.preventDefault();
-              send(input);
+              submitTyped(input);
             }}
         >
           <div className="cch-field">
             <input
                 className="cch-input"
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={(e) => {
+                  setInput(e.target.value);
+                  inputRef.current = e.target.value;
+                }}
                 placeholder="Send a message..."
                 aria-label="Send a message"
             />

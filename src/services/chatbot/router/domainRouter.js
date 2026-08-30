@@ -21,11 +21,23 @@ const OFF_TOPIC_HINTS = [
     'weather', 'rain', 'snow', 'temperature', 'forecast',
     'president', 'election', 'politics', 'news',
     'nba', 'nfl', 'football', 'basketball', 'soccer', 'superbowl', 'super',
+    'baseball', 'hockey', 'tennis', 'golf',
     'movie', 'song', 'netflix', 'joke', 'recipe', 'food',
     'essay', 'homework', 'math', 'calculate', 'translate', 'stock', 'crypto',
     'love', 'dating', 'horoscope', 'bitcoin', 'pizza', 'math', 'homework',
     'apple', 'stock', 'invest', 'restaurant', 'celebrity', 'lyrics', 'meme',
+    // Personal/family words, general trivia, shopping, and games — real TSA
+    // Coach questions never hinge on these, but generic single-word event
+    // fuzzy-matching used to occasionally leak them into an event before
+    // this domain even got a look (see events.js's GENERIC_WORDS fix).
+    'mom', 'dad', 'mother', 'father', 'capital', 'buy', 'shop', 'shopping',
+    'advice', 'minecraft', 'fortnite', 'videogame', 'tv',
+    'vacation', 'travel', 'airline',
 ];
+
+// Words specific enough that their presence means a real TSA-shaped ask,
+// even alongside an incidental off-topic word elsewhere in the message.
+const STRONG_TSA_ANCHORS = ['rule', 'rules', 'requirement', 'requirements', 'deadline', 'competition', 'conference', 'tsa'];
 
 // Arithmetic and translation style requests are never TSA questions.
 const OFF_TOPIC_PATTERNS = [
@@ -63,10 +75,17 @@ export function detectDomain(norm, state, { eventCount = 0 } = {}) {
 
     // Off topic is decided before domain scoring, otherwise a stray synonym
     // such as price to cost drags a general question into the events domain.
+    // Exception: a strong, unambiguous TSA anchor word ("rules for X") wins
+    // over an incidental off-topic word elsewhere in the same message (e.g.
+    // "what are the rules for quantum pizza engineering" — "pizza" alone
+    // would read as off-topic, but "rules for" is a real rules-lookup
+    // attempt that deserves a NO_RESOURCE_MATCH answer, not a blanket "I
+    // don't cover that").
     const offTopicWord = OFF_TOPIC_HINTS.find((w) => tokens.includes(w) || norm.raw.includes(w));
     const offTopicShape = OFF_TOPIC_PATTERNS.some((re) => re.test(norm.original || norm.rawJoined));
     const pronounFollowUp = hasPronounReference(norm) && !!(state?.activeEvent);
-    if ((offTopicWord || offTopicShape) && !pronounFollowUp && eventCount === 0) {
+    const hasStrongTsaAnchor = STRONG_TSA_ANCHORS.some((w) => tokens.includes(w));
+    if ((offTopicWord || offTopicShape) && !pronounFollowUp && eventCount === 0 && !hasStrongTsaAnchor) {
         return { domain: 'off-topic', confidence: 0.9, inherited: false, evidence: [offTopicWord || 'pattern'] };
     }
 

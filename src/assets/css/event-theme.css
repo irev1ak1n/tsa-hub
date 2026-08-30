@@ -168,6 +168,35 @@ html[data-theme="light"] .eth-no-theme {
 }
 
 /* ============================================================
+   EventFullPage — the one canonical full event-detail page.
+   Thin dividers between major sections, no boxed cards.
+   ============================================================ */
+.evd-section {
+    margin-top: 26px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+}
+.evd-section-first {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+}
+
+/* Related-event chip that's actually a link, not just a tag */
+.rec-tag-link {
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+}
+.rec-tag-link:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--line-strong);
+}
+html[data-theme="light"] .rec-tag-link:hover {
+    background: #e8e8f0;
+}
+
+/* ============================================================
    EventInfoModal additions — theme preview + access button
    ============================================================ */
 

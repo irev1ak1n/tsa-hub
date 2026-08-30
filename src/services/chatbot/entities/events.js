@@ -8,7 +8,50 @@ import { aliasesFor, MISSPELLINGS } from './aliases.js';
 const GENERIC_WORDS = new Set([
     'design', 'technology', 'engineering', 'digital', 'video', 'production',
     'development', 'science', 'system', 'systems', 'and', 'of', 'the',
+    // Domain vocabulary that happens to share a word with a specific event
+    // name ("Career Prep", "Software Development") — without this, a
+    // generic question like "what careers connect to this" or "what
+    // software do I need" fuzzy/overlap-matches that unrelated event and
+    // silently overrides the real active event from conversation context.
+    'career', 'careers', 'software',
+    // Negative corpus: ordinary words that must NEVER be treated as event-
+    // name evidence, no matter how close an edit distance happens to land
+    // them next to some event's name (e.g. "weather" is edit-distance 2 from
+    // "teacher", which used to fuzzy-match "Future Technology and
+    // Engineering Teacher"). No event is safer than the wrong event.
+    'weather', 'rain', 'snow', 'temperature', 'forecast', 'mother', 'mom',
+    'dad', 'father', 'family', 'sports', 'football', 'basketball', 'soccer',
+    'baseball', 'food', 'pizza', 'movie', 'music', 'school', 'homework',
+    'president', 'phone', 'computer', 'money', 'bitcoin', 'game', 'games',
+    'minecraft', 'fortnite', 'vacation', 'travel', 'airline', 'hotel',
+    'weekend', 'birthday', 'girlfriend', 'boyfriend', 'teacher', 'teachers',
+    // Words that are ALSO the entirety (or the only distinctive part) of a
+    // real event's name, but are common enough on their own that requiring
+    // just this one word (word-overlap ratio 1.0 for one-word names, or the
+    // "distinctive" half of a two-word name) produces real false positives:
+    // "whats the best basketball team" -> "Chapter Team", "can you solve
+    // this algebra problem" -> "Problem Solving", "how do i book a flight"
+    // -> "Flight". These stay resolvable via an exact full-name mention
+    // ("chapter team", "problem solving") — this only blocks the bare
+    // single common word from being sufficient evidence on its own.
+    'team', 'board', 'coming', 'storm', 'service',
+    'problem', 'flight', 'website', 'leadership', 'advisor',
 ]);
+
+// A single adjacent-character swap ("roboitcs" vs "robotics") is the most
+// common real typo shape and lands at Levenshtein distance 2 despite being
+// just as "close" as a distance-1 edit. Two arbitrary substitutions
+// ("weather" vs "teacher") also land at distance 2 but are usually two
+// genuinely different words that happen to collide — allowing those as
+// event-name evidence is what caused real false-positive event matches.
+function isAdjacentTransposition(a, b) {
+    if (a.length !== b.length) return false;
+    const diffs = [];
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) diffs.push(i);
+    if (diffs.length !== 2) return false;
+    const [i, j] = diffs;
+    return j === i + 1 && a[i] === b[j] && a[j] === b[i];
+}
 
 function nameWords(name) {
     return tokenize(name).filter((w) => w.length > 1);
@@ -75,15 +118,32 @@ export function resolveEvents(text, { activeDivision = null } = {}) {
         if (repaired.includes(bad)) repaired = repaired.split(bad).join(good);
     }
 
-    const qFlat = flat(repaired);
     const qWords = new Set(tokenize(repaired));
     const hits = [];
 
     for (const rec of recs) {
         if (!rec.lower) continue;
 
-        // 1. Exact name appears in the message.
-        if (rec.lower.length >= 4 && repaired.includes(rec.lower)) {
+        // 1. Exact name appears in the message. Guarded for single-word
+        // names that are ALSO ordinary English words (e.g. "Flight") — the
+        // word showing up anywhere in an unrelated sentence ("how do i book
+        // A flight") is not real evidence, but "...for flight"/"...about
+        // flight"/"what is flight"/a message that's just the word alone all
+        // read as a genuine event reference. The distinguishing signal is
+        // the word right before it: an article/possessive ("a", "my", "the")
+        // means it's being used as an ordinary noun; "for"/"about"/"is" (or
+        // nothing at all, i.e. it's the first/only word) means someone is
+        // naming the event.
+        const isRiskyBareWord = rec.words.length === 1 && GENERIC_WORDS.has(rec.lower);
+        const safeBareWordUse = !isRiskyBareWord || (() => {
+            const qWordsArr = tokenize(repaired);
+            const idx = qWordsArr.indexOf(rec.lower);
+            if (idx === -1) return false;
+            const prev = qWordsArr[idx - 1];
+            const next = qWordsArr[idx + 1];
+            return !prev || ['for', 'about', 'is'].includes(prev) || next === 'work' || next === 'event';
+        })();
+        if (rec.lower.length >= 4 && repaired.includes(rec.lower) && safeBareWordUse) {
             hits.push({ rec, score: 1, how: 'name' });
             continue;
         }
@@ -94,9 +154,32 @@ export function resolveEvents(text, { activeDivision = null } = {}) {
             continue;
         }
         // 3. Compact form, catches "webmaster" typed as "web master".
-        if (rec.flat.length >= 6 && qFlat.includes(rec.flat)) {
-            hits.push({ rec, score: 0.9, how: 'compact' });
-            continue;
+        // Checked as an EXACT match against concatenations of 1-3 adjacent
+        // words only — never "is this a substring of the whole flattened
+        // sentence" (qFlat), which let unrelated adjacent words accidentally
+        // spell out a real event name: "...speed of light" flattens to
+        // "...speedoflight", which contains "flight" spanning the boundary
+        // between "of" and "light" even though neither word means Flight.
+        if (rec.flat.length >= 6) {
+            const qWordsArr = tokenize(repaired);
+            let compactHit = false;
+            for (let i = 0; i < qWordsArr.length && !compactHit; i++) {
+                let acc = '';
+                // Window starts at 2 adjacent words minimum — a SINGLE word
+                // exactly equal to rec.flat is really step 1's job (exact
+                // name match), which already has its own risky-bare-word
+                // guard; without this floor, a single-word event name like
+                // "Flight" would sail through here uncontested every time.
+                for (let j = i; j < Math.min(i + 3, qWordsArr.length); j++) {
+                    acc += qWordsArr[j];
+                    if (j > i && acc === rec.flat) { compactHit = true; break; }
+                    if (acc.length >= rec.flat.length) break;
+                }
+            }
+            if (compactHit) {
+                hits.push({ rec, score: 0.9, how: 'compact' });
+                continue;
+            }
         }
         // 4. Word overlap, needs a distinctive non generic word.
         if (rec.words.length) {
@@ -108,13 +191,22 @@ export function resolveEvents(text, { activeDivision = null } = {}) {
                 continue;
             }
         }
-        // 5. Careful fuzzy, only on long distinctive tokens.
+        // 5. Careful fuzzy, only on long distinctive tokens. Max allowed
+        // edit distance scales with word length — a distance of 2 on a
+        // short-ish 6-8 letter word is a large fraction of the word (e.g.
+        // "weather"/"teacher" are genuinely different words that happen to
+        // be 2 edits apart) and produced real false positives; only truly
+        // long words can safely absorb a distance-2 typo.
         let fuzzyHit = false;
         for (const w of qWords) {
             if (w.length < 6 || GENERIC_WORDS.has(w)) continue;
             for (const nw of rec.words) {
                 if (nw.length < 6) continue;
-                if (editDistance(w, nw, 2) <= 2) { fuzzyHit = true; break; }
+                const dist = editDistance(w, nw, 2);
+                const allowed = dist <= 1
+                    || (dist === 2 && isAdjacentTransposition(w, nw))
+                    || (dist === 2 && w.length >= 9);
+                if (allowed) { fuzzyHit = true; break; }
             }
             if (fuzzyHit) break;
         }

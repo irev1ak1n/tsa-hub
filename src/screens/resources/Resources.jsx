@@ -158,6 +158,18 @@ export default function Resources() {
                 ))}
             </div>
 
+            {/* EVENTS ----------------------------------------------------------- */}
+            <div className="rs-group-label">Events</div>
+            <div className="rs-card">
+                <Link to="/resources/events/themes" className="rs-row">
+                    <span className="rs-ico"><Icon name="file-text" size={20} /></span>
+                    <span className="rs-text">
+                        <span className="rs-title">Event Guide</span>
+                    </span>
+                    <Icon name="chevron-right" size={18} />
+                </Link>
+            </div>
+
             {/* NATIONAL CONFERENCE -------------------------------------------- */}
             <NationalConferenceSection />
 

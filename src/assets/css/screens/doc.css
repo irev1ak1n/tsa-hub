@@ -1,11 +1,13 @@
 /* ============================================================================
    Static document pages — Privacy Policy, Terms and Policies.
-   Dark #171717 surface, same two text colors used on Settings sections.
+   Same page background as Settings (the app shell's own --bg, not a card
+   surface) — see Layout.jsx's .content, which sets no background of its
+   own, so it and Settings both show the plain body/--bg color through.
    ============================================================================ */
 
 .doc-page {
-    /* full #171717 background across the whole page, no card framing */
-    background: #171717;
+    /* matches Settings' page background exactly — var(--bg), not a card tone */
+    background: var(--bg);
     border: 0;
     border-radius: 0;
     padding: 24px 20px 40px;

@@ -3,6 +3,9 @@ import { Icon } from '../../components/UI.jsx';
 import { formatTime, parseYmd, ymd } from '../../utils/date.js';
 import { KIND_LABEL } from '../../utils/calendarItems.js';
 import { DEFAULT_PERSONAL_COLOR, PRESET_EVENT_COLORS, resolveItemColor } from '../../utils/color.js';
+import { REMINDER_OPTIONS, defaultReminder, normalizeReminder, reminderLabel } from '../../utils/reminders.js';
+import { getPermissionStatus, isSupported as notificationsSupported, requestPermission } from '../../services/notificationService.js';
+import { addEvent as addToDeviceCalendar } from '../../services/deviceCalendarService.js';
 
 const WEEKDAYS_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -99,13 +102,22 @@ function ItemRow({ item, onClick }) {
 }
 
 // ── Item details (official read-only, or personal edit/delete/complete) ──
-export function ItemDetailsModal({ item, onClose, onEdit, onDelete, onToggleComplete }) {
+export function ItemDetailsModal({ item, onClose, onEdit, onDelete, onToggleComplete, officialReminder, onSetOfficialReminder, onRemoveOfficialReminder }) {
     const [confirmingDelete, setConfirmingDelete] = useState(false);
-    useEffect(() => { setConfirmingDelete(false); }, [item]);
+    const [addingToCalendar, setAddingToCalendar] = useState(false);
+    const [calendarNote, setCalendarNote] = useState('');
+    useEffect(() => { setConfirmingDelete(false); setCalendarNote(''); }, [item]);
     if (!item) return null;
 
     const editable = item.kind !== 'official';
     const { bg } = resolveItemColor(item);
+
+    async function handleAddToDeviceCalendar() {
+        setAddingToCalendar(true);
+        const result = await addToDeviceCalendar(item);
+        setAddingToCalendar(false);
+        setCalendarNote(result.ok ? 'Calendar file downloaded — open it to add this to your calendar app.' : "Couldn't create a calendar file for this item.");
+    }
 
     return (
         <div className="rec-modal-backdrop" onClick={onClose}>
@@ -139,6 +151,12 @@ export function ItemDetailsModal({ item, onClose, onEdit, onDelete, onToggleComp
                                 <span className="rec-fact-value">{item.completed ? 'Completed' : 'Not completed'}</span>
                             </div>
                         )}
+                        {item.kind !== 'official' && item.reminder?.enabled && (
+                            <div className="rec-fact">
+                                <span className="rec-fact-label">Reminder</span>
+                                <span className="rec-fact-value">{reminderLabel(item.reminder.minutesBefore) || 'On'}</span>
+                            </div>
+                        )}
                     </div>
 
                     {item.description && (
@@ -161,6 +179,21 @@ export function ItemDetailsModal({ item, onClose, onEdit, onDelete, onToggleComp
                             </a>
                         </div>
                     )}
+
+                    {item.kind === 'official' && (
+                        <OfficialReminderControl
+                            existing={officialReminder}
+                            onSet={(minutesBefore) => onSetOfficialReminder(item.raw, minutesBefore)}
+                            onRemove={() => onRemoveOfficialReminder(item.raw.id)}
+                        />
+                    )}
+
+                    <div className="rec-modal-section">
+                        <button type="button" className="btn ghost" onClick={handleAddToDeviceCalendar} disabled={addingToCalendar}>
+                            <Icon name="download" size={15} /> Add to device calendar
+                        </button>
+                        {calendarNote && <p className="cal-inline-note">{calendarNote}</p>}
+                    </div>
 
                     {editable && (
                         <div className="cal-modal-actions">
@@ -191,6 +224,44 @@ export function ItemDetailsModal({ item, onClose, onEdit, onDelete, onToggleComp
     );
 }
 
+// A personal reminder attached to a read-only Official TSA Calendar event.
+// The official event itself is never modified — this only ever creates,
+// updates, or removes the user's own linked personal-reminder item.
+const OFFICIAL_REMINDER_OPTIONS = REMINDER_OPTIONS.filter((o) => ['m30', 'h1', 'd1', 'w1'].includes(o.id));
+
+function OfficialReminderControl({ existing, onSet, onRemove }) {
+    const [minutesBefore, setMinutesBefore] = useState(existing?.reminder?.minutesBefore ?? OFFICIAL_REMINDER_OPTIONS[0].minutesBefore);
+    const [status, setStatus] = useState(getPermissionStatus());
+
+    async function handleSet() {
+        if (notificationsSupported() && status !== 'granted') {
+            const result = await requestPermission();
+            setStatus(result);
+        }
+        onSet(minutesBefore);
+    }
+
+    return (
+        <div className="rec-modal-section">
+            <div className="rec-modal-section-title">Personal reminder</div>
+            {existing ? (
+                <div className="cal-official-reminder">
+                    <span>Reminder set — {reminderLabel(existing.reminder.minutesBefore) || 'on'}.</span>
+                    <button type="button" className="btn ghost" onClick={onRemove}>Remove</button>
+                </div>
+            ) : (
+                <div className="cal-official-reminder">
+                    <select value={minutesBefore} onChange={(e) => setMinutesBefore(Number(e.target.value))} aria-label="Remind me">
+                        {OFFICIAL_REMINDER_OPTIONS.map((o) => <option key={o.id} value={o.minutesBefore}>{o.label}</option>)}
+                    </select>
+                    <button type="button" className="btn ghost" onClick={handleSet}>Remind me</button>
+                </div>
+            )}
+            {status === 'denied' && <p className="cal-inline-note">Notifications are blocked for this site, so this reminder is saved but won't be able to alert you here. Allow notifications in your browser's site settings to change that.</p>}
+        </div>
+    );
+}
+
 // ── Create / edit form ────────────────────────────────────────────────────
 function addHour(hhmm) {
     const [h, m] = hhmm.split(':').map(Number);
@@ -212,6 +283,7 @@ function blankDraft(type, defaultDate, defaultStartTime) {
         notes: '',
         completed: false,
         color: DEFAULT_PERSONAL_COLOR,
+        reminder: defaultReminder(),
     };
 }
 
@@ -223,6 +295,7 @@ function draftFromItem(raw) {
         startDate: raw.startDate,
         endDate: raw.endDate || raw.startDate,
         startTime: raw.startTime || '',
+        reminder: normalizeReminder(raw.reminder),
         endTime: raw.endTime || '',
         location: raw.location || '',
         notes: raw.notes || '',
@@ -251,6 +324,50 @@ function ColorPicker({ value, onChange }) {
                     <input type="color" value={value} onChange={(e) => onChange(e.target.value)} aria-label="Custom color" />
                 </label>
             </div>
+        </div>
+    );
+}
+
+// Notification permission is requested only here — the moment the user
+// actually turns a reminder on — never on app load or on opening this form.
+function ReminderField({ reminder, onChange }) {
+    const [status, setStatus] = useState(getPermissionStatus());
+    const selectValue = reminder.enabled ? reminder.minutesBefore : 'none';
+
+    async function handleChange(value) {
+        if (value === 'none') {
+            onChange({ enabled: false, minutesBefore: null });
+            return;
+        }
+        const minutesBefore = Number(value);
+        if (notificationsSupported() && status !== 'granted') {
+            const result = await requestPermission();
+            setStatus(result);
+        }
+        onChange({ enabled: true, minutesBefore });
+    }
+
+    return (
+        <div className="cal-field">
+            <label className="cal-field">
+                <span>Reminder</span>
+                <select value={selectValue} onChange={(e) => handleChange(e.target.value)}>
+                    <option value="none">No reminder</option>
+                    {REMINDER_OPTIONS.map((o) => <option key={o.id} value={o.minutesBefore}>{o.label}</option>)}
+                </select>
+            </label>
+            {reminder.enabled && status === 'default' && notificationsSupported() && (
+                <p className="cal-inline-note">Allow notifications so TSA Hub can remind you before your events.</p>
+            )}
+            {reminder.enabled && status === 'denied' && (
+                <p className="cal-inline-note">Notifications are blocked for this site, so this reminder is saved but won't be able to alert you here. Allow notifications in your browser's site settings to change that.</p>
+            )}
+            {reminder.enabled && !notificationsSupported() && (
+                <p className="cal-inline-note">This browser doesn't support notifications, so this reminder is saved but won't alert you here.</p>
+            )}
+            {reminder.enabled && status === 'granted' && (
+                <p className="cal-inline-note">While TSA Hub is open in this tab, you'll get a notification at that time. This will work more reliably once TSA Hub is a mobile app.</p>
+            )}
         </div>
     );
 }
@@ -361,6 +478,11 @@ export function ItemEditorModal({ open, editing, defaultDate, defaultStartTime, 
                             <input type="time" value={draft.startTime} onChange={(e) => set({ startTime: e.target.value })} />
                         </label>
                     )}
+
+                    <ReminderField
+                        reminder={draft.reminder}
+                        onChange={(reminder) => set({ reminder })}
+                    />
 
                     {draft.type === 'event' && (
                         <label className="cal-field">

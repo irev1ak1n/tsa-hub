@@ -34,7 +34,12 @@ export default function Calendar() {
     const [openItemId, setOpenItemId] = useState(null); // details modal
     const [editor, setEditor] = useState({ open: false, editingId: null, defaultDate: todayKey, defaultStartTime: '', defaultType: 'event' });
 
-    const { items: personalItems, loading, error, createItem, updateItem, removeItem, toggleComplete, clearError } = usePersonalCalendar();
+    const {
+        items: personalItems, loading, error,
+        createItem, updateItem, removeItem, toggleComplete,
+        setOfficialReminder, removeOfficialReminder,
+        clearError,
+    } = usePersonalCalendar();
 
     useEffect(() => {
         try { localStorage.setItem(VIEW_STORAGE_KEY, viewMode); } catch { /* ignore */ }
@@ -44,6 +49,9 @@ export default function Calendar() {
     const itemsByDate = useMemo(() => indexItemsByDate(mergedItems), [mergedItems]);
 
     const openItem = openItemId ? mergedItems.find((i) => i.id === openItemId) || null : null;
+    const openItemOfficialReminder = openItem?.kind === 'official'
+        ? personalItems.find((p) => p.linkedOfficialEventId === openItem.raw.id) || null
+        : null;
     const editingRaw = editor.editingId ? personalItems.find((p) => p.id === editor.editingId) || null : null;
     const editingNormalized = editingRaw ? { ...editingRaw } : null;
 
@@ -243,6 +251,9 @@ export default function Calendar() {
                 onEdit={openEdit}
                 onDelete={handleDelete}
                 onToggleComplete={handleToggleComplete}
+                officialReminder={openItemOfficialReminder}
+                onSetOfficialReminder={setOfficialReminder}
+                onRemoveOfficialReminder={removeOfficialReminder}
             />
 
             <ItemEditorModal

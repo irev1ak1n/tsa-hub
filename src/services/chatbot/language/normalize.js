@@ -13,13 +13,16 @@ const CONTRACTIONS = {
     "what's": 'what is', "whats": 'what is', "it's": 'it is', "i'm": 'i am',
     "don't": 'do not', "doesn't": 'does not', "can't": 'can not', "won't": 'will not',
     "isn't": 'is not', "aren't": 'are not', "you're": 'you are', "there's": 'there is',
-    "i've": 'i have', "i'd": 'i would', "let's": 'let us', "that's": 'that is',
-    "how's": 'how is', "who's": 'who is', "whos": 'who is',
+    "i've": 'i have', "i'd": 'i would', "i'll": 'i will', "let's": 'let us', "that's": 'that is',
+    "how's": 'how is', "who's": 'who is', "whos": 'who is', "where's": 'where is', "wheres": 'where is',
     // Common student-chat shorthand. Deliberately NOT including single-letter
     // "r" ("are") — too ambiguous on its own (grades, ratings, etc.) to
     // blindly expand; "how r u" is already covered directly in smalltalk.js.
     "u": 'you', "ur": 'your', "pls": 'please', "plz": 'please',
     "idk": 'i do not know', "rn": 'right now',
+    "lemme": 'let me', "gimme": 'give me', "wanna": 'want to',
+    "gonna": 'going to', "gotta": 'got to', "haven't": 'have not',
+    "didn't": 'did not',
 };
 
 // Common misspellings of ordinary (non-event-name) TSA vocabulary — event
@@ -81,6 +84,11 @@ const SYNONYMS = {
     // "wear", which IS mapped below — so this restriction costs nothing.
     suit: 'dress', blazer: 'dress', tie: 'dress', skirt: 'dress',
     skirts: 'dress', casual: 'dress',
+    // Named AI tools students actually say instead of the word "AI" — map
+    // them to the same token so an "is chatgpt allowed" question retrieves
+    // the same official AI-usage rule as "is ai allowed" does.
+    chatgpt: 'ai', gpt: 'ai', copilot: 'ai', claude: 'ai', gemini: 'ai',
+    midjourney: 'ai', dalle: 'ai',
 };
 
 export function expandContractions(text) {
