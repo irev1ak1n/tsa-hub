@@ -206,7 +206,34 @@ describe('Coach navigation: state advisor flow (FLOW C)', () => {
     it('once a state is set, points at Resources with the state named', () => {
         const [, res] = askChain(['my state is texas', 'where do i find my advisor']);
         expect(res.text).toMatch(/texas/i);
-        expect(res.actions.some((a) => a.route === '/resources')).toBe(true);
+        // Deep-links straight to the "Your State" section, not just the bare
+        // Resources page — see the state-sync/routing fix.
+        expect(res.actions.some((a) => a.route === '/resources#your-state')).toBe(true);
+    });
+});
+
+describe('Coach navigation: stateConfirmed signal (app-wide state sync)', () => {
+    // Coach.jsx reads `res.stateConfirmed` to sync the app-wide selected
+    // state (AppContext's setStatePref) — but only when the engine considers
+    // the state genuinely explicit, never on an incidental mention.
+    it('an explicit declaration ("my state is X") reports stateConfirmed', () => {
+        const res = ask('my state is Washington');
+        expect(res.stateConfirmed).toBe('Washington');
+    });
+
+    it('a direct reply to "which state?" reports stateConfirmed', () => {
+        const [, res] = askChain(['who is my state advisor', 'Washington']);
+        expect(res.stateConfirmed).toBe('Washington');
+    });
+
+    it('a comparison mentioning two states does NOT report stateConfirmed', () => {
+        const res = ask('is the Texas state website different from the Ohio state website');
+        expect(res.stateConfirmed).toBeFalsy();
+    });
+
+    it('a genuine single-state question also reports stateConfirmed (not just declarations)', () => {
+        const res = ask('what is the Washington state website');
+        expect(res.stateConfirmed).toBe('Washington');
     });
 });
 

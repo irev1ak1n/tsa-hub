@@ -132,6 +132,9 @@ describe('Coach guided flow: required end-to-end sequences', () => {
         gf = applySelect(gf, res.selector.kind, alabama.id, data);
         expect(gf.leaf.type).toBe('SEND');
         expect(gf.leaf.question).toMatch(/state advisor for Alabama/i);
+        res = renderStep(gf.stepId, gf.context, data);
+        const view = res.blocks.find((b) => b.id === 'view');
+        expect(view.action).toEqual({ type: 'NAVIGATE', label: 'View Alabama TSA Information', route: '/resources#your-state' });
     });
 
     it('Home -> Resources -> Event Guide', () => {

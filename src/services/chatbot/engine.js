@@ -38,6 +38,20 @@ function detectStateName(text) {
     return null;
 }
 
+// Distinguishes "the user explicitly told Coach their state" from "a state
+// name happened to appear somewhere in the sentence" — used to decide
+// whether to sync the app-wide selected state (see stateConfirmed below).
+// A message naming exactly one recognizable state is treated as
+// unambiguous ("my state is Washington", a bare reply to "which state?");
+// a message naming two or more (a comparison/informational question, e.g.
+// "is Texas different from Ohio") is deliberately NOT treated as a
+// selection, so an incidental mention never overwrites the saved state.
+function explicitStateFromText(text) {
+    const t = (text || '').toLowerCase();
+    const found = US_STATES.filter((name) => t.includes(name.toLowerCase()));
+    return found.length === 1 ? found[0] : null;
+}
+
 const ANSWER = 0.62;
 const CLARIFY = 0.4;
 
@@ -361,7 +375,12 @@ export function processMessage(input, prevState) {
             state.lastIntent = stateIntent;
             state.lastAnswerType = sres.missing ? 'missing' : 'fact';
             debug.resolver = 'state-early';
-            return finish(reply(sres.text, { domain: 'state', intent: stateIntent, confidence: 0.9, sourceType: sres.sourceType, suggestions: ['Who is my state advisor?', 'What is my state website?', 'State officer team'], actions: [{ type: 'NAVIGATE', label: `View ${state.activeState} TSA Information`, route: '/resources' }] }), state, debug);
+            return finish(reply(sres.text, {
+                domain: 'state', intent: stateIntent, confidence: 0.9, sourceType: sres.sourceType,
+                suggestions: ['Who is my state advisor?', 'What is my state website?', 'State officer team'],
+                actions: [{ type: 'NAVIGATE', label: `View ${state.activeState} TSA Information`, route: '/resources#your-state' }],
+                stateConfirmed: explicitStateFromText(text) || undefined,
+            }), state, debug);
         }
     }
 
@@ -385,7 +404,7 @@ export function processMessage(input, prevState) {
             debug.resolver = 'state-advisor-nav';
             return finish(reply(`Your ${state.activeState} state advisor information is available in Resources.`, {
                 domain: 'state', confidence: 0.85, sourceType: 'official',
-                actions: [{ type: 'NAVIGATE', label: `View ${state.activeState} TSA Information`, route: '/resources' }],
+                actions: [{ type: 'NAVIGATE', label: `View ${state.activeState} TSA Information`, route: '/resources#your-state' }],
             }), state, debug);
         }
         // Deliberately does NOT set state.pendingClarification — this is a
@@ -679,7 +698,7 @@ export function processMessage(input, prevState) {
             const mentioned = detectStateName(text);
             if (mentioned) state.activeState = mentioned;
             const res = answerState('state.general', { stateName: state.activeState });
-            if (res) { state.activeDomain = 'state'; debug.resolver = 'state-fallback'; return finish(reply(res.text, { domain: 'state', sourceType: res.sourceType }), state, debug); }
+            if (res) { state.activeDomain = 'state'; debug.resolver = 'state-fallback'; return finish(reply(res.text, { domain: 'state', sourceType: res.sourceType, stateConfirmed: explicitStateFromText(text) || undefined }), state, debug); }
         }
         if (UNBUILT_DOMAINS.has(domain.domain) && domain.confidence >= 0.6) {
             debug.resolver = 'unsupported-domain';
@@ -911,7 +930,11 @@ export function processMessage(input, prevState) {
                 state.pendingClarification = { need: 'state', intent };
             }
             debug.resolver = 'state';
-            return finish(reply(res.text, { domain: 'state', intent, confidence, sourceType: res.sourceType, suggestions: ['Who is my state advisor?', 'What is my state website?', 'State officer team'] }), state, debug);
+            return finish(reply(res.text, {
+                domain: 'state', intent, confidence, sourceType: res.sourceType,
+                suggestions: ['Who is my state advisor?', 'What is my state website?', 'State officer team'],
+                stateConfirmed: explicitStateFromText(text) || undefined,
+            }), state, debug);
         }
     }
 

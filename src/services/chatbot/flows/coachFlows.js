@@ -202,6 +202,7 @@ export const FLOW_STEPS = {
     }),
 
     'state.done': (context) => step('state.done', `More about ${context.stateName} TSA:`, [
+        block('view', `View ${context.stateName} TSA Information`, navigate(`View ${context.stateName} TSA Information`, '/resources#your-state'), 'topic'),
         block('another', 'Choose another state', go('Choose another state', 'state.pick', { stateIntent: context.stateIntent, forcePick: true }), 'chip'),
         block('back', 'Back to State TSA', go('Back to State TSA', 'state'), 'chip'),
     ]),

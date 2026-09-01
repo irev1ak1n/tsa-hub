@@ -355,7 +355,7 @@ function slice(pool, page) {
 
 export default function Coach() {
   const navigate = useNavigate();
-  const { eventsLoading } = useApp();
+  const { eventsLoading, prefs, setStatePref } = useApp();
 
   // Read once, synchronously, before any other state initializes — this is
   // what lets a restored conversation land fully-formed on the very first
@@ -395,11 +395,15 @@ export default function Coach() {
   const inputRef = useRef('');
 
   // Canonical app data handed to the flow registry — coachFlows.js stays
-  // framework-free and doesn't import any of this itself.
+  // framework-free and doesn't import any of this itself. The app-wide
+  // selected state (Resources' source of truth) wins as the default here —
+  // if the user later changes their state from Resources, a fresh Coach
+  // conversation should follow that instead of silently keeping whatever
+  // this conversation's own engine state happened to have.
   const flowData = useMemo(() => ({
     EVENTS, getEvent, eventsForDivision, teamSizeLabel, answerEventFilter, preconferenceFor,
-    US_STATES, activeState: getActiveState(), shownEventIds,
-  }), [messages, shownEventIds]);
+    US_STATES, activeState: prefs?.state || getActiveState(), shownEventIds,
+  }), [messages, shownEventIds, prefs?.state]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
@@ -470,12 +474,24 @@ export default function Coach() {
     return () => clearTimeout(timer);
   }, [messages.length]);
 
+  // The engine only ever reports stateConfirmed when a message unambiguously
+  // named exactly one state (an explicit "my state is X" / a direct answer
+  // to "which state?") — never on an incidental mention inside a
+  // comparison/informational question. Syncing here, in the one place every
+  // engine answer passes through, keeps the app-wide selected state
+  // (Resources' source of truth) and Coach's own notion of the state in
+  // agreement without touching engine.js's boundary with AppContext.
+  function syncStateFromAnswer(res) {
+    if (res.stateConfirmed) setStatePref(res.stateConfirmed);
+  }
+
   // Every message, typed or tapped, goes through this one path so buttons and
   // typing can never drift apart.
   function send(text) {
     const q = (text || '').trim();
     if (!q) return;
     const res = answer(q);
+    syncStateFromAnswer(res);
     setMessages((m) => [
       ...m,
       { role: 'user', text: q },
@@ -490,6 +506,7 @@ export default function Coach() {
   // resolving the guided step it matched, not asking a second question.
   function appendAnswer(question) {
     const res = answer(question);
+    syncStateFromAnswer(res);
     setMessages((m) => [
       ...m,
       { role: 'bot', text: res.text, suggestions: res.suggestions || [], actions: res.actions || [], mailto: res.mailto || null },
@@ -541,6 +558,10 @@ export default function Coach() {
 
   function handleFlowSelect(kind, itemId, itemLabel, base) {
     pushUserLabel(itemLabel);
+    // A tap in the searchable state picker is always an explicit, unambiguous
+    // selection — sync it directly rather than relying on the follow-up
+    // engine answer to happen to name exactly this one state.
+    if (kind === 'states') setStatePref(itemId);
     const next = applySelect(base, kind, itemId, flowData);
     setGuidedFlow(next);
     pushFlowMessage(next);

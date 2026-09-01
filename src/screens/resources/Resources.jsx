@@ -110,10 +110,24 @@ export default function Resources() {
 
     // Remember where the user was on this page. When they open a sub-page and
     // come back, restore the scroll position instead of jumping to the top.
+    // An explicit navigation target (e.g. /resources#your-state, used by
+    // Coach's "View [State] TSA Information" action) must always win over
+    // this — arriving with a hash should never get silently overridden by
+    // wherever the user happened to be scrolled to last time.
     useLayoutEffect(() => {
-        let saved = 0;
-        try { saved = parseInt(sessionStorage.getItem('rs-scroll') || '0', 10) || 0; } catch { /* ignore */ }
-        if (saved) window.scrollTo(0, saved);
+        if (window.location.hash) {
+            const id = window.location.hash.slice(1);
+            const scrollToTarget = () => document.getElementById(id)?.scrollIntoView({ block: 'center' });
+            scrollToTarget();
+            // A second pass after paint settles (fonts/icons can shift layout
+            // slightly right after the initial synchronous scroll) so the
+            // section reliably lands on-screen instead of just below the fold.
+            requestAnimationFrame(scrollToTarget);
+        } else {
+            let saved = 0;
+            try { saved = parseInt(sessionStorage.getItem('rs-scroll') || '0', 10) || 0; } catch { /* ignore */ }
+            if (saved) window.scrollTo(0, saved);
+        }
 
         const onScroll = () => {
             try { sessionStorage.setItem('rs-scroll', String(Math.round(window.scrollY))); } catch { /* ignore */ }
@@ -216,7 +230,7 @@ export default function Resources() {
             </div>
 
             {/* YOUR STATE ---------------------------------------------------- */}
-            <div className="rs-group-label">{state ? (stateInfo?.name || `${state} TSA`) : 'Your State'}</div>
+            <div id="your-state" className="rs-group-label">{state ? (stateInfo?.name || `${state} TSA`) : 'Your State'}</div>
             <div className="rs-card">
                 {!state ? (
                     <div className="rs-state-prompt">
