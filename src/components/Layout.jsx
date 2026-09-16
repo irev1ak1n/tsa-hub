@@ -1,6 +1,7 @@
 import { NavLink, Outlet, Link, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext.jsx';
 import { Icon } from './UI.jsx';
+import ScrollToTop from './ScrollToTop.jsx';
 
 const TABS = [
     { to: '/', label: 'Home', icon: 'home', end: true },
@@ -42,6 +43,8 @@ export default function Layout() {
 
     return (
         <div className="shell">
+            <ScrollToTop />
+
             <aside className="rail">
                 <Wordmark />
                 <Tabs />
