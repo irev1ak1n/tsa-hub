@@ -1554,3 +1554,94 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     color: var(--muted);
     margin-top: 2px;
 }
+
+/* ── National TSA Officers page — one card per officer, mobile-first ──── */
+.no-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.no-card {
+    display: flex;
+    flex-direction: column;
+    background: #0a0a0a;
+    border: 1px solid #333333;
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+/* Whole portrait visible, never cropped — object-fit: contain letterboxes
+   into a neutral, theme-matching background instead of zooming/cutting off
+   the head, shoulders, or sides. Container is a mild portrait ratio (not
+   square/landscape) so most photos fill it with little to no letterboxing,
+   while staying balanced (not extremely tall) on mobile. */
+.no-photo {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: contain;
+    object-position: center center;
+    background: var(--surface-2);
+}
+
+.no-body {
+    padding: 14px 16px 16px;
+}
+
+.no-name {
+    margin: 0 0 6px;
+    font-family: var(--font-display, var(--font-system));
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--ink-hi);
+}
+
+.no-meta {
+    margin: 0;
+    font-family: var(--font-system);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+    color: var(--ink);
+}
+
+.no-meta-muted {
+    font-weight: 500;
+    color: var(--muted);
+}
+
+.no-email {
+    display: inline-block;
+    margin: 6px 0 10px;
+    font-family: var(--font-system);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ig-link);
+    text-decoration: none;
+}
+.no-email:hover { text-decoration: underline; }
+
+/* Only the first paragraph gets the divider/spacing above the bio block —
+   the rest just read as normal consecutive paragraphs. */
+.no-bio {
+    margin: 0;
+    font-family: var(--font-system);
+    font-size: 13.5px;
+    line-height: 20px;
+    color: var(--muted);
+}
+.no-bio-first {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+}
+.no-bio + .no-bio { margin-top: 10px; }
+
+/* Two columns once there's room, still one clean column on phones. */
+@media (min-width: 640px) {
+    .no-card { flex-direction: row; }
+    .no-photo { width: 200px; flex: 0 0 200px; aspect-ratio: 3 / 4; }
+    .no-body { flex: 1; padding: 16px 20px; }
+}

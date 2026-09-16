@@ -5,8 +5,12 @@ import { Icon } from '../components/UI.jsx';
 import SubmitModal from '../components/SubmitModal.jsx';
 import QuickActionsEditor from '../components/QuickActionsEditor.jsx';
 import { RowIcon } from './resources/resourcesShared.jsx';
+import { NATIONAL_TSA } from './resources/resourceSearch.jsx';
 import { resolveQuickActions } from '../data/quickActions.js';
+import HomeCalendarWidget from '../components/HomeCalendarWidget.jsx';
+import HomeMyEvents from '../components/HomeMyEvents.jsx';
 import { submitFeedback, submitReport } from '../services/feedbackService.js';
+import nationalOfficersImg from '../assets/img/national-officers.png';
 
 // One Quick Actions tile. `action.kind` decides how it behaves:
 //   route    -> <Link>, optionally carrying router state (e.g. Calendar's
@@ -65,6 +69,10 @@ export default function Dashboard() {
                 <span className="rs-search-placeholder">Search</span>
             </Link>
 
+            {/* CALENDAR WIDGET — same shared IndexedDB-backed personal calendar
+                store as the full Calendar page; nothing Home-only here. */}
+            <HomeCalendarWidget />
+
             {/* QUICK ACTIONS ----------------------------------------------------- */}
             <div className="section">
                 <div className="section-head">
@@ -87,6 +95,44 @@ export default function Dashboard() {
                             onOpenModal={setModal}
                             onToggleTheme={toggleTheme}
                         />
+                    ))}
+                </div>
+            </div>
+
+            {/* MY EVENTS ----------------------------------------------------------- */}
+            <HomeMyEvents />
+
+            {/* NATIONAL TSA OFFICERS PROMO — links to the full officers page. */}
+            <div className="section">
+                <Link to="/resources/national-officers" className="home-officers-card">
+                    <img src={nationalOfficersImg} alt="TSA National Officer Team" className="home-officers-img" />
+                    <span className="home-officers-year">2026-2027</span>
+                    <span className="home-officers-bar">
+                        <span className="home-officers-bar-label">National TSA Officers</span>
+                        <Icon name="chevron-right" size={18} />
+                    </span>
+                </Link>
+            </div>
+
+            {/* NATIONAL TSA LINKS — same NATIONAL_TSA data the Resources page and
+                search index already use, not a second copy of these links. */}
+            <div className="section">
+                <div className="section-head">
+                    <h2>National TSA Links</h2>
+                </div>
+                <div className="home-links-grid">
+                    {NATIONAL_TSA.map((link) => (
+                        <a
+                            key={link.title}
+                            href={link.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="home-link-item"
+                        >
+                            <RowIcon icon={link.icon} img={link.img} svg={link.svg} color={link.iconColor} />
+                            <span className="home-link-label">{link.title}</span>
+                            <Icon name="chevron-right" size={16} />
+                        </a>
                     ))}
                 </div>
             </div>

@@ -13,6 +13,7 @@ import ResourceSearch from './screens/resources/ResourceSearchPage.jsx';
 import CompetitionRequirementPage from './screens/resources/CompetitionRequirementPage.jsx';
 import StudentLeadership from './screens/resources/StudentLeadership.jsx';
 import LeadershipSupport from './screens/resources/LeadershipSupport.jsx';
+import NationalOfficers from './screens/resources/NationalOfficers.jsx';
 import Coach from './screens/Coach.jsx';
 import Settings from './screens/profile/Settings.jsx';
 import PrivacyPolicy from './screens/profile/PrivacyPolicy.jsx';
@@ -59,6 +60,7 @@ export default function App() {
                         <Route path="/resources/events/:id" element={<EventFullPage />} />
                         <Route path="/resources/student-leadership" element={<StudentLeadership />} />
                         <Route path="/resources/leadership-support" element={<LeadershipSupport />} />
+                        <Route path="/resources/national-officers" element={<NationalOfficers />} />
 
                         <Route path="/coach" element={<Coach />} />
 

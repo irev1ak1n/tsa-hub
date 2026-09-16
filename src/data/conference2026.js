@@ -13,10 +13,12 @@
 //   collapsible  true -> `list` renders as a show/hide group
 //   items        [{ label, meta?:[str], text?, list? }] labelled sub-blocks
 //   officers     [{ role, name, img }] photo grid (img = filename in
-//                assets/img/national-officers-2026/ without extension)
+//                assets/img/national-officers/ without extension)
 //   note         muted footnote
 //   attribution  { name, role }
 // ============================================================================
+
+import { NATIONAL_OFFICERS as NATIONAL_OFFICERS_2026 } from './nationalOfficers.js';
 
 export const CONFERENCE_2026_HEADER = {
     eyebrow: 'National Conference Guide',
@@ -42,17 +44,10 @@ export const CONFERENCE_2026_TOPICS = [
     { id: 'general-sessions', icon: 'cal', title: 'General Sessions', desc: 'Opening, Recognition, Business Meeting, Awards, times, and rules.' },
 ];
 
-// Single source of truth for the current National TSA officer team — also
-// shown on the Home page. `img` is a filename (without extension) in
-// assets/img/national-officers-2026/.
-export const NATIONAL_OFFICERS_2026 = [
-    { role: 'President', name: 'Sen Yakandawala', img: 'president' },
-    { role: 'Vice President', name: 'Lizzie Grounds', img: 'vp' },
-    { role: 'Secretary', name: 'Veronica Gao', img: 'secretary' },
-    { role: 'Treasurer', name: 'Avni Patel', img: 'treasurer' },
-    { role: 'Reporter', name: 'Rebecca Mogga', img: 'reporter' },
-    { role: 'Sergeant-at-Arms', name: 'Daniel Blackburn', img: 'sergent-at-arms' },
-];
+// The current National TSA officer team, also shown on the Home page and
+// the dedicated National TSA Officers page — one shared roster
+// (src/data/nationalOfficers.js), not a second copy of the same data.
+export { NATIONAL_OFFICERS_2026 };
 
 export const CONFERENCE_2026 = {
     overview: {

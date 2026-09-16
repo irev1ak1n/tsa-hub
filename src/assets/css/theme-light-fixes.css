@@ -85,6 +85,66 @@ html[data-theme="light"] .quick3-tile:hover {
     border-color: #b8b8c4;
 }
 
+/* Home calendar widget — pure white card per the light theme spec, subtle
+   gray border for separation from the (also white) page background. */
+html[data-theme="light"] .home-cal-widget {
+    background: #FFFFFF;
+    border-color: #d0d0da;
+}
+html[data-theme="light"] .home-cal-add-btn {
+    border-color: #d0d0da;
+    color: #111111;
+}
+html[data-theme="light"] .home-cal-add-btn:hover {
+    background: #ececf3;
+    border-color: #b8b8c4;
+}
+html[data-theme="light"] .home-officers-card { border-color: #d0d0da; }
+
+/* National TSA Links blocks — same light inversion as Home's other cards. */
+html[data-theme="light"] .home-link-item {
+    background: #ffffff;
+    border-color: #d0d0da;
+    color: #111111;
+}
+html[data-theme="light"] .home-link-item:hover {
+    background: #ececf3;
+    border-color: #b8b8c4;
+}
+
+/* My Events carousel — same light inversion as Home's other cards. */
+html[data-theme="light"] .myev-card { background: #FFFFFF; border-color: #d0d0da; }
+html[data-theme="light"] .myev-arrow { border-color: #d0d0da; color: #111111; }
+html[data-theme="light"] .myev-arrow:hover:not(:disabled) { background: #ececf3; border-color: #b8b8c4; }
+html[data-theme="light"] .myev-add-card { background: #FFFFFF; border-color: #b8b8c4; color: #111111; }
+html[data-theme="light"] .myev-add-card:hover { background: #ececf3; }
+html[data-theme="light"] .myev-add-circle { border-color: #6b6b78; color: #111111; }
+html[data-theme="light"] .myev-modal-row {
+    border-color: #d0d0da;
+    color: #111111;
+}
+html[data-theme="light"] .myev-modal-row:hover:not(:disabled) { background: #ececf3; }
+html[data-theme="light"] .myev-modal-badge {
+    background: #ececf3;
+    border-color: #d0d0da;
+    color: #4a4a55;
+}
+
+/* National TSA Officers page cards — same light inversion as the rest of
+   the app's dark-first cards (Home tiles, calendar widget, etc). */
+html[data-theme="light"] .no-card {
+    background: #ffffff;
+    border-color: #d0d0da;
+}
+html[data-theme="light"] .no-name { color: #111111; }
+html[data-theme="light"] .no-meta { color: #1a1a1f; }
+
+html[data-theme="light"] .home-cal-day { color: #111111; }
+html[data-theme="light"] .home-cal-day.is-outside { color: #8a8a95; }
+html[data-theme="light"] .home-cal-day:hover { background: #ececf3; }
+html[data-theme="light"] .home-cal-right { border-color: #d0d0da; }
+html[data-theme="light"] .home-cal-item:hover { background: #ececf3; }
+
 /* Quick Actions customization modal tiles — same light inversion. */
 html[data-theme="light"] .qae-tile {
     background: #ffffff;

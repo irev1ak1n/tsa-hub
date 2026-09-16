@@ -4,7 +4,7 @@ import { BackLink } from '../resources/resourcesShared.jsx';
 import { getConference2026Topic } from '../../data/conference2026.js';
 
 // National officer photos: src/screens/resources/conference/ -> assets/img/...
-const OFFICER_IMAGES = import.meta.glob('../../assets/img/national-officers-2026/*.png', { eager: true });
+const OFFICER_IMAGES = import.meta.glob('../../assets/img/national-officers/*.png', { eager: true });
 const officerImg = {};
 for (const path in OFFICER_IMAGES) {
     const file = path.split('/').pop().replace(/\.png$/i, '');
