@@ -70,7 +70,7 @@ function MyEventCard({ event, onOpen, onRemove }) {
 // that ordering) is: after adding an event, jump the carousel to that new
 // event so it becomes active immediately, instead of leaving Add focused.
 export default function HomeMyEvents() {
-    const { myEvents, removeEvent } = useApp();
+    const { myEvents, removeEvent, eventsLoading } = useApp();
     const [addOpen, setAddOpen] = useState(false);
     const [openEvent, setOpenEvent] = useState(null);
     const [activeIndex, setActiveIndex] = useState(0);
@@ -137,7 +137,22 @@ export default function HomeMyEvents() {
     // real net increase in saved-event count (not the initial mount) is
     // exactly "an event was just added": its slide is always the one right
     // before the trailing Add card, at index `events.length - 1`.
+    //
+    // While the global event catalog is still loading (eventsLoading),
+    // `getEvent()` resolves every id to `undefined`, so `events` is
+    // artificially empty even when `myEvents` already has saved ids. Once
+    // the catalog finishes loading (a real network round trip to Supabase —
+    // slow enough on mobile/production to be clearly visible, fast enough on
+    // local dev to go unnoticed), `events.length` jumps from 0 to the real
+    // count in a single re-render. Without this guard that jump was
+    // indistinguishable from "the user just added an event" and triggered
+    // `scrollToIndex`, whose `scrollIntoView({ block: 'nearest' })` can pull
+    // the whole page down to bring the carousel into view — a page-load
+    // scroll jump that has nothing to do with anyone adding anything. Skip
+    // the diff entirely until the catalog has actually finished loading, and
+    // don't let that first post-load render count as an "increase" either.
     useEffect(() => {
+        if (eventsLoading) return;
         const prevCount = prevEventCountRef.current;
         prevEventCountRef.current = events.length;
         if (prevCount !== null && events.length > prevCount) {
@@ -152,7 +167,7 @@ export default function HomeMyEvents() {
             scrollToIndex(newIndex);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [events.length]);
+    }, [events.length, eventsLoading]);
 
     return (
         <div className="section">
