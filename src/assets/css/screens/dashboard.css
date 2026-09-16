@@ -627,19 +627,25 @@
    overlay classes — never a second badge/gradient implementation.
    ============================================================================ */
 /* Bootstrap-style centered carousel: [smaller previous] [LARGER ACTIVE]
-   [smaller next]. Every slide shares the same flex-basis (~50% of the
-   track) — the size difference between the active and side cards comes
-   entirely from the scale() transform below, which is what lets a neighbor
-   partially peek in at each edge via the track's own side padding. Sized
-   so the active card lands at roughly 1.1x an Events-page `.ev-tile` card
-   (measured empirically: ~38% of this section's width at both mobile and
-   desktop breakpoints, since `.ev-tile` itself is ~1/3 of viewport width). */
+   [smaller next]. One fixed base card size (--myev-card-w) drives every
+   slide in every state — 0, 1, or many saved events — so adding items
+   never shrinks existing cards. It's viewport-based (scales down a bit on
+   narrow phones, caps at 320px), never based on the track's own resolved
+   width or how many siblings exist, which is what used to make cards
+   shrink once there was more than one. A slide that doesn't fit the
+   visible track just scrolls/peeks partially off-screen instead of
+   resizing — that's the point of a carousel. The active/side size
+   difference comes entirely from the scale() transform below, not from
+   different widths. 320px lands at roughly 1.1x an Events-page `.ev-tile`
+   card at typical desktop widths (`.ev-tile` itself is ~1/3 of viewport
+   width), matching the original sizing goal. */
 .myev-carousel {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   width: 100%;
+  --myev-card-w: min(320px, calc(100vw - 120px));
 }
 
 .myev-arrow {
@@ -664,7 +670,12 @@
   min-width: 0;
   display: flex;
   gap: 10px;
-  padding: 4px 20%;
+  /* Centers the fixed-width slide within the track at rest (needed for
+     scroll-snap to center an edge slide) without depending on the track's
+     own resolved width: 50% of the track's containing block (this
+     carousel) minus half the carousel's own fixed arrow+gap overhead
+     (2 x (26px arrow + 10px gap) = 72px) minus half the card width. */
+  padding: 4px calc(50% - 36px - var(--myev-card-w) / 2);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
@@ -673,9 +684,22 @@
 }
 .myev-track::-webkit-scrollbar { display: none; }
 
+/* Empty state (0 saved events, only the Add Event card): the padding
+   formula above reserves peek space for neighbors, which don't exist yet
+   here — that would just leave a huge empty gap next to the arrows on
+   wide screens. Narrow the track to the card's own width instead, so the
+   arrows sit close (10px carousel gap + 10px track padding = ~20px). The
+   card itself still uses the exact same --myev-card-w as every other
+   state. Scoped entirely to .myev-carousel--empty so the populated
+   multi-card layout is untouched.*/
+.myev-carousel--empty .myev-track {
+  flex: 0 1 auto;
+  width: calc(var(--myev-card-w) + 20px);
+  padding: 4px 10px;
+}
+
 .myev-slide {
-  flex: 0 0 100%;
-  max-width: 320px;
+  flex: 0 0 var(--myev-card-w);
   scroll-snap-align: center;
   transform: scale(0.86);
   opacity: 0.6;
@@ -756,32 +780,39 @@
   background: transparent;
 }
 
+/* Dark, glassy floating panel — always this style regardless of theme,
+   since it sits directly over the card's own photo (same treatment as the
+   ••• trigger button and the "2026-2027" chip on the officers card). Sized
+   to its content (just "Remove"), not a fixed min-width block. */
 .myev-card-menu {
   position: absolute;
   top: 40px;
   right: 8px;
   z-index: 4;
-  min-width: 190px;
-  background: #171717;
-  border: 1px solid #333333;
+  width: max-content;
+  background: rgba(8, 8, 10, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
 }
 .myev-card-menu button {
   display: block;
   width: 100%;
-  padding: 10px 12px;
+  padding: 9px 14px;
   border: 0;
   background: transparent;
   color: #ffffff;
   font-family: var(--font-system);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
+  white-space: nowrap;
   text-align: left;
   cursor: pointer;
 }
-.myev-card-menu button:hover { background: #242424; }
+.myev-card-menu button:hover { background: rgba(255, 255, 255, 0.14); }
 
 .myev-add-card {
   display: flex;
@@ -883,3 +914,55 @@
 }
 
 .myev-modal-row > svg { flex-shrink: 0; color: var(--muted); }
+
+/* ============================================================================
+   TSA Leadership & Support — square Quick-Actions-style cards (2 columns x
+   3 rows), not the horizontal pill row used by National TSA Links. Same
+   dark/border/radius language as .quick3-tile, just a size notch smaller
+   so a denser 2-column grid still reads as "compact" under National TSA
+   Links. Light theme override lives in theme-light-fixes.css.
+   ============================================================================ */
+/* Compact table-of-squares layout: 3 equal columns, row 1 fills all three;
+   row 2 has only 2 cards, centered under row 1 rather than left-aligned
+   with awkward trailing empty space. Doubling the column count to 6 (each
+   normal card spans 2 of them) lets the 2 row-2 cards be explicitly
+   centered — 1 empty half-column-width on each side — with plain CSS grid
+   placement, no JS/layout hack needed. */
+.leadership-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+.leadership-grid > * { grid-column: span 2; }
+.leadership-grid > *:nth-child(4) { grid-column: 2 / 4; }
+.leadership-grid > *:nth-child(5) { grid-column: 4 / 6; }
+
+.leadership-tile {
+  width: 100%;
+  min-width: 0;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  background: #0a0a0a;
+  border: 1px solid #333333;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--ink);
+  text-align: center;
+  cursor: pointer;
+  font-family: inherit;
+}
+.leadership-tile:hover { background: #141414; border-color: #454545; }
+
+.leadership-tile svg,
+.leadership-tile .rs-ico-img { width: 22px; height: 22px; color: var(--ink); flex-shrink: 0; }
+
+.leadership-label {
+  font-size: 0.74rem;
+  font-weight: 500;
+  line-height: 1.25;
+}

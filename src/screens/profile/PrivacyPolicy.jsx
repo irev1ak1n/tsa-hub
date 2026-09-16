@@ -59,16 +59,16 @@ export default function PrivacyPolicy() {
                     do not include sensitive personal information in feedback messages.
                 </p>
 
-                <h2 className="doc-h2">AI Coach</h2>
+                <h2 className="doc-h2">Smart search answers</h2>
                 <p className="doc-p">
-                    TSA Hub may include an AI Coach that helps answer questions about TSA
-                    competitions, rules, resources, and related information. Questions you send
-                    to the AI Coach may need to be processed by the services that power the
-                    feature. You should avoid entering private or sensitive personal information
-                    into the AI Coach. AI responses may sometimes be incomplete or incorrect, so
-                    important competition rules, deadlines, eligibility requirements, and other
-                    official information should always be confirmed using the official TSA
-                    sources provided in the app.
+                    TSA Hub's search may include an automatically generated answer that helps
+                    respond to questions about TSA competitions, rules, resources, and related
+                    information. Search queries may need to be processed by the services that
+                    power this feature. You should avoid entering private or sensitive personal
+                    information into search. These answers may sometimes be incomplete or
+                    incorrect, so important competition rules, deadlines, eligibility
+                    requirements, and other official information should always be confirmed
+                    using the official TSA sources provided in the app.
                 </p>
 
                 <h2 className="doc-h2">Advertising and selling data</h2>

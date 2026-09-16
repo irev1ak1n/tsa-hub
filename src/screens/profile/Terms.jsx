@@ -40,9 +40,9 @@ export default function Terms() {
                 <p className="doc-p">
                     TSA Hub also includes tools that go beyond simply displaying information. The
                     event recommender helps students discover competitions that may match their
-                    interests, skills, preferred team size, and other preferences. The AI Coach
-                    allows students to ask questions about events, rules, preparation, and TSA
-                    resources in a more natural way.
+                    interests, skills, preferred team size, and other preferences. Search can
+                    also surface a direct, automatically generated answer for question-style
+                    searches about events, rules, preparation, and TSA resources.
                 </p>
                 <p className="doc-p">
                     Students can also use the calendar to keep track of important dates, create
@@ -95,17 +95,17 @@ export default function Terms() {
                     reporting tools in TSA Hub to let us know.
                 </p>
 
-                <h2 className="doc-h2">AI Coach</h2>
+                <h2 className="doc-h2">Smart search answers</h2>
                 <p className="doc-p">
-                    TSA Hub may include an AI Coach designed to help students understand TSA
-                    events, rules, resources, preparation, and other TSA-related information. The
-                    AI Coach is intended to make it easier to find and understand information, but
-                    AI-generated answers can sometimes be incomplete, outdated, or incorrect. The
-                    AI Coach should be treated as a helpful guide, not as an official TSA source.
-                    Always confirm important information such as eligibility, deadlines,
-                    competition requirements, rules, and conference details using official TSA
-                    sources. Do not enter sensitive or private personal information into the AI
-                    Coach.
+                    TSA Hub's search may include an automatically generated answer designed to
+                    help students understand TSA events, rules, resources, preparation, and other
+                    TSA-related information. This is intended to make it easier to find and
+                    understand information, but the generated answers can sometimes be
+                    incomplete, outdated, or incorrect. They should be treated as a helpful guide,
+                    not as an official TSA source. Always confirm important information such as
+                    eligibility, deadlines, competition requirements, rules, and conference
+                    details using official TSA sources. Do not enter sensitive or private personal
+                    information into search.
                 </p>
 
                 <h2 className="doc-h2">Event recommendations</h2>

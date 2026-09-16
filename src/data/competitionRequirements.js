@@ -163,11 +163,11 @@ export const COMPETITION_REQUIREMENTS = [
         id: 'national-competition-requirements',
         title: 'National Competition Requirements',
         icon: 'file-text',
-        subtitle: 'Some, but not all, requirements related to competition at the 2026 National TSA Conference.',
+        subtitle: 'Some, but not all, requirements related to competition at the 2027 National TSA Conference.',
         sections: [
             {
                 body: [
-                    'The information that follows includes some, but not all, requirements related to competition at the 2026 National TSA Conference.',
+                    'The information that follows includes some, but not all, requirements related to competition at the 2027 National TSA Conference.',
                 ],
             },
             {
@@ -175,15 +175,9 @@ export const COMPETITION_REQUIREMENTS = [
                 body: [
                     [
                         'No competitive event changes or substitutions are permitted once chapter conference registration has closed on ',
-                        { b: 'Wednesday, May 6 at 11:59pm ET/10:59pm CT/9:59pm MT/8:59pm PT' },
+                        { b: 'Wednesday, May 12 at 11:59pm ET/10:59pm CT/9:59pm MT/8:59pm PT' },
                         '. Such adjustments may be made only up until the close of chapter registration. No exceptions.',
                     ],
-                ],
-            },
-            {
-                heading: 'Documentation Portfolios',
-                body: [
-                    'Cover page: Either Washington DC or National Harbor, MD is acceptable for the conference city and state.',
                 ],
             },
             {
@@ -191,9 +185,9 @@ export const COMPETITION_REQUIREMENTS = [
                 body: [
                     [
                         'Student members are responsible for uploading their competition components to the ',
-                        { link: 'TSA Student Member Site', url: 'https://tsaweb.org' },
+                        { link: 'TSA Student Member Site', url: 'https://tsamembership.registermychapter.com/members' },
                         '. Once a student member has activated an account, the member can access the competition component upload platform. ',
-                        { b: '*Competitors must upload competition components between May 11 at 9:00am ET and May 13 by 11:59pm ET/10:59pm CT/9:59pm MT/8:59pm PT. National TSA will not accept competition components after the deadline or via email. No exceptions.' },
+                        { b: '*Competitors must upload competition components between May 17 at 9:00am ET and May 19 by 11:59pm ET/10:59pm CT/9:59pm MT/8:59pm PT. National TSA will not accept competition components after the deadline or via email. No exceptions.' },
                     ],
                 ],
                 links: [
@@ -216,19 +210,25 @@ export const COMPETITION_REQUIREMENTS = [
                 after: [
                     'External keyboards and monitors are not permitted.',
                     [
-                        'AnswerWrite is the platform for onsite tests. Members will use their Student ID# and password to access ',
+                        'AnswerWrite is the platform for onsite tests. Members will use their Student ID# and password to log into the ',
+                        { link: 'TSA Student Member Site', url: 'https://tsamembership.registermychapter.com/members' },
+                        ' to access ',
                         { link: 'AnswerWrite', url: 'https://www.answerwrite.com/Login.aspx?id=820' },
                         '. Members should test their device (personal or school-issued) in advance of the national TSA conference using the provided link.',
                     ],
-                    'To take an onsite team event test at the conference, each team member will access the AnswerWrite platform, as described above.',
+                    'To take an onsite team event test at the conference, each team member will access the AnswerWrite platform via the TSA Student Member Site, as described above.',
                 ],
             },
             {
                 heading: 'Competitive event onsite uploads',
                 body: [
+                    'Some competitive events require onsite uploads of competitive event components.',
+                    'Competitors participating in HS CAD Architecture or HS CAD Engineering must access JudgePro (National TSA\u2019s scoring system) to upload the solution to the onsite design problem.',
                     'Competitors who advance to the semifinal level in MS Audio Podcasting, MS Promotional Marketing, MS Technical Design, HS Audio Podcasting, and HS On Demand Video, must access JudgePro (National TSA\u2019s scoring system) to upload semifinalist entries.',
                     [
-                        'Members will use their Student ID# and password to access ',
+                        'To upload onsite competitive components, student members will use their Student ID# and password to log into the ',
+                        { link: 'TSA Student Member Site', url: 'https://tsamembership.registermychapter.com/members' },
+                        ' to access ',
                         { link: 'JudgePro', url: 'https://judgepro.registermychapter.com/org/jptsa-national/conf/ntc2026/student#' },
                         '.',
                     ],

@@ -49,7 +49,7 @@ function MyEventCard({ event, onOpen, onRemove }) {
                     <div className="myev-card-menu-backdrop" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMenuOpen(false); }} />
                     <div className="myev-card-menu" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
                         <button type="button" onClick={() => { setMenuOpen(false); onRemove(); }}>
-                            Remove from My Events
+                            Remove
                         </button>
                     </div>
                 </>
@@ -160,7 +160,7 @@ export default function HomeMyEvents() {
                 <h2>My Events</h2>
             </div>
 
-            <div className="myev-carousel">
+            <div className={`myev-carousel${events.length === 0 ? ' myev-carousel--empty' : ''}`}>
                 <button
                     type="button"
                     className="myev-arrow myev-arrow-left"

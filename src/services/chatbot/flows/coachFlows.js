@@ -216,7 +216,6 @@ export const FLOW_STEPS = {
     ]),
 
     help: () => step('help', 'What do you need help with?', [
-        block('assistant', 'Using TSA Assistant', navigate('Using TSA Assistant', '/help/article/using-tsa-assistant')),
         block('calendar', 'Calendar and reminders', navigate('Calendar and Reminders', '/help/article/using-calendar')),
         block('privacy', 'Privacy', navigate('Privacy Policy', '/privacy')),
         block('report', 'Report incorrect information', navigate('Report Incorrect Information', '/help/article/reporting-incorrect-info')),

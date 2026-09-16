@@ -178,7 +178,6 @@ describe('Coach navigation: "how do I" app-usage questions get short answers + a
         'how can i report wrong info',
         'how do i report something wrong',
         'how do i change settings',
-        'how do i use tsa assistant',
         'how do i search events',
         'how do i find an event',
         'what data do you save',
@@ -292,7 +291,7 @@ describe('Coach navigation: bug reports go to Support, not a TSA answer (FLOW G 
     // bug-report detector ever got shadowed by that other flow again.
     it.each([
         ['the calendar is broken', 'Calendar or deadlines'],
-        ['coach isnt working', 'TSA Coach'],
+        ['coach isnt working', 'Website/app issue'],
         ['something is broken', 'Website/app issue'],
         ['events arent loading', 'Events'],
     ])('"%s" drafts a real bug report with category "%s"', (text, category) => {

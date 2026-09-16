@@ -1268,8 +1268,8 @@ function startSupportFlow(state, prevUserText) {
     // from it directly instead of making the student retype it.
     const context = prevUserText && prevUserText.length > 3 ? prevUserText : null;
     if (context) {
-        const category = 'TSA Coach';
-        const message = `TSA Coach didn't fully resolve my question: "${context}"`;
+        const category = 'Something else';
+        const message = `TSA Hub didn't fully resolve my question: "${context}"`;
         state.supportFlow = { step: 'confirm', category, message };
         return previewReply(category, message);
     }
@@ -1282,7 +1282,6 @@ function startSupportFlow(state, prevUserText) {
 // nothing more specific is mentioned.
 const BUG_AREA_CATEGORY = [
     [/\bcalendar\b/, 'Calendar or deadlines'],
-    [/\b(coach|assistant)\b/, 'TSA Coach'],
     [/\bevents?\b/, 'Events'],
     [/\bresources?\b/, 'Resources search'],
 ];
@@ -1301,7 +1300,7 @@ function matchCategory(text) {
 
 function supportMailto(category, message) {
     const subject = encodeURIComponent(`TSA Hub Support — ${category}`);
-    const body = encodeURIComponent(`Category: ${category}\n\n${message}\n\n(Sent from TSA Coach)`);
+    const body = encodeURIComponent(`Category: ${category}\n\n${message}\n\n(Sent from TSA Hub)`);
     return `mailto:${TSA_HUB_SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
 }
 
@@ -1324,8 +1323,8 @@ function handleSupportFlow(text, state) {
     if (flow.step === 'awaiting_message') {
         const trimmed = text.trim();
         const category = matchCategory(trimmed);
-        // A bare category chip click ("TSA Coach") still needs an actual
-        // message — ask once more instead of drafting "Message: TSA Coach".
+        // A bare category chip click ("Events") still needs an actual
+        // message — ask once more instead of drafting "Message: Events".
         if (category.toLowerCase() === trimmed.toLowerCase()) {
             state.supportFlow = { step: 'awaiting_message_after_category', category };
             return reply(`Got it — ${category}. What would you like to ask or get help with?`);

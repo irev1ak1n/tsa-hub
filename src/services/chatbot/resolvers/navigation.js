@@ -65,11 +65,6 @@ const HOWTO_TOPICS = [
         action: ['Open Settings', 'settings'],
     },
     {
-        match: /\bhow do i use (the )?(tsa )?(assistant|coach)\b|\bhow do i ask (you|coach) questions\b/,
-        text: 'Just type naturally — ask about an event, a rule, a deadline, or say what you\'re trying to find, and I\'ll point you to the right place.',
-        action: ['Using TSA Assistant', 'help:using-tsa-assistant'],
-    },
-    {
         match: /\bhow do i search (for )?events\b|\bhow do i find an event\b/,
         text: 'Use Event Search to look up an event directly by name, or browse and filter the full list in Events.',
         action: ['Search Events', 'eventSearch'],

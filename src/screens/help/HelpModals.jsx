@@ -141,7 +141,7 @@ export function ContactSupportModal({ onClose }) {
             <div className="help-contact-block">
                 <div className="help-contact-block-title">TSA Hub Support</div>
                 <p className="help-contact-block-sub">
-                    For TSA Hub bugs, wrong app information, Coach problems, search issues, Calendar issues, or product feedback.
+                    For TSA Hub bugs, wrong app information, search issues, Calendar issues, or product feedback.
                 </p>
 
                 {step === 'sent' ? (

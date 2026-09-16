@@ -112,6 +112,17 @@ html[data-theme="light"] .home-link-item:hover {
     border-color: #b8b8c4;
 }
 
+/* TSA Leadership & Support square cards — same light inversion as the
+   Quick Actions tiles they're styled to match. */
+html[data-theme="light"] .leadership-tile {
+    background: #ffffff;
+    border-color: #d0d0da;
+}
+html[data-theme="light"] .leadership-tile:hover {
+    background: #ececf3;
+    border-color: #b8b8c4;
+}
+
 /* My Events carousel — same light inversion as Home's other cards. */
 html[data-theme="light"] .myev-card { background: #FFFFFF; border-color: #d0d0da; }
 html[data-theme="light"] .myev-arrow { border-color: #d0d0da; color: #111111; }
@@ -396,6 +407,9 @@ html[data-theme="light"] .rs-modal-backdrop {
 
 html[data-theme="light"] .rs-modal-head {
     border-bottom-color: #404040;
+    /* Opaque so scrolled body content never shows through the sticky
+       header (see .rs-modal-head's position: sticky in resources.css). */
+    background: #f5f5f7;
 }
 
 html[data-theme="light"] .rs-modal-head h3,

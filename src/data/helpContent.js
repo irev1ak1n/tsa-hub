@@ -4,45 +4,6 @@
 
 export const HELP_ARTICLES = [
     {
-        id: 'using-tsa-assistant',
-        title: 'Using TSA Assistant',
-        intro: 'TSA Assistant, which most people around here just call Coach, is the chat helper built into TSA Hub. It exists to save you time when you have a quick question about an event, a rule, a deadline, or your state TSA, instead of digging through pages on your own.',
-        sections: [
-            {
-                heading: 'What Coach actually does',
-                paragraphs: [
-                    'Coach pulls its answers straight from the same data that powers the rest of TSA Hub. If you ask about an event’s team size, cost, or current theme, you’re getting the same information you’d find on that event’s own page, just delivered as a sentence instead of a list of fields.',
-                    'It can also help you find official rules and requirements, check deadlines and conference dates, compare two events side by side, or point you toward a recommendation if you’re not sure what to compete in yet. Mention your state and it can surface your state TSA’s contacts too.',
-                ],
-            },
-            {
-                heading: 'A few things you can try asking',
-                list: [
-                    'What’s the team size for Robotics?',
-                    'When is the deadline for online conference registration?',
-                    'What’s the difference between Coding and Software Development?',
-                    'Who’s my state advisor?',
-                    'I don’t know what event to pick, can you help?',
-                ],
-            },
-            {
-                heading: 'Where Coach draws the line',
-                paragraphs: [
-                    'Coach isn’t a general purpose AI chatbot, and it won’t pretend to be one. It only answers using TSA Hub’s own structured data, so it won’t invent an answer just to give you something to read. If it doesn’t have the information you’re asking about, it says so directly instead of guessing.',
-                    'That also means Coach can’t take actions outside of TSA Hub. It won’t register you for an event, submit a form for you, or reach out to your advisor on your behalf.',
-                ],
-            },
-            {
-                heading: 'If Coach can’t answer your question',
-                paragraphs: [
-                    'When Coach tells you it doesn’t know something, that usually means the information either hasn’t been published yet or lives somewhere outside TSA Hub, like with your state or your chapter advisor. Resources or Contact Support are good next stops in that case.',
-                ],
-            },
-        ],
-        action: { label: 'Open TSA Assistant', to: '/coach' },
-        keywords: ['coach', 'assistant', 'chatbot', 'ai assistant', 'tsa bot', 'chat'],
-    },
-    {
         id: 'finding-events',
         title: 'Finding competition events',
         intro: 'TSA runs dozens of competitive events spread across categories like technology, leadership, and STEM, and figuring out which ones are worth a look can feel overwhelming when you’re just getting started. TSA Hub gives you a few different ways to explore the full list depending on how you like to search.',
@@ -249,7 +210,7 @@ export const HELP_ARTICLES = [
     {
         id: 'contacting-support',
         title: 'Contacting TSA Hub Support',
-        intro: 'If something about TSA Hub itself isn’t working right, whether that’s a bug, information that looks wrong, a problem with Coach, or just feedback you want to share, Contact Support is the direct way to reach the people who maintain it.',
+        intro: 'If something about TSA Hub itself isn’t working right, whether that’s a bug, information that looks wrong, or just feedback you want to share, Contact Support is the direct way to reach the people who maintain it.',
         sections: [
             {
                 heading: 'What happens when you send one',
@@ -261,7 +222,7 @@ export const HELP_ARTICLES = [
             {
                 heading: 'Support versus other options',
                 paragraphs: [
-                    'If you’re not sure whether your question really belongs here, a good rule of thumb is this. If it’s about how TSA Hub works, or something feels broken, Contact Support is the right place. If it’s about an actual TSA rule or event detail, Coach or Resources will usually get you an answer faster.',
+                    'If you’re not sure whether your question really belongs here, a good rule of thumb is this. If it’s about how TSA Hub works, or something feels broken, Contact Support is the right place. If it’s about an actual TSA rule or event detail, the Resources search will usually get you an answer faster.',
                 ],
             },
         ],
@@ -302,7 +263,6 @@ export const HELP_ARTICLES = [
                 heading: 'What actually gets sent to us',
                 paragraphs: [
                     'Support messages and incorrect information reports are the only things that get sent, and only after you’ve reviewed and confirmed them yourself. Nothing is submitted quietly in the background.',
-                    'Conversations you have with TSA Assistant stay on your side unless you specifically choose to include part of one in a message you’re sending us. Coach itself doesn’t forward what you ask it anywhere.',
                 ],
             },
             {
@@ -326,14 +286,6 @@ export function getHelpArticle(id) {
 // ---------------------------------------------------------------------------
 
 export const QUICK_HELP = [
-    {
-        id: 'assistant',
-        icon: 'chat-bubble',
-        title: 'Using TSA Assistant',
-        subtitle: 'Get help from our in-app assistant',
-        to: '/coach',
-        keywords: ['coach', 'assistant', 'chatbot', 'ai assistant', 'tsa bot', 'chat'],
-    },
     {
         id: 'rules',
         icon: 'shield',

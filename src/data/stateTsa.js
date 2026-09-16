@@ -215,7 +215,7 @@ export const STATE_TSA = {
             { img: instagramIcon, title: 'Official NJ TSA Instagram', desc: 'Announcements, event highlights, and student stories.', url: 'https://www.instagram.com/nj_tsa/' },
             { img: facebookIcon, title: 'Official NJ TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/p/New-Jersey-Technology-Student-Association-100083381294136/' },
             { role: 'advisor', icon: 'user', title: 'State Advisor', desc: 'Contact your state advisor for official guidance and questions.', contact: { name: 'Alison Goeke', email: 'goeke2@tcnj.edu', phone: '609-771-3244' } },
-            { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://njtsa.tcnj.edu/2024-2025-state-officers/' },
+            { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://njtsa.tcnj.edu/2025-2026-state-officers/' },
         ],
     },
     'New Mexico': {
@@ -312,7 +312,7 @@ export const STATE_TSA = {
             { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official SC TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'https://southcarolinatsa.org/' },
             { img: instagramIcon, title: 'Official SC TSA Instagram', desc: 'Announcements, event highlights, and student stories.', url: 'https://www.instagram.com/officialsctsa/' },
             { role: 'advisor', icon: 'user', title: 'State Advisor', desc: 'Contact your state advisor for official guidance and questions.', contact: { name: 'Brandon Lovering', email: 'brandon_lovering@charleston.k12.sc.us', phone: '843-529-4990' } },
-            { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://southcarolinatsa.org/state-officers.html' },
+            { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://southcarolinatsa.org/state-officers/' },
         ],
     },
     'Tennessee': {
@@ -341,7 +341,7 @@ export const STATE_TSA = {
             { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official Utah TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'https://www.utahtsa.org/' },
             { img: instagramIcon, title: 'Official Utah TSA Instagram', desc: 'Announcements, event highlights, and student stories.', url: 'https://www.instagram.com/utah_tsa/' },
             { role: 'advisor', icon: 'user', title: 'State Advisor', desc: 'Contact your state advisor for official guidance and questions.', contact: { name: 'Lisa Wadzeck', email: 'lisaw@utahtsa.org', phone: '801-755-7619' } },
-            { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://utahtsa.org/wp/about-tsa/duties-of-state-officers/' },
+            { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://utahtsa.org/' },
         ],
     },
     'Virginia': {

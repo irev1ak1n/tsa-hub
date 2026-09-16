@@ -3,24 +3,16 @@ import { Icon, SparkleOrbitIcon } from './UI.jsx';
 
 // Reusable floating action button — a shortcut link to a page.
 //
-//   <SupportButton preset="coach" />         Home    -> AI Coach     (bubble + sparkle)
 //   <SupportButton preset="recommender" />   Events  -> Recommender (bubble + sparkle)
 //
-// Both are speech-bubble SHAPED buttons using the same sparkle glyph.
-// Fixed bottom-right, above the mobile nav bar and safe-area, below modals.
+// A speech-bubble SHAPED button using the sparkle glyph. Fixed bottom-right,
+// above the mobile nav bar and safe-area, below modals.
 
 const PRESETS = {
-    coach: {
-        to: '/coach',
-        shape: 'bubble',
-        glyph: 'sparkle',           // AI assistant
-        label: 'Open AI Coach',
-        accent: 'red',
-    },
     recommender: {
         to: '/recommend',
         shape: 'bubble',
-        glyph: 'sparkle',           // speech bubble with sparkles — same as TSA Coach
+        glyph: 'sparkle',           // speech bubble with sparkles
         label: 'Open Event Recommender',
         accent: 'red',
     },

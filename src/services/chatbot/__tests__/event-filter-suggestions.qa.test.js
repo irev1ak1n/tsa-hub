@@ -46,7 +46,7 @@ describe('the 4 originally broken suggestion chips now work', () => {
 
     it('"What are the low cost events?" returns TSA Hub\'s lower-cost classification, not a fake event lookup', () => {
         const res = expectFilterAnswer('What are the low cost events?', /^event\.filter\.costLow$/);
-        expect(res.text.toLowerCase()).toMatch(/doesn't publish an official cost rating/);
+        expect(res.text.toLowerCase()).toMatch(/doesn't publish an official cost rating|not an official tsa number/);
     });
 });
 

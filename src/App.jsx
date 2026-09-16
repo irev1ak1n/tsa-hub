@@ -14,7 +14,6 @@ import CompetitionRequirementPage from './screens/resources/CompetitionRequireme
 import StudentLeadership from './screens/resources/StudentLeadership.jsx';
 import LeadershipSupport from './screens/resources/LeadershipSupport.jsx';
 import NationalOfficers from './screens/resources/NationalOfficers.jsx';
-import Coach from './screens/Coach.jsx';
 import Settings from './screens/profile/Settings.jsx';
 import PrivacyPolicy from './screens/profile/PrivacyPolicy.jsx';
 import Terms from './screens/profile/Terms.jsx';
@@ -62,7 +61,6 @@ export default function App() {
                         <Route path="/resources/leadership-support" element={<LeadershipSupport />} />
                         <Route path="/resources/national-officers" element={<NationalOfficers />} />
 
-                        <Route path="/coach" element={<Coach />} />
 
                         <Route path="/calendar" element={<Calendar />} />
 

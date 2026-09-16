@@ -3,12 +3,17 @@
 // gets its own file: one canonical fact per event, many paraphrases, and a
 // contradiction check across them.
 //
-// Coding, Robotics, System Control Technology, Chapter Team, and Drone
-// Challenge (UAV) all exist in BOTH divisions under the identical name, so
-// the Coach correctly refuses to guess team size for them without division
-// context (see events-coverage.qa.test.js for that behavior itself) — these
-// tests establish "I'm in high school" first, the same way a real student's
+// Robotics, Chapter Team, and Drone Challenge (UAV) all exist in BOTH
+// divisions under the identical name, so the Coach correctly refuses to
+// guess team size for them without division context (see
+// events-coverage.qa.test.js for that behavior itself) — these tests
+// establish "I'm in high school" first, the same way a real student's
 // conversation would, before asking the team-size question.
+//
+// Coding and System Control Technology used to also be dual-named, but the
+// HS-division copies were retired (confirmed against the current official
+// tsaweb.org eligibility charts) — both are now MS-only, so the Coach can
+// resolve them without asking which division.
 
 import { describe, it, expect } from 'vitest';
 import { loadRealData, ask, askChain, findEventByName } from './setup.js';
@@ -55,7 +60,7 @@ describe('WEBMASTER_TEAM_SIZE (HS Webmaster — only offered in HS, no MS namesa
     });
 });
 
-describe('CODING_TEAM_SIZE (HS Coding: exact team of 2, no solo)', () => {
+describe('CODING_TEAM_SIZE (MS-only Coding: exact team of 2, no solo)', () => {
     it('with HS context established, a false claim of 3 people is not confirmed — the real max (2) is stated', () => {
         const res = askHS('can 3 ppl do coding');
         expect(numbersIn(res.text)).toContain(2);
@@ -68,9 +73,9 @@ describe('CODING_TEAM_SIZE (HS Coding: exact team of 2, no solo)', () => {
         expect(res.text).not.toMatch(/yes, you can compete in coding on your own/i);
     });
 
-    it('WITHOUT division context, Coding correctly asks MS or HS instead of silently guessing', () => {
+    it('WITHOUT division context, Coding resolves directly since it is now MS-only (no HS namesake)', () => {
         const res = ask('can 3 ppl do coding');
-        expect(res.text).toMatch(/middle school|high school/i);
+        expect(numbersIn(res.text)).toContain(2);
     });
 });
 
@@ -90,7 +95,7 @@ describe('division-ambiguous same-name events ask instead of silently picking HS
     // This was a real bug: DB order sorts divisions alphabetically (HS before
     // MS), so every dual-named event silently answered as if it were the HS
     // one, even for someone who never said "high school".
-    const dualNamed = ['Coding', 'Robotics', 'System Control Technology', 'Chapter Team', 'Drone Challenge (UAV)'];
+    const dualNamed = ['Robotics', 'Chapter Team', 'Drone Challenge (UAV)'];
 
     for (const name of dualNamed) {
         it(`"What is the theme for ${name}?" with no division context asks MS or HS`, () => {
@@ -102,7 +107,7 @@ describe('division-ambiguous same-name events ask instead of silently picking HS
 
 describe('team-size numeric grounding: every event with a real team-size fact is answered with a number that traces to the data', () => {
     it('the maximum team size the Coach states, WITH division context, matches the real max on file', () => {
-        const samples = ['Animatronics', 'System Control Technology', 'Chapter Team', 'Drone Challenge (UAV)'];
+        const samples = ['Animatronics', 'Chapter Team', 'Drone Challenge (UAV)'];
         const failures = [];
         for (const name of samples) {
             const e = findEventByName(name, 'HS');

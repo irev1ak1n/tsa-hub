@@ -139,6 +139,13 @@
 .rs-modal {
     width: 100%;
     max-width: 380px;
+    /* Fixed modal shell + scrollable content, same model as the Event
+       detail modal (.rec-modal): cap the shell's own height instead of
+       ever compressing its header/footer/padding to force everything
+       into one screen, and let the modal itself scroll when content is
+       taller than that. */
+    max-height: 88vh;
+    overflow-y: auto;
     /* dark glass, the page behind is blurred by the backdrop */
     background: rgba(10, 10, 12, .55);
     /* thicker neutral grey border */
@@ -157,6 +164,14 @@
     gap: 10px;
     padding: 16px 18px;
     border-bottom: 1px solid #404040;
+    /* Stays put while long content scrolls underneath it (see .rs-modal's
+       own overflow-y above), so the title/close button never end up
+       squeezed against the modal's top edge. */
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #14141a;
+    border-radius: 18px 18px 0 0;
 }
 
 .rs-modal-head h3 {
@@ -183,7 +198,7 @@
 .rs-modal-close:hover { background: var(--surface-2); color: var(--ink); }
 
 .rs-modal-body {
-    padding: 16px 18px 18px;
+    padding: 16px 18px calc(18px + env(safe-area-inset-bottom, 0px));
     display: flex;
     flex-direction: column;
     gap: 10px;

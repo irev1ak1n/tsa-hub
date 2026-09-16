@@ -16,7 +16,6 @@ export const NATIONAL_TSA = {
 };
 
 export const SUPPORT_CATEGORIES = [
-    'TSA Coach',
     'Events',
     'Rules or requirements',
     'Calendar or deadlines',

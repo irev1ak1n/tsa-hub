@@ -2,14 +2,18 @@
 // theme test. Deterministic — checked against the real event record, not
 // against a second LLM's opinion of the answer.
 //
-// Some event names exist in BOTH divisions (Coding, Robotics, System Control
-// Technology, Chapter Team, Drone Challenge (UAV), Dragster/Dragster Design,
-// Flight/Flight Endurance, Tech Bowl/Technology Bowl, Audio Podcasting,
-// Children's Stories, Video Game Design, Biotechnology/Biotechnology
-// Design, Board Game Design). For those, the Coach correctly asks which
-// division before answering (see the dedicated test below) instead of
-// silently guessing — so their event/theme queries need division context
-// established first, the same way a real student's conversation would.
+// Some event names exist in BOTH divisions (Robotics, Chapter Team, Drone
+// Challenge (UAV), Dragster/Dragster Design, Flight/Flight Endurance, Tech
+// Bowl/Technology Bowl, Audio Podcasting, Children's Stories, Video Game
+// Design, Biotechnology/Biotechnology Design, Board Game Design). For those,
+// the Coach correctly asks which division before answering (see the
+// dedicated test below) instead of silently guessing — so their event/theme
+// queries need division context established first, the same way a real
+// student's conversation would.
+//
+// Coding and System Control Technology used to also be dual-named, but the
+// HS-division copies were retired (confirmed against the current official
+// tsaweb.org eligibility charts) — both are now MS-only and resolve directly.
 
 import { describe, it, expect } from 'vitest';
 import { loadRealData, ask, askChain, events } from './setup.js';
@@ -126,7 +130,7 @@ describe('MS vs HS: same-named events never cross-contaminate', () => {
 
     it('WITHOUT division context, a shared event name asks which division instead of silently defaulting to HS', () => {
         const failures = [];
-        for (const name of ['Coding', 'Robotics', 'System Control Technology', 'Chapter Team', 'Drone Challenge (UAV)']) {
+        for (const name of ['Robotics', 'Chapter Team', 'Drone Challenge (UAV)']) {
             const res = ask(`What is the theme for ${name}?`);
             const asksBoth = /middle school/i.test(res.text) && /high school/i.test(res.text);
             if (!asksBoth) failures.push(`${name}: expected a division-clarifying question, got: ${res.text}`);

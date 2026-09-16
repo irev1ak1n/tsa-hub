@@ -9,6 +9,7 @@ import { NATIONAL_TSA } from './resources/resourceSearch.jsx';
 import { resolveQuickActions } from '../data/quickActions.js';
 import HomeCalendarWidget from '../components/HomeCalendarWidget.jsx';
 import HomeMyEvents from '../components/HomeMyEvents.jsx';
+import HomeLeadershipLinks from '../components/HomeLeadershipLinks.jsx';
 import { submitFeedback, submitReport } from '../services/feedbackService.js';
 import nationalOfficersImg from '../assets/img/national-officers.png';
 
@@ -136,6 +137,10 @@ export default function Dashboard() {
                     ))}
                 </div>
             </div>
+
+            {/* TSA LEADERSHIP & SUPPORT — same routes/actions/contact data as the
+                dedicated Leadership & Support page and National Officers page. */}
+            <HomeLeadershipLinks />
 
             {showEditor && (
                 <QuickActionsEditor

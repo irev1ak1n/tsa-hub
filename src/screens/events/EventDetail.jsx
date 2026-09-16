@@ -1,11 +1,10 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useApp } from '../../context/AppContext.jsx';
 import { getEvent, teamSizeLabel } from '../../data/events.js';
 import { Icon } from '../../components/UI.jsx';
 
 export default function EventDetail() {
     const { id } = useParams();
-    const navigate = useNavigate();
     const { myEvents, addEvent, removeEvent, eventsLoading } = useApp();
     const event = getEvent(id);
 
@@ -45,12 +44,6 @@ export default function EventDetail() {
                             <Icon name="plus" size={16} /> Add to my events
                         </button>
                     )}
-                    <button
-                        className="btn ghost"
-                        onClick={() => navigate('/coach', { state: { q: `What are the rules for ${event.name}?` } })}
-                    >
-                        <Icon name="chat" size={16} /> Ask the coach
-                    </button>
                 </div>
             </div>
 
