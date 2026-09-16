@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Icon } from '../components/UI.jsx';
 import { CALENDAR_EVENTS } from '../data/tsaCalendar.js';
 import { now, ymd, addDays, isSameMonth } from '../utils/date.js';
@@ -27,6 +28,7 @@ function loadDefaultView() {
 export default function Calendar() {
     const today = useMemo(() => now(), []);
     const todayKey = ymd(today);
+    const location = useLocation();
 
     const [viewMode, setViewMode] = useState(loadDefaultView);
     const [anchor, setAnchor] = useState(today); // current navigation reference date
@@ -44,6 +46,13 @@ export default function Calendar() {
     useEffect(() => {
         try { localStorage.setItem(VIEW_STORAGE_KEY, viewMode); } catch { /* ignore */ }
     }, [viewMode]);
+
+    // Home's "Add Calendar Event" Quick Action reuses this exact editor by
+    // navigating here with router state instead of a second add-event flow.
+    useEffect(() => {
+        if (location.state?.openAdd) openCreate();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const mergedItems = useMemo(() => mergeCalendarItems(CALENDAR_EVENTS, personalItems), [personalItems]);
     const itemsByDate = useMemo(() => indexItemsByDate(mergedItems), [mergedItems]);

@@ -6,7 +6,8 @@ import { hasAny } from '../language/normalize.js';
 const DOMAIN_SIGNALS = {
     events: ['event', 'team', 'individual', 'cost', 'time', 'difficulty', 'overview',
         'theme', 'category', 'career', 'compete', 'competition', 'material',
-        'preconference', 'submission', 'advisor', 'eligibility', 'compare'],
+        'preconference', 'submission', 'advisor', 'eligibility', 'compare',
+        'equipment', 'deliverable', 'deliverables', 'brief', 'statement', 'problem'],
     rules: ['rule', 'requirement', 'dress', 'code', 'penalty', 'penalties', 'judging',
         'judge', 'judges', 'citation', 'citations', 'cite', 'prohibited', 'allowed', 'appeal', 'ai', 'artificial', 'citation', 'citations', 'cite', 'copyright'],
     deadlines: ['deadline', 'due', 'register', 'registration', 'submit', 'submission', 'state', 'states', 'regionals', 'nationals'],
@@ -55,10 +56,17 @@ const FOLLOWUP_PATTERNS = [
     /^what if\b/, /^why\b/, /^and\b/,
 ];
 
+// A message only "looks like a follow-up" when it actually has the SHAPE of
+// one (matches a real follow-up pattern below) — being short is not
+// evidence of anything on its own. A one-word message can be a genuine
+// follow-up ("why", "and") or complete gibberish ("efwefwe"); length alone
+// can't tell them apart, so this used to let ANY short message (<=4 words)
+// silently inherit whatever domain/event was active, which is exactly how
+// random keyboard-mash ended up re-answering the previous event. Real
+// pronoun-driven follow-ups ("is that allowed") are still caught separately
+// by hasPronounReference below.
 function looksLikeFollowUp(norm) {
-    const t = norm.rawJoined;
-    if (norm.raw.length <= 4) return true;
-    return FOLLOWUP_PATTERNS.some((re) => re.test(t));
+    return FOLLOWUP_PATTERNS.some((re) => re.test(norm.rawJoined));
 }
 
 function hasPronounReference(norm) {

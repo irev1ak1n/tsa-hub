@@ -68,7 +68,7 @@ function looksVagueFollowup(text) {
 // from a bare context statement ("im doing webmaster") when both resolve an
 // event but match no specific intent — a wh-word/question shape means Coach
 // should admit it doesn't have that data, not just acknowledge the event.
-const QUESTION_SHAPE_RE = /^(what|who|when|where|why|how|which|is|are|do|does|did|can|will|would)\b|\?\s*$|\bpercent(age)?\b/i;
+const QUESTION_SHAPE_RE = /^(what|who|when|where|why|how|which|is|are|do|does|did|can|will|would|anything)\b|\?\s*$|\bpercent(age)?\b/i;
 function looksLikeQuestion(text) {
     return QUESTION_SHAPE_RE.test((text || '').trim());
 }
@@ -520,6 +520,26 @@ export function processMessage(input, prevState) {
                 actions: resolved.candidates.slice(0, 2).map((c) => eventGuideAction(c, `${c.division === 'HS' ? 'High School' : 'Middle School'} ${c.name} Event Guide`)),
             }, state, debug);
         }
+        // A bare state-name reply ("Washington") to a pending "which state?"
+        // clarification directly answers what was just asked — that's real
+        // current-turn evidence (the user is answering Coach's own
+        // question), not stale context bleeding through.
+        if (pending.need === 'state' && mentionedState) {
+            state.activeState = mentionedState;
+            state.pendingClarification = null;
+            const res = answerState(pending.intent || 'state.general', { stateName: mentionedState });
+            if (res) {
+                state.activeDomain = 'state';
+                state.lastIntent = pending.intent || 'state.general';
+                state.lastAnswerType = res.missing ? 'missing' : 'fact';
+                debug.resolver = 'clarification-resolved-state';
+                return finish(reply(res.text, {
+                    domain: 'state', intent: state.lastIntent, confidence: 0.9, sourceType: res.sourceType,
+                    suggestions: ['Who is my state advisor?', 'What is my state website?', 'State officer team'],
+                    stateConfirmed: mentionedState,
+                }), state, debug);
+            }
+        }
         // None of the above matched — this message isn't an attempt to
         // answer the pending clarification at all (no event mentioned, no
         // division reply, not itself ambiguous). Don't leave it stuck
@@ -594,8 +614,17 @@ export function processMessage(input, prevState) {
         return finish({ ...fallback('tsa-unsupported', { seed: text, eventName: state.activeEvent?.name }), actions: state.activeEvent ? [eventGuideAction(state.activeEvent)] : [] }, state, debug);
     }
 
+    // CURRENT-TURN evidence only. A prior state.activeEvent is conversation
+    // CONTEXT, not proof that THIS message names an event — conflating the
+    // two used to let detectIntent's "bare event mention -> overview"
+    // shortcut (eventOnly) fire off stale context alone, which then let
+    // random unrecognized text ("efwefwe") silently re-answer the previous
+    // event's overview. state is still passed through separately below for
+    // genuine follow-ups (state.lastIntent/state.activeEvent/state.activeState)
+    // that need a real current-turn signal (a matched phrase/pattern) before
+    // they're allowed to borrow anything from it.
     const intentResult = detectIntent(norm, {
-        eventCount: resolved.events.length || (state.activeEvent ? 1 : 0),
+        eventCount: resolved.events.length,
         state,
     });
     debug.intent = intentResult.intent;
@@ -666,15 +695,42 @@ export function processMessage(input, prevState) {
         // going fully unknown.
         intent = 'question.opening';
         confidence = 0.55;
+    } else if (!intent && !resolved.events.length && state.activeEvent && looksLikeQuestion(norm.rawJoined)) {
+        // A genuine question shape ("what do I bring", "how do I get
+        // ready") that matches no specific intent PHRASE, with a real event
+        // already active. Coach understood enough to know this is a real
+        // question about that event — it just doesn't have a specific
+        // matched answer for it. TSA_NO_VERIFIED_DATA with the event named,
+        // not a silent overview dump (that requires the event to actually
+        // be named THIS turn, see `eventOnly` above) and not a plain "I
+        // didn't understand" (this isn't gibberish — looksLikeQuestion only
+        // matches real question shapes, so keyboard-mash never lands here).
+        debug.resolver = 'no-verified-data-event-unmatched';
+        return finish({ ...fallback('tsa-unsupported', { seed: text, eventName: state.activeEvent.name }), actions: [eventGuideAction(state.activeEvent)] }, state, debug);
     }
 
-    // Nothing TSA about the message and no context to lean on. Gated on
-    // `!intent` too — the coarser keyword-based domain classifier not
-    // recognizing a message (e.g. capability requests like "can you text
-    // them" use none of DOMAIN_SIGNALS' words) must never discard an
-    // intent the more specific PHRASES/TOKEN_INTENTS router already found
-    // with real confidence.
-    if (domain.domain === 'unknown' && !intent && !resolved.events.length && !state.activeEvent) {
+    // A recognized division token ("HS", "middle school") is real
+    // current-turn evidence too — findDivision() genuinely parsed it, it
+    // isn't gibberish, even though it scores no domain/intent signal on its
+    // own. Used below to keep a bare division mention out of the unknown
+    // path alongside every other real signal (recognized intent, resolved
+    // event, non-unknown domain, control/smalltalk, genuine follow-up).
+    const hasRecognizedSignal = Boolean(division);
+
+    // Nothing about THIS message gives Coach anything to go on: no
+    // recognized intent, no event/division resolved from it, and the
+    // keyword domain classifier found nothing either. Deliberately NOT
+    // gated on state.activeEvent — a prior event is conversation CONTEXT,
+    // not evidence that this message is about it. A genuine follow-up
+    // ("what about that", "how many?") already set `intent` in the
+    // inheritance branches above, so this only ever fires for messages that
+    // truly carry no recognizable signal, regardless of what was said
+    // before. Also gated on `!intent` — the coarser keyword-based domain
+    // classifier not recognizing a message (e.g. capability requests like
+    // "can you text them" use none of DOMAIN_SIGNALS' words) must never
+    // discard an intent the more specific PHRASES/TOKEN_INTENTS router
+    // already found with real confidence.
+    if (domain.domain === 'unknown' && !intent && !resolved.events.length && !hasRecognizedSignal) {
         debug.resolver = 'unknown-no-context';
         return finish(fallback('unknown'), state, debug);
     }
@@ -705,7 +761,7 @@ export function processMessage(input, prevState) {
             return finish(fallback('unsupported-domain', { domain: domain.domain }), state, debug);
         }
         debug.resolver = 'fallback-unknown';
-        return finish(fallback(domain.domain === 'unknown' ? 'unknown' : 'tsa-unsupported', { seed: text }), state, debug);
+        return finish(fallback(domain.domain === 'unknown' && !hasRecognizedSignal ? 'unknown' : 'tsa-unsupported', { seed: text }), state, debug);
     }
 
     if (confidence < CLARIFY) {

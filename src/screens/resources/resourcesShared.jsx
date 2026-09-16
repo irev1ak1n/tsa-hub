@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Icon } from '../../components/UI.jsx';
-import { STATE_DIRECTORY_URL } from '../../data/stateTsa.js';
+import { STATE_DIRECTORY_URL, US_STATES } from '../../data/stateTsa.js';
 
 export { STATE_DIRECTORY_URL };
 
@@ -121,6 +122,59 @@ export function ContactModal({ title, contact, onClose }) {
                             <span>{contact.email}</span>
                         </a>
                     )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// Modal state picker: a searchable list of states (not a native dropdown).
+// Shared by Resources and Dashboard (Home) — one implementation, one source
+// of truth for how "choose your state" works everywhere it appears.
+export function StatePicker({ current, onPick, onClose }) {
+    const [q, setQ] = useState('');
+    const needle = q.trim().toLowerCase();
+    const list = needle ? US_STATES.filter((s) => s.toLowerCase().includes(needle)) : US_STATES;
+
+    return (
+        <div className="rs-modal-backdrop" onClick={onClose}>
+            <div
+                className="rs-modal rs-state-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Choose your state"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="rs-modal-head">
+                    <h3>Choose your state</h3>
+                    <button type="button" className="rs-modal-close" onClick={onClose} aria-label="Close">×</button>
+                </div>
+
+                <div className="rs-state-search">
+                    <Icon name="search" size={16} />
+                    <input
+                        className="rs-state-search-input"
+                        placeholder="Search states"
+                        value={q}
+                        onChange={(e) => setQ(e.target.value)}
+                        aria-label="Search states"
+                        autoFocus
+                    />
+                </div>
+
+                <div className="rs-state-list">
+                    {list.map((s) => (
+                        <button
+                            key={s}
+                            type="button"
+                            className={`rs-state-option ${s === current ? 'is-current' : ''}`}
+                            onClick={() => onPick(s)}
+                        >
+                            <span className="rs-state-option-name">{s}</span>
+                            {s === current && <Icon name="check" size={16} />}
+                        </button>
+                    ))}
+                    {list.length === 0 && <p className="rs-state-empty">No states match &ldquo;{q}&rdquo;.</p>}
                 </div>
             </div>
         </div>

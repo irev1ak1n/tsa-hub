@@ -69,8 +69,33 @@ html[data-theme="light"] .rs-search-placeholder {
 }
 
 html[data-theme="light"] .rs-search {
-    background: #ececf3;
+    background: var(--search-bg);
     border-color: #d0d0da;
+}
+
+/* Home's 3x3 Quick Actions tiles: the "very dark/black" dark-theme tile
+   inverts to the same light neutral surface used elsewhere in light theme,
+   keeping the same minimal relationship in both themes. */
+html[data-theme="light"] .quick3-tile {
+    background: #ffffff;
+    border-color: #d0d0da;
+}
+html[data-theme="light"] .quick3-tile:hover {
+    background: #ececf3;
+    border-color: #b8b8c4;
+}
+
+/* Quick Actions customization modal tiles — same light inversion. */
+html[data-theme="light"] .qae-tile {
+    background: #ffffff;
+    border-color: #d0d0da;
+}
+html[data-theme="light"] .qae-tile:hover {
+    background: #ececf3;
+    border-color: #b8b8c4;
+}
+html[data-theme="light"] .qae-tile.is-selected {
+    background: color-mix(in srgb, var(--ig-blue) 10%, #ffffff);
 }
 
 /* Competition Rules topic pages */
@@ -242,7 +267,7 @@ html[data-theme="light"] .ev-search-input {
 }
 
 html[data-theme="light"] .ev-search {
-    background: #ececf3;
+    background: var(--search-bg);
     border-color: #d0d0da;
 }
 
@@ -334,7 +359,7 @@ html[data-theme="light"] .rs-modal-close:hover {
 
 /* State picker list */
 html[data-theme="light"] .rs-state-search {
-    background: #ececf3;
+    background: var(--search-bg);
     border-color: #d0d0da;
 }
 

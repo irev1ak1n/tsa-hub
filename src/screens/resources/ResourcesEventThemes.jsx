@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext.jsx';
 import { Icon } from '../../components/UI.jsx';
@@ -29,8 +30,13 @@ function DivisionGroup({ label, events }) {
 
 export default function ResourcesEventThemes() {
     const { eventsLoading } = useApp();
-    const msEvents = EVENTS.filter((e) => e.division === 'MS').sort(byName);
-    const hsEvents = EVENTS.filter((e) => e.division === 'HS').sort(byName);
+    const [query, setQuery] = useState('');
+
+    const q = query.trim().toLowerCase();
+    const matches = (e) => !q || e.name.toLowerCase().includes(q);
+
+    const msEvents = EVENTS.filter((e) => e.division === 'MS' && matches(e)).sort(byName);
+    const hsEvents = EVENTS.filter((e) => e.division === 'HS' && matches(e)).sort(byName);
 
     return (
         <>
@@ -45,6 +51,25 @@ export default function ResourcesEventThemes() {
                 </p>
             </div>
 
+            {/* Filters the Middle School / High School lists below by event name —
+                same search bar styling used elsewhere in TSA Hub. */}
+            <div className="rs-search">
+                <Icon name="search" size={18} />
+                <input
+                    type="text"
+                    className="rs-search-input"
+                    placeholder="Search events by name"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    aria-label="Search Event Guide by event name"
+                />
+                {query && (
+                    <button type="button" className="rs-search-clear" onClick={() => setQuery('')} aria-label="Clear search">
+                        <Icon name="x" size={16} />
+                    </button>
+                )}
+            </div>
+
             {eventsLoading && <p className="muted small">Loading events…</p>}
 
             {!eventsLoading && (
@@ -55,7 +80,9 @@ export default function ResourcesEventThemes() {
             )}
 
             {!eventsLoading && msEvents.length === 0 && hsEvents.length === 0 && (
-                <p className="rs-note">Event data isn&rsquo;t available right now — try again in a moment.</p>
+                <p className="rs-note">
+                    {q ? `No events match "${query}".` : 'Event data isn’t available right now — try again in a moment.'}
+                </p>
             )}
         </>
     );

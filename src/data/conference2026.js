@@ -42,6 +42,18 @@ export const CONFERENCE_2026_TOPICS = [
     { id: 'general-sessions', icon: 'cal', title: 'General Sessions', desc: 'Opening, Recognition, Business Meeting, Awards, times, and rules.' },
 ];
 
+// Single source of truth for the current National TSA officer team — also
+// shown on the Home page. `img` is a filename (without extension) in
+// assets/img/national-officers-2026/.
+export const NATIONAL_OFFICERS_2026 = [
+    { role: 'President', name: 'Sen Yakandawala', img: 'president' },
+    { role: 'Vice President', name: 'Lizzie Grounds', img: 'vp' },
+    { role: 'Secretary', name: 'Veronica Gao', img: 'secretary' },
+    { role: 'Treasurer', name: 'Avni Patel', img: 'treasurer' },
+    { role: 'Reporter', name: 'Rebecca Mogga', img: 'reporter' },
+    { role: 'Sergeant-at-Arms', name: 'Daniel Blackburn', img: 'sergent-at-arms' },
+];
+
 export const CONFERENCE_2026 = {
     overview: {
         title: 'Conference Overview',
@@ -64,14 +76,7 @@ export const CONFERENCE_2026 = {
             },
             {
                 heading: 'National Officer Team',
-                officers: [
-                    { role: 'President', name: 'Sen Yakandawala', img: 'president' },
-                    { role: 'Vice President', name: 'Lizzie Grounds', img: 'vp' },
-                    { role: 'Secretary', name: 'Veronica Gao', img: 'secretary' },
-                    { role: 'Treasurer', name: 'Avni Patel', img: 'treasurer' },
-                    { role: 'Reporter', name: 'Rebecca Mogga', img: 'reporter' },
-                    { role: 'Sergeant-at-Arms', name: 'Daniel Blackburn', img: 'sergent-at-arms' },
-                ],
+                officers: NATIONAL_OFFICERS_2026,
             },
         ],
     },

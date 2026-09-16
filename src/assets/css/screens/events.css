@@ -150,23 +150,26 @@ body.light .ev-filter-ico--light { display: block; }
   border-color: var(--ig-blue);
 }
 
-/* ---- explore gallery (near edge-to-edge, Instagram-style) ---- */
+/* ---- explore gallery (edge-to-edge, Instagram-style) ---- */
 .ev-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2px;
-  /* Break out of the page's horizontal padding so the grid nearly touches
-     the screen edges. Set --ev-content-pad to your .content side padding
-     (default 16px) — increase/decrease if the grid over/undershoots. */
-  margin-left: calc(-1 * var(--ev-content-pad, 16px) + 3px);
-  margin-right: calc(-1 * var(--ev-content-pad, 16px) + 3px);
+  gap: 0;
+  /* Break out of the page's horizontal padding so the grid touches the
+     screen/content edges exactly. Must match .content's side padding
+     (16px on mobile, 32px on desktop — see the 920px match below). */
+  margin-left: calc(-1 * var(--ev-content-pad, 16px));
+  margin-right: calc(-1 * var(--ev-content-pad, 16px));
+}
+@media (min-width: 920px) {
+  .ev-grid { --ev-content-pad: 32px; }
 }
 
 .ev-tile {
   position: relative;
   margin: 0;
   aspect-ratio: 2 / 3;
-  border-radius: 6px;
+  border-radius: 0;
   overflow: hidden;
   background: var(--surface-2, var(--surface));
   transition: box-shadow 0.18s ease, transform 0.18s ease;

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '../../context/AppContext.jsx';
 import { EVENTS, CATEGORIES } from '../../data/events.js';
 import { Icon, SlidersIcon } from '../../components/UI.jsx';
@@ -103,7 +103,12 @@ function optKey(groupKey, optionId) {
 
 export default function Events() {
     const { eventsLoading } = useApp();
-    const [division, setDivision] = useState('all');
+    const location = useLocation();
+    // Callers (e.g. the Home page's "High School events" preview) can pass a
+    // starting division via navigate('/events', { state: { division } })
+    // instead of a URL param — read once as the initial state, same as any
+    // other default.
+    const [division, setDivision] = useState(location.state?.division || 'all');
     const [category, setCategory] = useState('All');
 
     const [panelOpen, setPanelOpen] = useState(false);

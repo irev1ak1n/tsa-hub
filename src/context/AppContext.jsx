@@ -17,6 +17,9 @@ const EMPTY = {
   meetings: [],
   teamMembers: [],
   coachCount: 0,
+  // Home "Quick Actions" customization: null means "use the default 9"
+  // (src/data/quickActions.js); once set, an ordered array of registry ids.
+  quickActions: null,
 };
 
 function load() {
@@ -190,6 +193,11 @@ export function AppProvider({ children }) {
 
     removeMember(id) {
       setState((s) => ({ ...s, teamMembers: s.teamMembers.filter((m) => m.id !== id) }));
+    },
+
+    // ---- home quick actions ----
+    setQuickActions(ids) {
+      setState((s) => ({ ...s, quickActions: ids }));
     },
 
     // ---- coach ----

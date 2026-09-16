@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext.jsx';
 import { Icon } from '../../components/UI.jsx';
 import { submitFeedback, submitReport } from '../../services/feedbackService.js';
+import SubmitModal from '../../components/SubmitModal.jsx';
 
 // One settings row. If `onClick` is passed the WHOLE row is clickable
 // (button), not just the chevron. `onEdit`/plain rows are unchanged.
@@ -39,72 +40,6 @@ function Row({ icon, label, value, onEdit, soon, onClick }) {
         );
     }
     return <div className="set-row">{content}</div>;
-}
-
-// Shared submit modal: a textarea + submit. `onSubmit` returns { ok }.
-// Used for both Send Feedback and Report Incorrect Information.
-function SubmitModal({ title, hint, placeholder, doneText, onSubmit, onClose }) {
-    const [text, setText] = useState('');
-    const [status, setStatus] = useState('idle'); // idle | sending | done | error
-
-    async function send() {
-        const msg = text.trim();
-        if (!msg || status === 'sending') return;
-        setStatus('sending');
-        const res = await onSubmit(msg);
-        setStatus(res.ok ? 'done' : 'error');
-    }
-
-    return (
-        <div className="rs-modal-backdrop" onClick={onClose}>
-            <div
-                className="rs-modal"
-                role="dialog"
-                aria-modal="true"
-                aria-label={title}
-                onClick={(e) => e.stopPropagation()}
-            >
-                <div className="rs-modal-head">
-                    <h3>{title}</h3>
-                    <button type="button" className="rs-modal-close" onClick={onClose} aria-label="Close">×</button>
-                </div>
-                <div className="rs-modal-body">
-                    {status === 'done' ? (
-                        <p className="fb-thanks">{doneText}</p>
-                    ) : (
-                        <>
-                            <p className="fb-hint">{hint}</p>
-                            <textarea
-                                className="fb-textarea"
-                                value={text}
-                                onChange={(e) => setText(e.target.value)}
-                                placeholder={placeholder}
-                                rows={5}
-                                autoFocus
-                                disabled={status === 'sending'}
-                            />
-                            {status === 'error' && (
-                                <p className="fb-error">Couldn&rsquo;t send right now. Please try again.</p>
-                            )}
-                            <div className="fb-actions">
-                                <button type="button" className="btn ghost small" onClick={onClose}>
-                                    Cancel
-                                </button>
-                                <button
-                                    type="button"
-                                    className="btn primary small"
-                                    onClick={send}
-                                    disabled={!text.trim() || status === 'sending'}
-                                >
-                                    {status === 'sending' ? 'Sending…' : 'Send'}
-                                </button>
-                            </div>
-                        </>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
 }
 
 export default function Settings() {

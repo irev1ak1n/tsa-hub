@@ -1,4 +1,5 @@
-import { imageForEvent } from '../../data/eventImages.js';
+import { useEffect, useState } from 'react';
+import { useEventImage } from '../../data/eventImages.js';
 
 // Combined division badge, MS before HS (e.g. "MS/HS").
 export function divisionLabel(divs) {
@@ -51,14 +52,29 @@ export function mergeByName(events) {
 // One explore tile (image + name + MS/HS badge). Clickable when onSelect is
 // given, otherwise it renders as a plain non-interactive figure.
 export function EventTile({ event, onSelect }) {
-    const img = imageForEvent(event);
+    const img = useEventImage(event);
     const badge = divisionLabel(event._divisions || [event.division]);
+
+    // A resolved URL can still fail to actually load (corrupt file, bad
+    // alias) — fall back to the same placeholder rather than a broken-image
+    // icon. Reset whenever the resolved URL changes so a later successful
+    // resolution (e.g. after the missing-image warning gets fixed) isn't
+    // stuck showing a stale failure.
+    const [broken, setBroken] = useState(false);
+    useEffect(() => setBroken(false), [img]);
+    const showImage = Boolean(img) && !broken;
 
     const inner = (
         <>
             {badge && <span className="ev-tile-badge">{badge}</span>}
-            {img ? (
-                <img className="ev-tile-img" src={img} alt="" loading="lazy" />
+            {showImage ? (
+                <img
+                    className="ev-tile-img"
+                    src={img}
+                    alt=""
+                    loading="lazy"
+                    onError={() => setBroken(true)}
+                />
             ) : (
                 <div className="ev-tile-img ev-tile-fallback" aria-hidden="true" />
             )}
