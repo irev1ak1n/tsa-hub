@@ -1,9 +1,33 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext.jsx';
 import { Icon } from '../../components/UI.jsx';
 import { getStateTsa } from '../../data/stateTsa.js';
 import { BackLink } from './resourcesShared.jsx';
 import { buildResourceIndex, searchResources, SearchResults } from './resourceSearch.jsx';
+import { getSearchAssistAnswer } from '../../services/chatbot/searchAssist.js';
+
+// TSA Coach's direct-answer suggestion for a question-like search — reuses
+// Coach's real answering engine (see searchAssist.js), shown above the
+// normal results only when Coach has a confident, relevant answer.
+function CoachSearchAssist({ query }) {
+    const assist = useMemo(() => getSearchAssistAnswer(query), [query]);
+    if (!assist) return null;
+    return (
+        <div className="rs-coach-assist">
+            <div className="rs-coach-assist-label">
+                <Icon name="spark" size={14} />
+                This may be helpful
+            </div>
+            <p className="rs-coach-assist-text">{assist.text}</p>
+            {assist.source && (
+                <Link to={assist.source.route} className="rs-coach-assist-source">
+                    View source
+                </Link>
+            )}
+        </div>
+    );
+}
 
 export default function ResourceSearch() {
     const { prefs } = useApp();
@@ -60,7 +84,10 @@ export default function ResourceSearch() {
             </div>
 
             {q ? (
-                <SearchResults results={results} query={query} onPick={() => addRecent(query)} />
+                <>
+                    <CoachSearchAssist query={query} />
+                    <SearchResults results={results} query={query} onPick={() => addRecent(query)} />
+                </>
             ) : recent.length > 0 ? (
                 <div className="rs-recent">
                     <div className="rs-recent-head">

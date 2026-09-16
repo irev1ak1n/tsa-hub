@@ -1416,6 +1416,48 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
 /* dedicated search page */
 .rs-search-page { margin-bottom: 18px; }
 
+/* TSA Coach's direct-answer suggestion, shown above normal search results
+   for question-like queries. Deliberately lightweight — a labeled note, not
+   a chat bubble/interface — so it stays visually part of the search page. */
+.rs-coach-assist {
+    margin: 4px 4px 20px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--tint);
+    border: 1px solid var(--tint-line);
+}
+
+.rs-coach-assist-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-system);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: var(--ig-link);
+    margin-bottom: 6px;
+}
+
+.rs-coach-assist-text {
+    font-family: var(--font-system);
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--ink);
+}
+
+.rs-coach-assist-source {
+    display: inline-block;
+    margin-top: 8px;
+    font-family: var(--font-system);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ig-link);
+    text-decoration: none;
+}
+
+.rs-coach-assist-source:hover { text-decoration: underline; }
+
 .rs-search-hint {
     padding: 8px 4px;
     font-family: var(--font-system);
