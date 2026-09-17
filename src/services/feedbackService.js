@@ -1,30 +1,37 @@
 // ============================================================
 // TSA HUB — feedback + incorrect-info reports.
-// Both write a single row to the `feedback` table (differentiated
-// by the `type` column: 'feedback' | 'report'). Anonymous insert
-// is allowed by an RLS policy; the role has INSERT only (no SELECT),
-// so we pass { returning: 'minimal' } to avoid a read-back that
-// would need SELECT rights.
+//
+// The actual Supabase write and email notification both happen server-side
+// (api/submit-feedback.js), so the RESEND_API_KEY never touches the
+// browser. This just posts the form's message plus the current page path
+// (context for the email, not stored in Supabase) to that endpoint.
 // ============================================================
 
-import { supabase } from './supabase.js';
-
-async function insertFeedback(message, type) {
+async function submit(message, type) {
     const text = String(message || '').trim();
     if (!text) return { ok: false, error: 'empty' };
 
-    const { error } = await supabase
-        .from('feedback')
-        .insert({ message: text, type }, { returning: 'minimal' });
+    let page = null;
+    try { page = window.location.pathname; } catch { /* ignore */ }
 
-    if (error) return { ok: false, error: error.message || 'failed' };
-    return { ok: true };
+    try {
+        const res = await fetch('/api/submit-feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type, message: text, page }),
+        });
+        const data = await res.json().catch(() => null);
+        if (!res.ok || !data?.ok) return { ok: false, error: data?.error || 'failed' };
+        return { ok: true };
+    } catch {
+        return { ok: false, error: 'network error' };
+    }
 }
 
 export function submitFeedback(message) {
-    return insertFeedback(message, 'feedback');
+    return submit(message, 'feedback');
 }
 
 export function submitReport(message) {
-    return insertFeedback(message, 'report');
+    return submit(message, 'report');
 }
