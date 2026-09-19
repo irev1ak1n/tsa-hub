@@ -14,7 +14,7 @@ const NO_VERIFIED_DATA = [
     "I can't give you a reliable answer from the resources I have.",
     "The available TSA resources don't provide a clear answer to that.",
     "I couldn't find an official source that confirms that.",
-    "I don't want to make up an answer — I wasn't able to verify this from the TSA resources currently available.",
+    "I don't want to make up an answer. I wasn't able to verify this from the TSA resources currently available.",
     "I couldn't find a reliable TSA source for that.",
     "I don't have verified information for that specific question.",
     "The resources available to me don't answer that clearly.",

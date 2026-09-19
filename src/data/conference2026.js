@@ -23,7 +23,7 @@ import { NATIONAL_OFFICERS as NATIONAL_OFFICERS_2026 } from './nationalOfficers.
 export const CONFERENCE_2026_HEADER = {
     eyebrow: 'National Conference Guide',
     title: '2026 National Conference',
-    dateLabel: 'June 22\u201326, 2026',
+    dateLabel: 'June 22-26, 2026',
     // Machine-readable end date so callers (like the Coach) can tell this
     // conference has already happened instead of presenting it as current.
     endDate: '2026-06-26',
@@ -56,7 +56,7 @@ export const CONFERENCE_2026 = {
             {
                 heading: 'Conference Details',
                 lines: [
-                    'June 22\u201326, 2026',
+                    'June 22-26, 2026',
                     'Gaylord National Resort and Convention Center',
                     'National Harbor, Maryland',
                 ],
@@ -83,19 +83,19 @@ export const CONFERENCE_2026 = {
                 heading: 'Information Desk',
                 lines: [
                     'Location: Potomac Ballroom Registration Desk',
-                    'Monday, June 22: 5:00 PM\u20138:00 PM',
-                    'Tuesday, June 23: 8:00 AM\u20135:00 PM',
-                    'Wednesday, June 24: 8:00 AM\u20135:00 PM',
-                    'Thursday, June 25: 8:00 AM\u20135:00 PM',
+                    'Monday, June 22: 5:00 PM-8:00 PM',
+                    'Tuesday, June 23: 8:00 AM-5:00 PM',
+                    'Wednesday, June 24: 8:00 AM-5:00 PM',
+                    'Thursday, June 25: 8:00 AM-5:00 PM',
                 ],
             },
             {
                 heading: 'TSA Store',
                 lines: [
                     'Location: Maryland Ballroom 1 and 2',
-                    'Tuesday, June 23: 8:00 AM\u20135:00 PM',
-                    'Wednesday, June 24: 8:00 AM\u20135:00 PM',
-                    'Thursday, June 25: 8:00 AM\u20132:00 PM',
+                    'Tuesday, June 23: 8:00 AM-5:00 PM',
+                    'Wednesday, June 24: 8:00 AM-5:00 PM',
+                    'Thursday, June 25: 8:00 AM-2:00 PM',
                 ],
                 paragraphs: ['The store is cashless. Apple Pay and credit or debit cards are accepted.'],
             },
@@ -104,8 +104,8 @@ export const CONFERENCE_2026 = {
                 paragraphs: ['Attendees receiving the complimentary 2026 conference shirt must bring the T-shirt ticket included in their conference packet.'],
                 lines: [
                     'Pickup: Prince George\u2019s Exhibition Hall Registration Desk, Lower Atrium',
-                    'Tuesday, June 23: 11:00 AM\u20135:00 PM',
-                    'Wednesday, June 24: 11:00 AM\u20135:00 PM',
+                    'Tuesday, June 23: 11:00 AM-5:00 PM',
+                    'Wednesday, June 24: 11:00 AM-5:00 PM',
                 ],
             },
             {
@@ -122,13 +122,13 @@ export const CONFERENCE_2026 = {
             },
             {
                 heading: 'Guest Luggage Storage',
-                lines: ['Friday, June 26: 6:30 AM\u201312:00 PM', 'Maryland Ballroom C'],
+                lines: ['Friday, June 26: 6:30 AM-12:00 PM', 'Maryland Ballroom C'],
                 paragraphs: ['All luggage must be removed by noon. National TSA is not responsible for stored luggage.'],
             },
             {
                 heading: 'Business Center',
                 paragraphs: ['The FedEx Office Business Center is located on the second floor of the Gaylord National Resort.'],
-                lines: ['Hours: 6:00 AM\u20139:00 PM daily'],
+                lines: ['Hours: 6:00 AM-9:00 PM daily'],
                 contacts: [{ label: 'Phone', value: '301-567-0457', tel: true }],
             },
             {
@@ -160,9 +160,9 @@ export const CONFERENCE_2026 = {
             {
                 heading: 'Schedule and Gifts',
                 items: [
-                    { label: 'Tuesday, June 23', meta: ['11:30 AM\u201312:30 PM'], text: 'Gift: TSA Beanie' },
-                    { label: 'Wednesday, June 24', meta: ['11:30 AM\u201312:30 PM'], text: 'Gift: TSA Canvas Lunch Bag' },
-                    { label: 'Thursday, June 25', meta: ['11:30 AM\u201312:30 PM'], text: 'Gift: National TSA Conference Mug' },
+                    { label: 'Tuesday, June 23', meta: ['11:30 AM-12:30 PM'], text: 'Gift: TSA Beanie' },
+                    { label: 'Wednesday, June 24', meta: ['11:30 AM-12:30 PM'], text: 'Gift: TSA Canvas Lunch Bag' },
+                    { label: 'Thursday, June 25', meta: ['11:30 AM-12:30 PM'], text: 'Gift: National TSA Conference Mug' },
                 ],
                 note: 'Advisor gifts are not distributed or sold at the Information Desk. Advisors may receive each gift only by attending the meeting on the day it is distributed.',
             },
@@ -192,11 +192,11 @@ export const CONFERENCE_2026 = {
         sections: [
             {
                 heading: 'TSA Meet and Greet',
-                lines: ['Wednesday, June 24: 1:00 PM\u20135:00 PM', 'Potomac Ballroom Pre-function'],
+                lines: ['Wednesday, June 24: 1:00 PM-5:00 PM', 'Potomac Ballroom Pre-function'],
                 paragraphs: ['The TSA Meet and Greet connects attendees with National TSA officers, officer candidates, education organizations, professional associations, STEM companies, and other TSA partners. Attendees can explore programs and opportunities that support STEM education, leadership, and future careers.'],
                 list: [
-                    '2025\u20132026 National TSA Officers',
-                    '2026\u20132027 National TSA Officer Candidates',
+                    '2025-2026 National TSA Officers',
+                    '2026-2027 National TSA Officer Candidates',
                     'ACTE Engineering and Technology Education Division',
                     'American Red Cross',
                     'Creative Designs By Sara',
@@ -214,9 +214,9 @@ export const CONFERENCE_2026 = {
                 heading: 'TSA Pin Exchange',
                 paragraphs: ['The Pin Exchange gives attendees an opportunity to meet members from other delegations and exchange state or chapter pins after the first three general sessions.'],
                 lines: [
-                    'Tuesday, June 23: 11:00 AM\u20131:00 PM',
-                    'Wednesday, June 24: 11:00 AM\u20131:00 PM',
-                    'Thursday, June 25: 11:00 AM\u20131:00 PM',
+                    'Tuesday, June 23: 11:00 AM-1:00 PM',
+                    'Wednesday, June 24: 11:00 AM-1:00 PM',
+                    'Thursday, June 25: 11:00 AM-1:00 PM',
                     'Convention Center Pre-function',
                 ],
             },
@@ -326,19 +326,19 @@ export const CONFERENCE_2026 = {
             {
                 heading: 'Operating Hours',
                 lines: [
-                    'Monday, June 22: 4:00 PM\u201310:00 PM',
-                    'Tuesday, June 23: 7:00 AM\u201310:00 PM',
-                    'Wednesday, June 24: 7:00 AM\u201310:00 PM',
-                    'Thursday, June 25: 6:30 AM\u201310:00 PM',
-                    'Friday, June 26: 6:30 AM\u201312:00 PM',
+                    'Monday, June 22: 4:00 PM-10:00 PM',
+                    'Tuesday, June 23: 7:00 AM-10:00 PM',
+                    'Wednesday, June 24: 7:00 AM-10:00 PM',
+                    'Thursday, June 25: 6:30 AM-10:00 PM',
+                    'Friday, June 26: 6:30 AM-12:00 PM',
                 ],
             },
             {
                 heading: 'National Harbor Circulator',
                 lines: [
                     'Stops: Waterfront District on St. George Boulevard, Gaylord National Resort and Convention Center, Tanger Outlets, MGM National Harbor',
-                    'Sunday through Thursday: 12:00 PM\u201312:00 AM',
-                    'Friday and Saturday: 11:00 AM\u20132:00 AM',
+                    'Sunday through Thursday: 12:00 PM-12:00 AM',
+                    'Friday and Saturday: 11:00 AM-2:00 AM',
                 ],
                 paragraphs: ['$10 for an all-day pass. Gaylord National Resort guests may ride without charge by showing their room key.'],
                 contacts: [{ label: 'Phone', value: '703-790-5466', tel: true }],
@@ -362,22 +362,22 @@ export const CONFERENCE_2026 = {
         sections: [
             {
                 heading: 'Opening General Session',
-                lines: ['Tuesday, June 23: 9:00 AM\u201311:00 AM', 'Doors open 8:00 AM'],
+                lines: ['Tuesday, June 23: 9:00 AM-11:00 AM', 'Doors open 8:00 AM'],
                 paragraphs: ['The conference opens with the Parade of State Flags, presentation of colors, the National Anthem, special presentations, Forward to Fifty recognition, and campaign speeches from National TSA officer candidates.'],
             },
             {
                 heading: 'Recognition Assembly',
-                lines: ['Wednesday, June 24: 9:00 AM\u201311:00 AM', 'Doors open 8:00 AM'],
+                lines: ['Wednesday, June 24: 9:00 AM-11:00 AM', 'Doors open 8:00 AM'],
                 paragraphs: ['Members and advisors are recognized for their achievements. Special awards, Chapter Advisor of the Year honors, partnership announcements, and years-of-service recognition are presented. Officer candidates also answer extemporaneous questions.'],
             },
             {
                 heading: 'Business Meeting',
-                lines: ['Thursday, June 25: 9:00 AM\u201311:00 AM', 'Voting delegate seating 7:00 AM\u20137:30 AM', 'General seating approximately 8:45 AM'],
+                lines: ['Thursday, June 25: 9:00 AM-11:00 AM', 'Voting delegate seating 7:00 AM-7:30 AM', 'General seating approximately 8:45 AM'],
                 paragraphs: ['The annual Business Meeting includes the election of National TSA officers by voting delegates and the Parade of State Presidents.'],
             },
             {
                 heading: 'Awards Ceremony',
-                lines: ['Friday, June 26: 7:30 AM\u201310:30 AM', 'Doors open 6:30 AM'],
+                lines: ['Friday, June 26: 7:30 AM-10:30 AM', 'Doors open 6:30 AM'],
                 paragraphs: ['The Awards Ceremony recognizes National TSA competitive event finalists. First, second, and third-place competitors receive trophies. The top ten finalists and their chapter advisors receive finalist pins.'],
             },
             {

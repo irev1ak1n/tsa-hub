@@ -51,7 +51,7 @@ export const CONFERENCE_GUIDES = [
     {
         id: 'nc-2026',
         title: '2026 National TSA Conference',
-        detail: 'National Harbor, Maryland \u00B7 June 22\u201326, 2026',
+        detail: 'National Harbor, Maryland \u00B7 June 22-26, 2026',
         route: '/resources/national-conference/guides/2026',
     },
 ];

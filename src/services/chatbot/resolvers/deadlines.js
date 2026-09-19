@@ -20,7 +20,7 @@ function fmtExact(iso) {
 // expose internal status words to the user — every branch below is natural
 // language a student would actually read.
 function regionalsText(d, stateName) {
-    if (d.status === 'exact') return `Regionals for ${stateName || 'your state'}: ${fmtExact(d.date)}.`;
+    if (d.status === 'exact') return `Regionals for ${stateName || 'your state'} are ${fmtExact(d.date)}.`;
     if (d.status === 'window') {
         return `${stateName || 'Your state'} regional conferences are expected during ${d.label}. Exact dates have not been officially announced yet. We'll update TSA Hub when official dates are published.`;
     }
@@ -28,7 +28,7 @@ function regionalsText(d, stateName) {
 }
 
 function statesText(d, stateName) {
-    if (d.status === 'exact') return `State conference for ${stateName || 'your state'}: ${fmtExact(d.date)}.`;
+    if (d.status === 'exact') return `The state conference for ${stateName || 'your state'} is ${fmtExact(d.date)}.`;
     if (d.status === 'window') {
         return `${stateName ? `Your ${stateName}` : 'Your'} state conference is expected during ${d.label}. Exact dates have not been officially announced yet.`;
     }

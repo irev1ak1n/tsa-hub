@@ -55,7 +55,7 @@ export function answerRule(tokens, { eventId = null, seed = '' } = {}) {
         const source = topic.sourceSection || cat.sourceSection || '';
         const cite = source ? ` (${source})` : '';
         return {
-            text: `${topic.title}${cite}: ${body}`,
+            text: `${topic.title}${cite}. ${body}`,
             sourceType: 'official',
             source: { title: topic.title, section: source },
         };
@@ -69,7 +69,7 @@ export function answerRule(tokens, { eventId = null, seed = '' } = {}) {
     const cite = r.id ? ` [${r.id}]` : '';
     const scope = r.scope === 'Event rule' && r.eventId ? ` (${r.eventId})` : '';
     return {
-        text: `${r.title}${cite}${scope}: ${r.text}`,
+        text: `${r.title}${cite}${scope}. ${r.text}`,
         sourceType: 'official',
         source: { title: r.title, section: r.id },
     };

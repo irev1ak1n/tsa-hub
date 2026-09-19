@@ -37,7 +37,7 @@ export default function EventDetail() {
                 <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     {added ? (
                         <button className="btn navy" onClick={() => removeEvent(event.id)}>
-                            ✓ In my events — remove
+                            ✓ In my events (tap to remove)
                         </button>
                     ) : (
                         <button className="btn primary" onClick={() => addEvent(event.id)}>
@@ -70,7 +70,7 @@ export default function EventDetail() {
                     </div>
                     <p className="small muted" style={{ margin: '10px 0 0' }}>
                         From the TSA competitive events eligibility chart. Each participant or team may submit only one entry.
-                        Your state association can set tighter limits — check with your advisor.
+                        Your state association can set tighter limits, so check with your advisor.
                     </p>
                 </div>
             ) : (
@@ -87,7 +87,7 @@ export default function EventDetail() {
                 <span aria-hidden="true">⚠</span>
                 <span>
           Rules, deliverables, rubrics and deadlines are published in the official TSA Competition Guide for the
-          current year. They are not in this app yet — check the guide or ask your advisor.
+          current year. They are not in this app yet, so check the guide or ask your advisor.
         </span>
             </div>
 

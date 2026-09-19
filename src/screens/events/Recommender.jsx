@@ -110,7 +110,7 @@ function teamSizeText(el) {
         return el.maxTeamSize && el.maxTeamSize > 1 ? `Solo or up to ${el.maxTeamSize}` : 'Individual';
     }
     if (el.minTeamSize && el.maxTeamSize && el.minTeamSize === el.maxTeamSize) return `Team of ${el.minTeamSize}`;
-    if (el.minTeamSize && el.maxTeamSize) return `${el.minTeamSize}–${el.maxTeamSize} members`;
+    if (el.minTeamSize && el.maxTeamSize) return `${el.minTeamSize}-${el.maxTeamSize} members`;
     if (el.minTeamSize) return `${el.minTeamSize}+ members`;
     return 'Team event';
 }
@@ -509,8 +509,8 @@ export default function Recommender() {
                     </p>
                     <div className="rec-division">
                         {[
-                            { id: 'HS', title: 'High School', sub: 'Grades 9–12' },
-                            { id: 'MS', title: 'Middle School', sub: 'Grades 6–8' },
+                            { id: 'HS', title: 'High School', sub: 'Grades 9-12' },
+                            { id: 'MS', title: 'Middle School', sub: 'Grades 6-8' },
                         ].map((d) => (
                             <button
                                 key={d.id}
@@ -638,7 +638,7 @@ export default function Recommender() {
             {/* STEP 5 — team availability */}
             {step === 5 && (
                 <>
-                    <p className="muted small rec-stepsub">Tell us whether you prefer working independently or with a team. This will helps us highlight suitable events and team-size requirements.</p>
+                    <p className="muted small rec-stepsub">Tell us if you like working alone or with a team. This helps us show events with the right team size for you.</p>
                     <div className="rec-options">
                         {TEAM_AVAILABILITY_CHOICES.map(({ id, label, desc }) => {
                             const on = teamAvail === id;

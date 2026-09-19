@@ -583,7 +583,7 @@ export function processMessage(input, prevState) {
         // matters once there's something specific to look up.
         if (QUESTION_OPENING_PREEMPT_RE.test(norm.rawJoined)) {
             debug.resolver = 'question-opening-preempt-ambiguous';
-            return finish(reply("Sure, go ahead — what do you want to know? Once I know what you're asking, I can check which division it applies to.", { domain: 'events', intent: 'question.opening', confidence: 0.78, suggestions: [] }), state, debug);
+            return finish(reply("Sure, go ahead. What do you want to know? Once I know what you're asking, I can check which division it applies to.", { domain: 'events', intent: 'question.opening', confidence: 0.78, suggestions: [] }), state, debug);
         }
         // "what will robotics theme be in 2035" — no division answers this
         // (nobody has published a 2035 theme for either), so asking
@@ -820,8 +820,8 @@ export function processMessage(input, prevState) {
         // `kind`, so this never counts as a misunderstanding).
         const eventName = state.activeEvent?.name;
         const text2 = eventName
-            ? `I don't have one single rule that covers that broadly for ${eventName} — I can look up something specific though: AI/tool use, original work, dress code, disqualification, or judging. Which one?`
-            : "I don't have one rule that covers that broadly — I can look up something specific though: AI/tool use, original work, dress code, disqualification, or judging. Which one?";
+            ? `I don't have one single rule that covers that broadly for ${eventName}. I can look up something specific though, like AI/tool use, original work, dress code, disqualification, or judging. Which one?`
+            : "I don't have one rule that covers that broadly. I can look up something specific though, like AI/tool use, original work, dress code, disqualification, or judging. Which one?";
         debug.resolver = 'rules-generic';
         return finish(reply(text2, { domain: 'rules', intent, confidence, suggestions: ['Can we use AI?', 'What is the dress code?', 'What counts as original work?'] }), state, debug);
     }
@@ -856,7 +856,7 @@ export function processMessage(input, prevState) {
         const eventName = state.activeEvent?.name;
         const text2 = eventName
             ? `Do you mean what you need to bring to competition, what you need to submit beforehand, or what you need to build for ${eventName}?`
-            : "Do you mean what you need to bring to competition, what you need to submit beforehand, or what you need to build — and for which event?";
+            : "Do you mean what you need to bring to competition, what you need to submit beforehand, or what you need to build, and for which event?";
         state.activeDomain = 'events';
         state.lastIntent = intent;
         debug.resolver = 'clarify-need';
@@ -887,7 +887,7 @@ export function processMessage(input, prevState) {
         const event = state.activeEvent;
         const text2 = event
             ? `Sure, what do you want to know about ${event.name}? I can help with the current challenge, team size, submissions, rules, or preparation.`
-            : "Sure, go ahead — what's your question? I can help with events, rules, deadlines, choosing an event, conference info, or your state TSA.";
+            : "Sure, go ahead. What's your question? I can help with events, rules, deadlines, choosing an event, conference info, or your state TSA.";
         state.activeDomain = 'events';
         debug.resolver = 'question-opening';
         return finish(reply(text2, { domain: 'events', intent, confidence, suggestions: [] }), state, debug);
@@ -908,7 +908,7 @@ export function processMessage(input, prevState) {
         const text2 = topicWord
             ? `${topicWord[1](event.name)} are in its Event Guide.`
             : event
-                ? `Got it — ${event.name}. What do you want to know?`
+                ? `Got it, ${event.name}. What do you want to know?`
                 : "Got it. What do you want to know?";
         state.activeDomain = 'events';
         debug.resolver = 'context-acknowledge';
@@ -923,7 +923,7 @@ export function processMessage(input, prevState) {
     // — same destination as clarify.recommend, just phrased as a statement
     // instead of a question.
     if (intent === 'event.preference') {
-        const text2 = "Good to know — that helps narrow it down. Want me to suggest a few event types based on that, or would you rather check Events → Get recommendations for a full ranked list based on your interests?";
+        const text2 = "Good to know, that helps narrow it down. Want me to suggest a few event types based on that, or would you rather check Events → Get recommendations for a full ranked list based on your interests?";
         state.activeDomain = 'events';
         state.lastIntent = intent;
         debug.resolver = 'event-preference';
@@ -933,7 +933,7 @@ export function processMessage(input, prevState) {
     // Hypotheticals ("what if my teammate quits") with no specific-topic
     // match — honest general guidance instead of a made-up official ruling.
     if (intent === 'whatif.general') {
-        const text2 = "I don't have an official ruling on that specific hypothetical. For anything that could affect eligibility or scoring, your advisor or state TSA director has the final say — but if you tell me which event or requirement this touches on, I can look up the actual rule or deadline for you.";
+        const text2 = "I don't have an official ruling on that specific hypothetical. For anything that could affect eligibility or scoring, your advisor or state TSA director has the final say. But if you tell me which event or requirement this touches on, I can look up the actual rule or deadline for you.";
         state.activeDomain = 'events';
         debug.resolver = 'whatif-general';
         return finish(reply(text2, { domain: 'events', intent, confidence, suggestions: [] }), state, debug);
@@ -954,7 +954,7 @@ export function processMessage(input, prevState) {
     // Real-life conference logistics — Coach has no official data for most
     // of these, so say so honestly instead of guessing.
     if (intent === 'conference.life') {
-        const text2 = "I don't have official logistics details for that specific question — things like arrival times, check-in, hotels, and what to pack usually come from your conference registration packet or your advisor. I can help with the conference dates, deadlines, and official rules though.";
+        const text2 = "I don't have official logistics details for that specific question. Things like arrival times, check-in, hotels, and what to pack usually come from your conference registration packet or your advisor. I can help with the conference dates, deadlines, and official rules though.";
         state.activeDomain = 'conference';
         debug.resolver = 'conference-life';
         return finish(reply(text2, { domain: 'conference', intent, confidence, suggestions: ['When is the conference?', 'Where is it?'] }), state, debug);
@@ -1238,12 +1238,12 @@ function handleControl(intent, norm, state, prevUserText) {
             return { response: startSupportFlow(next, prevUserText), state: next };
         }
         case 'keepTrying':
-            return { response: reply("Sure — what would you like to know?"), state: { ...state, misunderstandingCount: 0 } };
+            return { response: reply("Sure, what would you like to know?"), state: { ...state, misunderstandingCount: 0 } };
         case 'repair': {
             const event = state.activeEvent;
             const text2 = event
-                ? `Sorry about that — let's try again. What do you want to know about ${event.name}?`
-                : "Sorry about that — let's try again. What are you trying to find out?";
+                ? `Sorry about that. Let's try again. What do you want to know about ${event.name}?`
+                : "Sorry about that. Let's try again. What are you trying to find out?";
             return { response: reply(text2), state };
         }
         default:
@@ -1299,7 +1299,7 @@ function matchCategory(text) {
 }
 
 function supportMailto(category, message) {
-    const subject = encodeURIComponent(`TSA Hub Support — ${category}`);
+    const subject = encodeURIComponent(`TSA Hub Support - ${category}`);
     const body = encodeURIComponent(`Category: ${category}\n\n${message}\n\n(Sent from TSA Hub)`);
     return `mailto:${TSA_HUB_SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
 }
@@ -1317,7 +1317,7 @@ function handleSupportFlow(text, state) {
 
     if (/\b(cancel|never ?mind|nvm|forget it|stop)\b/.test(lower)) {
         state.supportFlow = null;
-        return reply("No problem — let me know if you need anything else.");
+        return reply("No problem. Let me know if you need anything else.");
     }
 
     if (flow.step === 'awaiting_message') {
@@ -1327,7 +1327,7 @@ function handleSupportFlow(text, state) {
         // message — ask once more instead of drafting "Message: Events".
         if (category.toLowerCase() === trimmed.toLowerCase()) {
             state.supportFlow = { step: 'awaiting_message_after_category', category };
-            return reply(`Got it — ${category}. What would you like to ask or get help with?`);
+            return reply(`Got it, ${category}. What would you like to ask or get help with?`);
         }
         state.supportFlow = { step: 'confirm', category, message: trimmed };
         return previewReply(category, trimmed);
@@ -1344,7 +1344,7 @@ function handleSupportFlow(text, state) {
     const mailto = supportMailto(flow.category, flow.message);
     state.supportFlow = null;
     return reply(
-        `Your message is ready — I've prepared an email to TSA Hub support (${TSA_HUB_SUPPORT_EMAIL}). Open it below and hit send from your email app to finish. I can't confirm it's received until you do.`,
+        `Your message is ready. I've prepared an email to TSA Hub support (${TSA_HUB_SUPPORT_EMAIL}). Open it below and hit send from your email app to finish. I can't confirm it's received until you do.`,
         { mailto, suggestions: [] }
     );
 }

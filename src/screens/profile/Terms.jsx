@@ -15,7 +15,7 @@ export default function Terms() {
             <div className="section">
                 <div className="rs-eyebrow">TSA HUB</div>
                 <h1 className="doc-h1">Terms and Policies</h1>
-                <p className="doc-updated">Last updated: August 2026</p>
+                <p className="doc-updated">Last updated August 2026</p>
             </div>
 
             <div className="doc-body">

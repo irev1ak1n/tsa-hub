@@ -339,7 +339,7 @@ export function ScheduleView({ dates, today, itemsByDate, onOpenItem, onAddForDa
                         <div className="cal-schedule-items">
                             {items.map((it) => {
                                 const { bg } = resolveItemColor(it);
-                                const timeLabel = it.allDay ? 'All day' : it.startTime ? `${formatTime(it.startTime)}${it.endTime ? ` – ${formatTime(it.endTime)}` : ''}` : '';
+                                const timeLabel = it.allDay ? 'All day' : it.startTime ? `${formatTime(it.startTime)}${it.endTime ? ` - ${formatTime(it.endTime)}` : ''}` : '';
                                 return (
                                     <button key={it.id} type="button" className={`cal-schedule-item ${it.completed ? 'is-completed' : ''}`} onClick={() => onOpenItem(it)}>
                                         <span className="cal-item-row-dot" style={{ background: bg }} />

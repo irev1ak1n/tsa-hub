@@ -86,7 +86,7 @@ export function usePersonalCalendar() {
             syncReminder(item);
             return item;
         } catch (err) {
-            setError(err.message || 'Could not save this item — it was not created.');
+            setError(err.message || 'Could not save this item. It was not created.');
             throw err;
         }
     }, []);

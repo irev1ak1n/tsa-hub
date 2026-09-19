@@ -16,10 +16,10 @@ export const NATIONAL_SERVICE_PROJECT = {
     resourcesTitle: 'Red Cross resources',
     resources: [
         { id: 'we-are-arc', title: 'We are the American Red Cross (video)', url: 'https://www.youtube.com/watch?v=j3-ilgrJPLY' },
-        { id: 'activity-guides', title: 'Activity Guides — Red Cross Youth', url: 'https://www.redcross.org/red-cross-youth/resources/activity-guides.html' },
+        { id: 'activity-guides', title: 'Activity Guides - Red Cross Youth', url: 'https://www.redcross.org/red-cross-youth/resources/activity-guides.html' },
         { id: 'help-disasters', title: 'Help Those Affected by Disasters', url: 'https://www.redcross.org/' },
         { id: 'find-chapter', title: 'Find a Red Cross Chapter Near You', url: 'https://www.redcross.org/find-your-local-chapter.html' },
-        { id: 'youth-news', title: 'News — Red Cross Youth', url: 'https://www.redcross.org/red-cross-youth/news.html' },
+        { id: 'youth-news', title: 'News - Red Cross Youth', url: 'https://www.redcross.org/red-cross-youth/news.html' },
         { id: 'mission-stories', title: 'Red Cross Mission and Stories', url: 'https://www.redcross.org/content/dam/redcross/lp/donor-bulletins/mission-and-stories-infographic-05-2025.pdf' },
         { id: 'red-cross-youth', title: 'Red Cross Youth', url: 'https://www.redcross.org/red-cross-youth.html' },
         { id: 'training-certs', title: 'Training and Certifications', url: 'https://www.redcross.org/take-a-class/learn-about-our-programs' },

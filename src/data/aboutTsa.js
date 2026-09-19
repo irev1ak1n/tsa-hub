@@ -134,14 +134,14 @@ export const ABOUT_TSA_CONTENT = {
                     'Ninth-grade students compete in the division their TSA chapter is affiliated with.',
                 ],
                 list: [
-                    'Students in schools serving grades 9\u201312 compete in High School events.',
-                    'Students in schools serving grades 6\u20139 or 7\u20139 compete in Middle School events.',
+                    'Students in schools serving grades 9-12 compete in High School events.',
+                    'Students in schools serving grades 6-9 or 7-9 compete in Middle School events.',
                 ],
             },
             {
                 heading: 'Other School Configurations',
                 paragraphs: [
-                    'Schools with a K\u201312 structure or another grade configuration should contact National TSA to confirm and approve the appropriate competition division.',
+                    'Schools with a K-12 structure or another grade configuration should contact National TSA to confirm and approve the appropriate competition division.',
                 ],
             },
         ],

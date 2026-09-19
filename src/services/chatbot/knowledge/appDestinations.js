@@ -50,7 +50,7 @@ export const APP_DESTINATIONS = [
         id: 'resources', title: 'Resources', route: '/resources',
         aliases: ['resources', 'tsa resources', 'resource guide', 'official resources'],
         keywords: ['guide', 'documents', 'links', 'state', 'national', 'programs'],
-        description: 'TSA Hub’s guide to official TSA information — rules, programs, your state TSA, and national contacts.',
+        description: 'TSA Hub’s guide to official TSA information, including rules, programs, your state TSA, and national contacts.',
     },
     {
         id: 'resourceSearch', title: 'Resource Search', route: '/resources/search',
@@ -80,7 +80,7 @@ export const APP_DESTINATIONS = [
         id: 'coach', title: 'TSA Assistant', route: '/coach',
         aliases: ['coach', 'tsa assistant', 'chatbot', 'ask coach', 'assistant'],
         keywords: ['assistant', 'chat', 'ask'],
-        description: 'TSA Hub’s in-app assistant — you’re using it right now.',
+        description: 'TSA Hub’s in-app assistant. You’re using it right now.',
     },
     {
         id: 'settings', title: 'Settings', route: '/settings',

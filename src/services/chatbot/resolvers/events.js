@@ -226,7 +226,7 @@ export function answerEventIntent(event, intent, { style = 'normal', seed: extra
             if (!variants) return { text: "I don't have a difficulty classification for " + name + " yet.", sourceType: DERIVED, missing: true };
             const wp = workPhrase(event);
             const context = wp
-                ? ` A lot of that comes down to your own experience with ${wp} — TSA doesn't publish an official difficulty rating, "hard" is relative to what you've done before.`
+                ? ` A lot of that comes down to your own experience with ${wp}. TSA doesn't publish an official difficulty rating, so "hard" is relative to what you've done before.`
                 : ` TSA doesn't publish an official difficulty rating, so how hard it feels really depends on your own experience with the skills it involves.`;
             return ok(pick([
                 `${name} is ${pick(variants, s)}.${context} That's TSA Hub's assessment, not an official TSA rating.`,
@@ -295,19 +295,19 @@ export function answerEventIntent(event, intent, { style = 'normal', seed: extra
             if (isMissing(event.materials)) {
                 return { text: pick([
                     `I don't have a verified materials list for ${name}. I don't want to guess at an official requirement, but I can check the current-year rules for exactly what to bring or submit if that would help.`,
-                    `No verified materials info is on file for ${name} yet. Rather than guess, I'd point you to the current official rules — want me to look for the submission requirements instead?`,
+                    `No verified materials info is on file for ${name} yet. Rather than guess, I'd point you to the current official rules. Want me to look for the submission requirements instead?`,
                 ], s), sourceType: OFFICIAL, missing: true };
             }
             const flagged = String(event.materials).trim().toLowerCase() === 'yes';
             if (!flagged) {
                 return ok(pick([
-                    `TSA Hub doesn't flag ${name} as needing materials or equipment beyond what the challenge itself calls for. That's TSA Hub's read on it, not a line from the official rules — check the current-year guide if you want the official wording.`,
+                    `TSA Hub doesn't flag ${name} as needing materials or equipment beyond what the challenge itself calls for. That's TSA Hub's read on it, not a line from the official rules, so check the current-year guide if you want the official wording.`,
                     `${name} isn't marked as needing extra materials or equipment on TSA Hub's side. That's our classification, not an official TSA statement, so the current rules are the real source if you need to be sure.`,
                 ], s), DERIVED);
             }
             return ok(pick([
                 `TSA Hub flags ${name} as needing materials or equipment beyond the basics, but I don't have the specific list. Want me to check the current official rules for exactly what's required?`,
-                `${name} is marked as needing some materials or equipment, though I don't have the exact list on file — the current-year rules would have the specifics.`,
+                `${name} is marked as needing some materials or equipment, though I don't have the exact list on file. The current-year rules would have the specifics.`,
             ], s), DERIVED);
         }
 

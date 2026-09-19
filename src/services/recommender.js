@@ -48,17 +48,17 @@ export const DIFFICULTY_CHOICES = DIFFICULTY_OPTIONS; // beginner / challenging 
 
 // ---- Time / budget ----------------------------------------------------------
 export const TIME_CHOICES = [
-  { id: "light", label: "1–3 hours a week" },
-  { id: "medium", label: "3–5 hours a week" },
-  { id: "heavy", label: "5–10+ hours a week" },
+  { id: "light", label: "1-3 hours a week" },
+  { id: "medium", label: "3-5 hours a week" },
+  { id: "heavy", label: "5-10+ hours a week" },
   { id: "any", label: "I'm open to any commitment" },
 ];
 
 export const BUDGET_CHOICES = [
   { id: "0-25", label: "Under $25" },
-  { id: "25-75", label: "$25–75" },
-  { id: "75-150", label: "$75–150" },
-  { id: "150-300", label: "$150–300" },
+  { id: "25-75", label: "$25-75" },
+  { id: "75-150", label: "$75-150" },
+  { id: "150-300", label: "$150-300" },
   { id: "300+", label: "$300+ is fine" },
 ];
 

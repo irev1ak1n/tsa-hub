@@ -16,7 +16,7 @@ function pastConferenceNotice() {
     const nextDate = NATIONALS.startDate
         ? `it's scheduled for ${formatDateRange(NATIONALS.startDate, NATIONALS.endDate)}`
         : "exact dates haven't been officially announced yet";
-    return `The most recent conference guide I have loaded is for the ${CONFERENCE_2026_HEADER.title} (${CONFERENCE_2026_HEADER.dateLabel}), which has already happened. I don't have official details for the next National TSA Conference loaded yet — ${nextDate}, but venue and theme haven't been loaded.`;
+    return `The most recent conference guide I have loaded is for the ${CONFERENCE_2026_HEADER.title} (${CONFERENCE_2026_HEADER.dateLabel}), which has already happened. I don't have official details for the next National TSA Conference loaded yet. As for timing, ${nextDate}, but venue and theme haven't been loaded.`;
 }
 
 // Find the best matching topic and section by keyword.
@@ -61,7 +61,7 @@ export function answerConference(intent, tokens) {
         case 'conference.when':
             if (past) return { text: pastConferenceNotice(), sourceType: 'official', missing: true };
             return {
-                text: `The ${CONFERENCE_2026_HEADER.title} runs ${CONFERENCE_2026_HEADER.dateLabel} at ${CONFERENCE_2026_HEADER.venue}, ${CONFERENCE_2026_HEADER.location}. Theme: "${CONFERENCE_2026_HEADER.theme}".`,
+                text: `The ${CONFERENCE_2026_HEADER.title} runs ${CONFERENCE_2026_HEADER.dateLabel} at ${CONFERENCE_2026_HEADER.venue}, ${CONFERENCE_2026_HEADER.location}. The theme is "${CONFERENCE_2026_HEADER.theme}."`,
                 sourceType: 'official',
             };
         case 'conference.where':
@@ -80,7 +80,7 @@ export function answerConference(intent, tokens) {
         default: {
             const hit = searchConference(tokens);
             if (!hit) return null;
-            const prefix = past ? `Note: this is from the ${CONFERENCE_2026_HEADER.title} guide (${CONFERENCE_2026_HEADER.dateLabel}, already past) — details for the next conference aren't loaded yet, but logistics like this often stay similar. ` : '';
+            const prefix = past ? `Just so you know, this is from the ${CONFERENCE_2026_HEADER.title} guide (${CONFERENCE_2026_HEADER.dateLabel}, already past). Details for the next conference aren't loaded yet, but logistics like this often stay similar. ` : '';
             return {
                 text: prefix + sectionToText(hit.section),
                 sourceType: 'official',

@@ -321,7 +321,7 @@ function teamNotes(ev, teamAvailId) {
     } else if (el.minTeamSize && el.maxTeamSize && el.minTeamSize === el.maxTeamSize) {
         requirement = `${el.minTeamSize} required`;
     } else if (el.minTeamSize && el.maxTeamSize) {
-        requirement = `${el.minTeamSize}\u2013${el.maxTeamSize} members`;
+        requirement = `${el.minTeamSize}-${el.maxTeamSize} members`;
     } else if (el.minTeamSize) {
         requirement = `${el.minTeamSize}+ required`;
     } else {
@@ -346,7 +346,7 @@ function teamNotes(ev, teamAvailId) {
     } else if (have === 1 && min != null && min > 1 && !el.individualAllowed) {
         notes.push({
             kind: "warn",
-            text: `This event requires ${el.maxTeamSize ? `${min}\u2013${el.maxTeamSize}` : `${min}+`} members. You'll need teammates before registration.`,
+            text: `This event requires ${el.maxTeamSize ? `${min}-${el.maxTeamSize}` : `${min}+`} members. You'll need teammates before registration.`,
         });
     }
 

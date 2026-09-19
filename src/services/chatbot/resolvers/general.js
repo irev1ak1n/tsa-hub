@@ -47,7 +47,7 @@ export function answerGeneral(intent, tokens, seed) {
         case 'general.scholarships': {
             if (!AWARDS_SCHOLARSHIPS?.scholarships) return null;
             const names = AWARDS_SCHOLARSHIPS.scholarships.map((s) => s.title).join(', ');
-            return { text: `TSA offers these scholarships: ${names}. Check the TSA Student Member Site for applications and deadlines.`, sourceType: 'official' };
+            return { text: `TSA offers scholarships including ${names}. Check the TSA Student Member Site for applications and deadlines.`, sourceType: 'official' };
         }
         case 'general.awards': {
             if (!AWARDS_SCHOLARSHIPS?.awards) return null;
@@ -64,7 +64,7 @@ export function answerGeneral(intent, tokens, seed) {
                 'Find out if your school has a TSA chapter. If it does, talk to the advisor about joining and choosing events. If not, visit tsaweb.org to learn how to start one.',
             ], seed), sourceType: 'official' };
         case 'general.how-competitions-work':
-            return { text: 'TSA competitions happen at three levels: regional, state, and national. You compete in your chosen events, and top performers advance to the next level. Most events involve either a preconference submission, an on-site challenge, or both.', sourceType: 'official' };
+            return { text: 'TSA competitions happen at the regional, state, and national levels. You compete in your chosen events, and top performers advance to the next level. Most events involve either a preconference submission, an on-site challenge, or both.', sourceType: 'official' };
         default:
             return null;
     }

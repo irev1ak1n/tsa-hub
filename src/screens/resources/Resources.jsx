@@ -223,7 +223,7 @@ export default function Resources() {
                 {!state ? (
                     <div className="rs-state-prompt">
                         <p className="rs-state-prompt-text">
-                            Want to see more content for your state? Set your state and get access to more resources.
+                            Set your state to see resources just for it.
                         </p>
                         <button type="button" className="rs-state-btn" onClick={() => setShowPicker(true)}>
                             <Icon name="globe" size={18} />

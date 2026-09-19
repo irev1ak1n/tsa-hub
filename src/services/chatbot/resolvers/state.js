@@ -65,9 +65,9 @@ export function answerState(intent, { stateName = null } = {}) {
             if (!links.length) return { text: `I don't have social media links for ${stateName} TSA.`, sourceType: 'official', missing: true };
             const list = links.map((l) => {
                 const platform = /instagram/i.test(l.title) ? 'Instagram' : /facebook/i.test(l.title) ? 'Facebook' : 'Social';
-                return `${platform}: ${l.url}`;
+                return `${platform} is at ${l.url}`;
             }).join('. ');
-            return { text: `${stateName} TSA social media: ${list}.`, sourceType: 'official' };
+            return { text: `${stateName} TSA's social media, ${list}.`, sourceType: 'official' };
         }
 
         case 'state.officers': {

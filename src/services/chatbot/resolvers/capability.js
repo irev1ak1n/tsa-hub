@@ -41,7 +41,7 @@ export function answerCapabilityLimit(rawText) {
     const cantDo = pick([
         `I'm not able to ${cant}.`,
         `I can't ${cant} myself.`,
-        `That's not something I can do directly — I can't ${cant}.`,
+        `That's not something I can do directly. I can't ${cant}.`,
     ], rawText);
 
     if (action === 'text') {
@@ -57,13 +57,13 @@ export function answerCapabilityLimit(rawText) {
     }
 
     if (action === 'dm') {
-        const body = `${cantDo} I can help you find the verified official account instead — try asking me for your state's Instagram or Facebook.`;
+        const body = `${cantDo} I can help you find the verified official account instead. Try asking me for your state's Instagram or Facebook.`;
         return { text: body, suggestions: ['Contact TSA Hub Support', 'National TSA Contact'] };
     }
 
     // email / generic message
     if (targetsNationalTsa(rawText)) {
-        const body = `${cantDo} National TSA's official email is ${NATIONAL_TSA.email} — you can email them directly, or I can pull up their full contact card.`;
+        const body = `${cantDo} National TSA's official email is ${NATIONAL_TSA.email}. You can email them directly, or I can pull up their full contact card.`;
         return { text: body, suggestions: ['National TSA Contact', 'Contact TSA Hub Support'] };
     }
 
@@ -75,7 +75,7 @@ export function answerCapabilityLimit(rawText) {
 // answer, not a capability limit.
 export function answerNationalContactInfo() {
     return {
-        text: `${NATIONAL_TSA.org} — Email: ${NATIONAL_TSA.email} · Phone: ${NATIONAL_TSA.phone} · Toll free: ${NATIONAL_TSA.tollFree}.`,
+        text: `${NATIONAL_TSA.org}'s email is ${NATIONAL_TSA.email}. Their phone number is ${NATIONAL_TSA.phone}, and their toll free number is ${NATIONAL_TSA.tollFree}.`,
         suggestions: ['Email National TSA', 'Contact TSA Hub Support'],
         // A ready-to-send draft the UI can offer as a real link — opening it
         // is the user's own action, never something the Coach claims to have

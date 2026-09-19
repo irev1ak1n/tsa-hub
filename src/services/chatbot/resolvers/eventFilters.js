@@ -46,8 +46,8 @@ export function answerEventFilter(kind, allEvents, opts = {}) {
             const list = nameList(matches, 10);
             return {
                 text: pick([
-                    `Based on TSA Hub's eligibility data, these events allow you to compete on your own: ${list}. Individual entry can still be capped even where it's allowed, so it's worth double-checking the specific event's eligibility rules before you commit.`,
-                    `These events let you enter individually, no team required: ${list}. That's from TSA Hub's own eligibility data, so check the exact event page for any caps on solo entries.`,
+                    `Based on TSA Hub's eligibility data, ${list} let you compete on your own. Individual entry can still be capped even where it's allowed, so it's worth double-checking the specific event's eligibility rules before you commit.`,
+                    `${list} let you enter individually, no team required. That's from TSA Hub's own eligibility data, so check the exact event page for any caps on solo entries.`,
                 ], seedFor(kind, matches)),
                 sourceType: OFFICIAL,
                 events: matches,
@@ -60,8 +60,8 @@ export function answerEventFilter(kind, allEvents, opts = {}) {
             const list = nameList(matches, 10);
             return {
                 text: pick([
-                    `These events require a team, individual entries aren't allowed: ${list}. That's based on TSA Hub's eligibility data.`,
-                    `Based on TSA Hub's data, these events need a team rather than allowing solo entries: ${list}.`,
+                    `${list} require a team, individual entries aren't allowed. That's based on TSA Hub's eligibility data.`,
+                    `Based on TSA Hub's data, ${list} need a team rather than allowing solo entries.`,
                 ], seedFor(kind, matches)),
                 sourceType: OFFICIAL,
                 events: matches,
@@ -74,8 +74,8 @@ export function answerEventFilter(kind, allEvents, opts = {}) {
             const list = nameList(matches, 10);
             return {
                 text: pick([
-                    `TSA doesn't publish an official cost rating, but based on typical materials, TSA Hub classifies these as lower-cost events: ${list}. Actual cost still depends on what your team already has versus what you'd need to buy.`,
-                    `Here's TSA Hub's own lower-cost classification, not an official TSA number: ${list}. Your real cost will still come down to what materials or equipment your team already has access to.`,
+                    `TSA doesn't publish an official cost rating, but based on typical materials, TSA Hub classifies ${list} as lower-cost events. Actual cost still depends on what your team already has versus what you'd need to buy.`,
+                    `${list} are TSA Hub's own lower-cost classification, not an official TSA number. Your real cost will still come down to what materials or equipment your team already has access to.`,
                 ], seedFor(kind, matches)),
                 sourceType: DERIVED,
                 events: matches,
@@ -84,8 +84,8 @@ export function answerEventFilter(kind, allEvents, opts = {}) {
 
         case 'beginner': {
             const matches = events.filter((e) => e.difficulty === 'beginner');
-            const intro = "TSA doesn't officially label any event as \"beginner friendly\" — that's TSA Hub's own read based on typical workload, difficulty, and how approachable the event tends to be for first-time competitors.";
-            if (!matches.length) return { text: `${intro} I don't have enough difficulty data on file right now to point to specific events, though — want to tell me what you enjoy (coding, building, design, presenting) so I can narrow it down another way?`, sourceType: DERIVED, missing: true };
+            const intro = "TSA doesn't officially label any event as \"beginner friendly.\" That's TSA Hub's own read based on typical workload, difficulty, and how approachable the event tends to be for first-time competitors.";
+            if (!matches.length) return { text: `${intro} I don't have enough difficulty data on file right now to point to specific events, though. Want to tell me what you enjoy (coding, building, design, presenting) so I can narrow it down another way?`, sourceType: DERIVED, missing: true };
             const list = nameList(matches, 10);
             return {
                 text: `${intro} Based on that classification, events like ${list} tend to be the most approachable for someone just starting out. Want to narrow it down further? Tell me what you enjoy, or whether you'd rather work solo or with a team.`,
@@ -100,7 +100,7 @@ export function answerEventFilter(kind, allEvents, opts = {}) {
             if (!matches.length) return { text: `${intro} I don't have enough of that flag set on file right now to give you a confident list.`, sourceType: DERIVED, missing: true };
             const list = nameList(matches, 10);
             return {
-                text: `${intro} Based on that flag, these events aren't marked as needing extra materials or equipment: ${list}. That's TSA Hub's classification, not an official rule, so check the current-year requirements to be sure.`,
+                text: `${intro} Based on that flag, ${list} aren't marked as needing extra materials or equipment. That's TSA Hub's classification, not an official rule, so check the current-year requirements to be sure.`,
                 sourceType: DERIVED,
                 events: matches,
             };
@@ -111,7 +111,7 @@ export function answerEventFilter(kind, allEvents, opts = {}) {
             if (!matches.length) return { text: "I don't have enough project-type data on file to confidently rule presenting in or out across events right now.", sourceType: DERIVED, missing: true };
             const list = nameList(matches, 10);
             return {
-                text: `Based on TSA Hub's project-type tags, these events aren't flagged as involving a judged presentation: ${list}. Plenty of events still involve some kind of interview or explanation to judges even without a formal presentation, so this isn't a guarantee of zero judge interaction, just what TSA Hub has tagged.`,
+                text: `Based on TSA Hub's project-type tags, ${list} aren't flagged as involving a judged presentation. Plenty of events still involve some kind of interview or explanation to judges even without a formal presentation, so this isn't a guarantee of zero judge interaction, just what TSA Hub has tagged.`,
                 sourceType: DERIVED,
                 events: matches,
             };
@@ -125,7 +125,7 @@ export function answerEventFilter(kind, allEvents, opts = {}) {
             if (!matches.length) return { text: "I don't have enough preconference submission data on file to confidently list events without one.", sourceType: OFFICIAL, missing: true };
             const list = nameList(matches, 10);
             return {
-                text: `Based on TSA Hub's preconference submission data, these events don't have a preconference item due before competition: ${list}.`,
+                text: `Based on TSA Hub's preconference submission data, ${list} don't have a preconference item due before competition.`,
                 sourceType: OFFICIAL,
                 events: matches,
             };
@@ -137,7 +137,7 @@ export function answerEventFilter(kind, allEvents, opts = {}) {
             if (!matches.length) return { text: `${intro} I don't have enough of that flag set on file right now to give you a confident list.`, sourceType: DERIVED, missing: true };
             const list = nameList(matches, 10);
             return {
-                text: `${intro} Based on that flag, these events are marked as needing extra materials or equipment: ${list}. Check each event's current-year rules for the specific list.`,
+                text: `${intro} Based on that flag, ${list} are marked as needing extra materials or equipment. Check each event's current-year rules for the specific list.`,
                 sourceType: DERIVED,
                 events: matches,
             };
@@ -151,8 +151,8 @@ export function answerEventFilter(kind, allEvents, opts = {}) {
             const list = nameList(matches, 10);
             return {
                 text: pick([
-                    `Events on TSA Hub connected to ${label}: ${list}.`,
-                    `Based on TSA Hub's career tags, these events connect to ${label}: ${list}.`,
+                    `${list} connect to ${label} on TSA Hub.`,
+                    `Based on TSA Hub's career tags, ${list} connect to ${label}.`,
                 ], seedFor('career' + label, matches)),
                 sourceType: DERIVED,
                 events: matches,
@@ -172,8 +172,8 @@ export function answerEventFilter(kind, allEvents, opts = {}) {
             const list = nameList(matches, 10);
             return {
                 text: pick([
-                    `Events on TSA Hub tagged around ${label}: ${list}.`,
-                    `Based on TSA Hub's project tags, these events involve ${label}: ${list}.`,
+                    `${list} are tagged around ${label} on TSA Hub.`,
+                    `Based on TSA Hub's project tags, ${list} involve ${label}.`,
                 ], seedFor(kind + key, matches)),
                 sourceType: DERIVED,
                 events: matches,

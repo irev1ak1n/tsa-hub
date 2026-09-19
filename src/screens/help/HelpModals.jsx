@@ -36,7 +36,7 @@ export function ReportIncorrectInfoModal({ onClose }) {
     const [description, setDescription] = useState('');
     const [step, setStep] = useState('form'); // form | preview | sent
 
-    const subject = `TSA Hub Report — ${category}`;
+    const subject = `TSA Hub Report - ${category}`;
     const bodyLines = [
         `Category: ${category}`,
         page.trim() && `Page/section: ${page.trim()}`,
@@ -87,8 +87,8 @@ export function ReportIncorrectInfoModal({ onClose }) {
 
                     {step === 'preview' && (
                         <div className="fb-preview">
-                            <strong>To:</strong> {TSA_HUB_SUPPORT_EMAIL}{'\n'}
-                            <strong>Subject:</strong> {subject}{'\n\n'}
+                            <strong>To</strong> {TSA_HUB_SUPPORT_EMAIL}{'\n'}
+                            <strong>Subject</strong> {subject}{'\n\n'}
                             {bodyLines.filter(Boolean).join('\n')}
                         </div>
                     )}
@@ -122,7 +122,7 @@ export function ContactSupportModal({ onClose }) {
     const [replyEmail, setReplyEmail] = useState('');
     const [step, setStep] = useState('form'); // form | preview | sent
 
-    const subject = `TSA Hub Support — ${category}`;
+    const subject = `TSA Hub Support - ${category}`;
     const bodyLines = [
         `Category: ${category}`,
         replyEmail.trim() && `Reply to: ${replyEmail.trim()}`,
@@ -178,8 +178,8 @@ export function ContactSupportModal({ onClose }) {
 
                         {step === 'preview' && (
                             <div className="fb-preview">
-                                <strong>To:</strong> {TSA_HUB_SUPPORT_EMAIL}{'\n'}
-                                <strong>Subject:</strong> {subject}{'\n\n'}
+                                <strong>To</strong> {TSA_HUB_SUPPORT_EMAIL}{'\n'}
+                                <strong>Subject</strong> {subject}{'\n\n'}
                                 {bodyLines.filter(Boolean).join('\n')}
                             </div>
                         )}
@@ -212,11 +212,11 @@ export function ContactSupportModal({ onClose }) {
                 </a>
                 <a className="help-contact-line" href={`tel:${NATIONAL_TSA.phone.replace(/[^\d+]/g, '')}`}>
                     <Icon name="phone" size={16} />
-                    <span>Phone: {NATIONAL_TSA.phone}</span>
+                    <span>Phone {NATIONAL_TSA.phone}</span>
                 </a>
                 <a className="help-contact-line" href={`tel:${NATIONAL_TSA.tollFree.replace(/[^\d+]/g, '')}`}>
                     <Icon name="phone" size={16} />
-                    <span>Toll Free: {NATIONAL_TSA.tollFree}</span>
+                    <span>Toll free {NATIONAL_TSA.tollFree}</span>
                 </a>
             </div>
         </ModalShell>

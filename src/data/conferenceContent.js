@@ -15,7 +15,7 @@ export const CONFERENCE_CONTENT = {
     'dress-code': {
         title: 'Dress Code',
         intro: [
-            'Everyone attending the National TSA Conference \u2014 students, advisors, parents, guests, and children \u2014 must follow the TSA Dress Code, and must wear their official conference identification badge at all times.',
+            'Everyone attending the National TSA Conference, including students, advisors, parents, guests, and children, must follow the TSA Dress Code and wear their official conference identification badge at all times.',
             'Students must wear competition attire when participating in competitive events. A student who competes in incorrect attire may still be allowed to participate, but may receive a 20% point deduction for each round.',
         ],
         sections: [
@@ -227,7 +227,7 @@ export const CONFERENCE_CONTENT = {
     'registration-badges': {
         title: 'Registration and Badges',
         intro: [
-            'Everyone attending the National TSA Conference must be officially registered \u2014 students, advisors, parents, guests, volunteers, and children.',
+            'Everyone attending the National TSA Conference must be officially registered, including students, advisors, parents, guests, volunteers, and children.',
         ],
         sections: [
             {

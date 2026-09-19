@@ -178,7 +178,7 @@ export default function EventFullPage() {
                 <Section title="Materials / Equipment">
                     <p className="rec-modal-desc" style={{ margin: 0 }}>
                         {materials === 'yes'
-                            ? "TSA Hub flags this event as needing materials or equipment beyond the basics, though it doesn't have the specific list — check the current official rules for exactly what's required."
+                            ? "TSA Hub flags this event as needing materials or equipment beyond the basics. We don't have the specific list, so check the current official rules for exactly what's required."
                             : "TSA Hub doesn't flag this event as needing materials or equipment beyond what the challenge itself calls for."}
                     </p>
                 </Section>

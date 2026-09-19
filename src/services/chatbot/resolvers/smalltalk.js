@@ -16,15 +16,15 @@ const BYE = ['See you. Good luck with your events!', 'Take care! Come back anyti
 const HELP_VARIANTS = [
     "Of course. Tell me what you're trying to figure out. I can help with events, rules, deadlines, choosing an event, conference questions, state TSA info, or TSA Hub itself.",
     "Absolutely. What are you stuck on? If you're not sure where to start, tell me whether it's about an event, competition rules, deadlines, or choosing what to compete in.",
-    "Sure — what do you need? I can explain an event, check rules or requirements, look up dates, help you pick something, or point you to your state TSA info.",
+    "Sure, what do you need? I can explain an event, check rules or requirements, look up dates, help you pick something, or point you to your state TSA info.",
 ];
 const HOW_ARE_YOU = ['Doing fine! What can I help you with?', 'All good here. What TSA question do you have?'];
 const IDENTITY = [
     "I'm the TSA Hub Assistant. I use TSA Hub's structured data and official TSA resources to answer questions. I'm not a generative AI, so I won't make anything up.",
 ];
 const CAPABILITIES = [
-    "A lot of TSA stuff. I can explain events, tell you the current theme or challenge, check team sizes and requirements, explain official rules, look up deadlines and conference dates, help you choose or compare events, find your state TSA contacts, and connect events to careers or majors.\n\nYou don't need to phrase it formally either — just tell me what you're trying to figure out.",
-    "I cover events (what they are, team size, cost, difficulty, current theme), rules and requirements, deadlines and conference info, state TSA contacts, careers connected to events, and getting started if you're new.\n\nAsk however you'd normally ask — I'll do my best to figure out what you mean.",
+    "A lot of TSA stuff. I can explain events, tell you the current theme or challenge, check team sizes and requirements, explain official rules, look up deadlines and conference dates, help you choose or compare events, find your state TSA contacts, and connect events to careers or majors.\n\nYou don't need to phrase it formally either. Just tell me what you're trying to figure out.",
+    "I cover events (what they are, team size, cost, difficulty, current theme), rules and requirements, deadlines and conference info, state TSA contacts, careers connected to events, and getting started if you're new.\n\nAsk however you'd normally ask. I'll do my best to figure out what you mean.",
 ];
 const LIMITATIONS = [
     "I only cover TSA topics. I won't guess at anything I don't have data for, and I'll tell you when something is missing or might be out of date.",
@@ -37,7 +37,7 @@ const ARE_YOU_AI = [
 ];
 const WHO_BUILT = ['I was built as part of TSA Hub to help students navigate TSA competitions.'];
 const PERSONAL_QUESTION = [
-    "I don't have a personal life like that — I'm an AI assistant built to help with TSA.",
+    "I don't have a personal life like that. I'm an AI assistant built to help with TSA.",
     "I don't have family, an age, or a home. I'm just here to help with TSA Hub.",
     "That's not something I have, but happy to help with TSA instead.",
     "I don't have personal favorites or a life outside of TSA Hub, but I do like helping with TSA questions.",

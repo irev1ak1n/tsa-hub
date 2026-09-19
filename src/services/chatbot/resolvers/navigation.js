@@ -41,22 +41,22 @@ const HOWTO_TOPICS = [
     },
     {
         match: /\bhow do i export\b|\badd (this |it |an event )?to my (device )?calendar\b|\badd to (my )?calendar app\b|\bexport (this |it )?to my calendar\b|\bcan i add (a |an )?tsa date to my calendar\b/,
-        text: 'Open the event and tap "Add to device calendar" — it downloads a calendar file your phone or computer\'s calendar app can open.',
+        text: 'Open the event and tap "Add to device calendar." It downloads a calendar file your phone or computer\'s calendar app can open.',
         action: ['Open Calendar', 'calendar'],
     },
     {
         match: /\bhow do i (install|add (this|it) to my (home screen|phone))\b/,
-        text: 'TSA Hub runs in your browser, so there\'s no app store download — add a shortcut to your home screen instead for quick access.',
+        text: 'TSA Hub runs in your browser, so there\'s no app store download. Add a shortcut to your home screen instead for quick access.',
         action: ['Open installation guide', 'help:install'],
     },
     {
         match: /\bhow do i contact support\b|\bwhere do i contact support\b|\bhow do i report a bug\b/,
-        text: 'Contact Support is in the Help Center — pick a category and describe the issue, and you\'ll see exactly what gets sent before anything goes out.',
+        text: 'Contact Support is in the Help Center. Pick a category and describe the issue, and you\'ll see exactly what gets sent before anything goes out.',
         action: ['Contact Support', 'help:contacting-support'],
     },
     {
         match: /\bhow (do|can) i report (incorrect|wrong) info(rmation)?\b|\bwhere do i report (wrong|incorrect) info(rmation)?\b|\bhow do i report something wrong\b/,
-        text: 'You can report incorrect TSA Hub information through the Help Center — it helps keep things accurate for everyone.',
+        text: 'You can report incorrect TSA Hub information through the Help Center. It helps keep things accurate for everyone.',
         action: ['Report incorrect information', 'help:reporting-incorrect-info'],
     },
     {
@@ -81,12 +81,12 @@ const HOWTO_TOPICS = [
     },
     {
         match: /\bhow do i get (back )?to my events\b|\bhow do i get back to events\b/,
-        text: 'Events is in the main navigation — tap it any time to browse or search the full list.',
+        text: 'Events is in the main navigation. Tap it any time to browse or search the full list.',
         action: ['Open Events', 'events'],
     },
     {
         match: /^(reminder|reminders|my reminders|set a reminder|notifications?)$/,
-        text: 'Reminders live in Calendar — open a day, tap the + button, choose Reminder, and turn on a notification for it.',
+        text: 'Reminders live in Calendar. Open a day, tap the + button, choose Reminder, and turn on a notification for it.',
         action: ['Open Calendar', 'calendar'],
     },
     {

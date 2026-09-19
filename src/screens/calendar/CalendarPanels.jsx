@@ -18,11 +18,11 @@ function formatDateRange(item) {
     let label = startLabel;
     if (end && ymd(end) !== ymd(start)) {
         const sameMonth = start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
-        label += ` – ${sameMonth ? `${end.getDate()}, ${end.getFullYear()}` : `${MONTHS[end.getMonth()]} ${end.getDate()}, ${end.getFullYear()}`}`;
+        label += ` - ${sameMonth ? `${end.getDate()}, ${end.getFullYear()}` : `${MONTHS[end.getMonth()]} ${end.getDate()}, ${end.getFullYear()}`}`;
     }
     if (!item.allDay && item.startTime) {
         label += ` · ${formatTime(item.startTime)}`;
-        if (item.endTime) label += ` – ${formatTime(item.endTime)}`;
+        if (item.endTime) label += ` - ${formatTime(item.endTime)}`;
     } else if (item.allDay) {
         label += ' · All day';
     }
@@ -88,7 +88,7 @@ export function DayPanel({ date, items, onClose, onOpenItem, onAdd }) {
 
 function ItemRow({ item, onClick }) {
     const { bg } = resolveItemColor(item);
-    const timeLabel = item.allDay ? 'All day' : item.startTime ? `${formatTime(item.startTime)}${item.endTime ? ` – ${formatTime(item.endTime)}` : ''}` : '';
+    const timeLabel = item.allDay ? 'All day' : item.startTime ? `${formatTime(item.startTime)}${item.endTime ? ` - ${formatTime(item.endTime)}` : ''}` : '';
     return (
         <button type="button" className={`cal-item-row ${item.completed ? 'is-completed' : ''}`} onClick={onClick}>
             <span className="cal-item-row-dot" style={{ background: bg }} />
@@ -116,7 +116,7 @@ export function ItemDetailsModal({ item, onClose, onEdit, onDelete, onToggleComp
         setAddingToCalendar(true);
         const result = await addToDeviceCalendar(item);
         setAddingToCalendar(false);
-        setCalendarNote(result.ok ? 'Calendar file downloaded — open it to add this to your calendar app.' : "Couldn't create a calendar file for this item.");
+        setCalendarNote(result.ok ? 'Calendar file downloaded. Open it to add this to your calendar app.' : "Couldn't create a calendar file for this item.");
     }
 
     return (
@@ -246,7 +246,7 @@ function OfficialReminderControl({ existing, onSet, onRemove }) {
             <div className="rec-modal-section-title">Personal reminder</div>
             {existing ? (
                 <div className="cal-official-reminder">
-                    <span>Reminder set — {reminderLabel(existing.reminder.minutesBefore) || 'on'}.</span>
+                    <span>Reminder set for {reminderLabel(existing.reminder.minutesBefore) || 'on'}.</span>
                     <button type="button" className="btn ghost" onClick={onRemove}>Remove</button>
                 </div>
             ) : (

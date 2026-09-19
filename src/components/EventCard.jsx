@@ -51,7 +51,7 @@ export default function EventCard({ event: e, added, onAdd, onRemove }) {
                 </Link>
                 {added ? (
                     <button className="btn navy small" onClick={onRemove}>
-                        ✓ Added — remove
+                        ✓ Added (tap to remove)
                     </button>
                 ) : (
                     <button className="btn primary small" onClick={onAdd}>

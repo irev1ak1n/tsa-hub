@@ -84,7 +84,7 @@ export default function CompetitionRuleTopic() {
             {topic.note && (
                 <div className="rk-callout">
                     <span className="rk-callout-ico"><Icon name="info" size={18} /></span>
-                    <span className="rk-callout-text"><strong>Important:</strong> {topic.note}</span>
+                    <span className="rk-callout-text">{topic.note}</span>
                 </div>
             )}
 

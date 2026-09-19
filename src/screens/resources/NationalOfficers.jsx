@@ -20,7 +20,7 @@ export default function NationalOfficers() {
                 <p className="rs-eyebrow">National TSA</p>
                 <h1 className="cal-h1">National TSA Officers</h1>
                 <p className="muted small" style={{ margin: 0 }}>
-                    Meet the students elected to lead National TSA for 2026&ndash;2027.
+                    Meet the students elected to lead National TSA for 2026-2027.
                 </p>
             </div>
 

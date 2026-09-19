@@ -136,7 +136,7 @@ function ThemeBlock({ theme, onOpenPage }) {
     return (
         <div className="eth-theme-block">
             {noTheme ? (
-                <p className="eth-theme-no-theme">No theme or problem has been published by National TSA for the 2026–2027 season.</p>
+                <p className="eth-theme-no-theme">No theme or problem has been published by National TSA for the 2026-2027 season.</p>
             ) : (
                 <>
                     {headline && <div className="eth-modal-headline">{headline}</div>}

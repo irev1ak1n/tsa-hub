@@ -16,7 +16,7 @@ export default function PrivacyPolicy() {
             <div className="section">
                 <div className="rs-eyebrow">TSA HUB</div>
                 <h1 className="doc-h1">Privacy Policy</h1>
-                <p className="doc-updated">Last updated: August 2026</p>
+                <p className="doc-updated">Last updated August 2026</p>
             </div>
 
             <div className="doc-body">

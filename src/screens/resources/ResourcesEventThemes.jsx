@@ -46,8 +46,7 @@ export default function ResourcesEventThemes() {
                 <div className="rs-eyebrow">Events</div>
                 <h1 className="rs-h1">Event Guide</h1>
                 <p className="rs-sub">
-                    Explore each competitive event&rsquo;s current theme, requirements, submissions, resources,
-                    team details, and other important information.
+                    See each event&rsquo;s current theme, requirements, submissions, resources, and team details.
                 </p>
             </div>
 
@@ -81,7 +80,7 @@ export default function ResourcesEventThemes() {
 
             {!eventsLoading && msEvents.length === 0 && hsEvents.length === 0 && (
                 <p className="rs-note">
-                    {q ? `No events match "${query}".` : 'Event data isn’t available right now — try again in a moment.'}
+                    {q ? `No events match "${query}".` : 'Event data isn’t available right now. Try again in a moment.'}
                 </p>
             )}
         </>

@@ -125,7 +125,7 @@ export const FLOW_STEPS = {
     'events.event.topic': (context, data) => {
         const event = data.getEvent(context.eventId);
         if (!event) {
-            return step('events.event.topic', "I couldn't find that event anymore — pick another.", [
+            return step('events.event.topic', "I couldn't find that event anymore. Pick another.", [
                 block('back-list', 'Browse events', go('Browse events', 'events.event.list', { division: context.division })),
             ]);
         }
@@ -161,7 +161,7 @@ export const FLOW_STEPS = {
         }
 
         if (!pool.length) {
-            return step('events.recommend.results', "I couldn't find a close match for that combination — here's the full list instead.", [
+            return step('events.recommend.results', "I couldn't find a close match for that combination. Here's the full list instead.", [
                 block('browse', 'Browse all events', go('Browse all events', 'events.division')),
             ]);
         }
