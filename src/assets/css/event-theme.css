@@ -21,6 +21,23 @@
     padding: 0 0 40px;
 }
 
+/* ── Official source link under Theme & Problem — small and subtle, never
+   as prominent as the theme content itself ── */
+.eth-source-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-decoration: none;
+}
+.eth-source-link:hover {
+    color: var(--ink);
+    text-decoration: underline;
+}
+
 /* ── Top description ── */
 .eth-desc {
     font-size: 15px;

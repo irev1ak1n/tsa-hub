@@ -169,45 +169,6 @@ export const HELP_ARTICLES = [
         keywords: ['reminder', 'personal event', 'add reminder', 'local storage', 'saved locally'],
     },
     {
-        id: 'install',
-        title: 'Installing TSA Hub',
-        intro: 'TSA Hub runs entirely in your browser, so there’s nothing to download from an app store. What you can do instead is add a shortcut to your home screen, which makes it open and feel a lot like a regular installed app.',
-        sections: [
-            {
-                heading: 'iPhone or Safari',
-                paragraphs: [
-                    'This only works in Safari. Other iPhone browsers don’t offer the same option to add a home screen icon.',
-                ],
-                list: [
-                    'Open TSA Hub in Safari',
-                    'Tap the Share icon',
-                    'Tap “Add to Home Screen”',
-                ],
-            },
-            {
-                heading: 'Android or Chrome',
-                list: [
-                    'Open TSA Hub in Chrome',
-                    'Tap the menu (⋮)',
-                    'Tap “Add to Home screen” (or “Install app” if Chrome offers it)',
-                ],
-            },
-            {
-                heading: 'On a computer',
-                paragraphs: [
-                    'Most desktop browsers let you pin the tab or add a bookmark, which gets you quick access without a separate installation step.',
-                ],
-            },
-            {
-                heading: 'What changes once it’s added',
-                paragraphs: [
-                    'Tapping the home screen icon opens TSA Hub in its own window without the browser’s address bar, which makes it feel closer to a native app. It’s still the same website underneath, though, so anything you do in TSA Hub, like setting your state or adding calendar entries, works exactly the same whether you open it from the icon or from a regular browser tab.',
-                ],
-            },
-        ],
-        keywords: ['install', 'app', 'home screen', 'phone', 'pwa', 'add to home screen'],
-    },
-    {
         id: 'contacting-support',
         title: 'Contacting TSA Hub Support',
         intro: 'If something about TSA Hub itself isn’t working right, whether that’s a bug, information that looks wrong, or just feedback you want to share, Contact Support is the direct way to reach the people who maintain it.',
@@ -305,14 +266,6 @@ export const QUICK_HELP = [
 ];
 
 export const POPULAR_TOPICS = [
-    {
-        id: 'install',
-        icon: 'download',
-        title: 'Install TSA Hub on your phone',
-        subtitle: 'Add TSA Hub to your device and set it up',
-        article: 'install',
-        keywords: ['install', 'app', 'home screen', 'phone', 'pwa', 'add to home screen'],
-    },
     {
         id: 'calendar',
         icon: 'cal',

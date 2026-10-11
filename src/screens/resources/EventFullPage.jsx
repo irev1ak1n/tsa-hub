@@ -5,7 +5,20 @@ import { BackLink } from './resourcesShared.jsx';
 import { EVENTS, getEvent, teamSizeLabel } from '../../data/events.js';
 import { getEventTheme } from '../../data/eventThemes.js';
 import { getRelatedEvents } from '../../data/eventDetailAdapter.js';
-import { preconferenceFor, advisorApprovalFor, answerEventIntent, CAREER_LABELS } from '../../services/chatbot/resolvers/events.js';
+import { preconferenceFor, advisorApprovalFor, answerEventIntent, materialsText, bestSuitedFor, CAREER_LABELS } from '../../services/chatbot/resolvers/events.js';
+
+// Official source link for the Theme & Problem section. Prefers a
+// tsaweb.org link already on file for this specific event (its theme PDF,
+// problem statement, etc.); falls back to TSA's official competitions page
+// when nothing event-specific is on file, never to a third-party source.
+function officialThemeSource(event) {
+    const links = Array.isArray(event?.themeLinks) ? event.themeLinks : [];
+    const specific = links.find((l) => {
+        try { return new URL(l.url).hostname.endsWith('tsaweb.org'); } catch { return false; }
+    });
+    if (specific) return { url: specific.url, label: 'View official event page' };
+    return { url: 'https://tsaweb.org/competitions', label: 'View on TSA' };
+}
 
 // Same resource-type icon/label convention as the old EventThemePage, reused
 // here so PDFs/CSVs/templates/links keep looking the same across the app.
@@ -73,6 +86,7 @@ export default function EventFullPage() {
     const difficulty = answerEventIntent(event, 'difficulty.general');
     const time = answerEventIntent(event, 'time.general');
     const cost = answerEventIntent(event, 'cost.general', { style: 'short' });
+    const bestSuited = bestSuitedFor(event);
 
     const careers = Object.entries(event.careers || {})
         .sort((a, b) => b[1] - a[1])
@@ -140,6 +154,15 @@ export default function EventFullPage() {
                                     )}
                                 </div>
                             ))}
+                            {(() => {
+                                const src = officialThemeSource(event);
+                                return (
+                                    <a href={src.url} target="_blank" rel="noreferrer" className="eth-source-link">
+                                        {src.label}
+                                        <Icon name="external-link" size={12} />
+                                    </a>
+                                );
+                            })()}
                         </>
                     )}
                 </Section>
@@ -176,11 +199,7 @@ export default function EventFullPage() {
 
             {(materials === 'yes' || materials === 'no') && (
                 <Section title="Materials / Equipment">
-                    <p className="rec-modal-desc" style={{ margin: 0 }}>
-                        {materials === 'yes'
-                            ? "TSA Hub flags this event as needing materials or equipment beyond the basics. We don't have the specific list, so check the current official rules for exactly what's required."
-                            : "TSA Hub doesn't flag this event as needing materials or equipment beyond what the challenge itself calls for."}
-                    </p>
+                    <p className="rec-modal-desc" style={{ margin: 0 }}>{materialsText(event)}</p>
                 </Section>
             )}
 
@@ -199,6 +218,12 @@ export default function EventFullPage() {
             {cost && !cost.missing && (
                 <Section title="Cost">
                     <p className="rec-modal-desc" style={{ margin: 0 }}>{cost.text}</p>
+                </Section>
+            )}
+
+            {bestSuited && (
+                <Section title="Best Suited For">
+                    <p className="rec-modal-desc" style={{ margin: 0 }}>{bestSuited}</p>
                 </Section>
             )}
 

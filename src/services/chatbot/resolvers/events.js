@@ -66,13 +66,21 @@ const CAREER_LABELS = {
 function costFactorsFor(event) {
     const wp = workPhrase(event);
     if (String(event.materials || '').toLowerCase() === 'yes') {
-        return 'the specific materials or equipment the challenge calls for, since this one is flagged as needing some beyond the basics';
+        return 'the specific materials or equipment the challenge calls for, since this one needs some beyond the basics';
     }
     if (wp && /coding|designing/.test(wp) && !/building/.test(wp)) {
         return 'what software, hosting, or equipment your team already has access to';
     }
     return "what supplies, software, or equipment your team already has versus what you'd still need";
 }
+
+const COST_LABEL = {
+    '0-25': 'Very low',
+    '25-75': 'Low',
+    '75-150': 'Moderate',
+    '150-300': 'Moderate to higher',
+    '300+': 'Higher',
+};
 
 const COST_NATURAL = {
     '0-25': ['one of the lower cost events', "generally affordable since most of the work is digital"],
@@ -84,8 +92,8 @@ const COST_NATURAL = {
 
 const TIME_NATURAL = {
     light: ['a lighter commitment compared with more build-heavy events', "one of the quicker events to prepare for"],
-    medium: ['a moderate amount of preparation', "not the lightest event, but it usually doesn't require an extreme weekly commitment"],
-    heavy: ['a fair amount of preparation, so it is worth starting early', "going to take consistent work over several weeks"],
+    medium: ['a moderate amount of preparation', "more than the lightest events, but it usually doesn't require an extreme weekly commitment"],
+    heavy: ['a fair amount of preparation, so it is worth starting early', "consistent work over several weeks"],
     project: ['a long-running project that needs early planning', "a significant time investment, so start as soon as you can"],
 };
 
@@ -96,6 +104,140 @@ const DIFF_NATURAL = {
 };
 
 const WORK_LABEL = { build: 'building', code: 'coding', design: 'designing', present: 'presenting' };
+
+// What "challenging" or "competitive" actually means for this kind of event
+// — the skill/prep axis that makes a difficulty label useful instead of a
+// bare word. Falls back to a generic line when no project type is on file.
+const DIFF_REASON = {
+    build: 'how much hands-on building and troubleshooting it takes to get a working result',
+    code: 'how much programming or technical problem-solving the challenge requires',
+    design: 'how polished and well-planned the design work needs to be',
+    present: 'how strong the presentation and interview component needs to be',
+};
+
+// Realistic "what you'll actually need" for each build_type, used by
+// materialsText() below. Keep these short and factual (no brand names or
+// dollar amounts) — the official event guide always has the exact specs.
+const BUILD_MATERIALS = {
+    robot: 'a robot or robotics platform, sensors, motors, and a microcontroller or programmable kit',
+    vehicle: 'a vehicle body or chassis, wheels or axles, and a motor or propulsion system',
+    drone: 'a drone or UAV platform along with its flight components',
+    structure: 'building materials and basic construction or modeling supplies',
+    wearable: 'fabric or wearable materials along with basic electronics',
+    product: 'prototyping materials, basic tools, and supplies for building a physical product',
+};
+
+// Event-specific materials notes for the events where build_type doesn't
+// capture what's actually needed (mainly media production, where the real
+// requirement is a camera or microphone rather than a physical build).
+// Keyed by normalized event name so both HS and MS versions match.
+const MATERIALS_OVERRIDES = {
+    'audio podcasting': 'a computer, audio recording equipment (a smartphone or a basic USB microphone works for most teams), and audio editing software',
+    'music production': 'a computer, audio production software, and a way to record or source original audio',
+    'digital video production': 'a video camera or smartphone, basic lighting, and video editing software',
+    'on demand video': 'a video camera or smartphone and video editing software, since the whole video is shot and edited onsite',
+    'vlogging': 'a camera or smartphone, basic lighting, and video editing software',
+    'community service video': 'a video camera or smartphone and video editing software',
+    'stem mass media': 'a camera, basic lighting, and video editing software for a news-style segment',
+    'photographic technology': 'a digital camera and photo editing software',
+    'digital photography': 'a digital camera and photo editing software',
+    'stem animation': 'a computer and animation or video editing software',
+    "children's stories": 'paper and bookbinding materials for the physical storybook, plus basic art or design supplies',
+    'promotional design': 'a computer with design software, plus printing materials if your team produces physical print pieces',
+    'promotional marketing': 'a computer with design software, plus printing materials for any physical pieces in your campaign',
+};
+
+// Natural-language labels for the raw interest/skill tag keys stored per
+// event (see eventsService.js parseWeighted) — used only by bestSuitedFor()
+// below. Real per-event weighted data, not invented.
+const INTEREST_PHRASE = {
+    architecture: 'architecture and the built environment',
+    business: 'business and marketing',
+    coding: 'programming and software',
+    design: 'design',
+    engineering: 'engineering and how things are built',
+    games: 'games and interactive media',
+    leadership: 'leadership',
+    media: 'media production and storytelling',
+    robotics: 'robotics and automation',
+    science: 'science and research',
+};
+
+const SKILL_PHRASE = {
+    '3d-modeling': '3D modeling',
+    animation: 'animation',
+    business: 'business skills',
+    cad: 'CAD software',
+    cybersecurity: 'cybersecurity concepts',
+    'data-analysis': 'data analysis',
+    design: 'design tools',
+    electronics: 'electronics',
+    engineering: 'engineering fundamentals',
+    'game-design': 'game design',
+    leadership: 'leadership and teamwork',
+    medicine: 'medical or health topics',
+    programming: 'programming',
+    'public-speaking': 'public speaking',
+    robotics: 'robotics',
+    science: 'science',
+    soldering: 'soldering and hands-on electronics work',
+    'technical-writing': 'technical writing',
+    'ux-design': 'UX design',
+    video: 'video production and editing',
+    writing: 'writing',
+};
+
+function topKeys(weighted, n) {
+    return Object.entries(weighted || {})
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, n)
+        .map(([k]) => k);
+}
+
+// "Best suited for" — grounded in the event's own real interest/skill
+// weights, never invented. Returns null when there's nothing on file.
+export function bestSuitedFor(event) {
+    const interests = topKeys(event?.interests, 2).map((k) => INTEREST_PHRASE[k]).filter(Boolean);
+    if (!interests.length) return null;
+    const interestText = interests.length > 1 ? `${interests[0]} and ${interests[1]}` : interests[0];
+    // Skip the skill clause if it would just restate an interest already
+    // named above (e.g. "robotics" as both top interest and top skill).
+    const skill = topKeys(event?.skills, 2)
+        .map((k) => SKILL_PHRASE[k])
+        .filter(Boolean)
+        .find((phrase) => !interests.some((i) => i.includes(phrase) || phrase.includes(i)));
+    const skillTail = skill ? `, especially if you're comfortable with ${skill}` : '';
+    return `Best for students who enjoy ${interestText}${skillTail}.`;
+}
+
+// Materials / Equipment — a real, useful answer instead of "no equipment
+// identified." Specific event notes win first, then build_type, then a
+// style-based fallback for events with no physical build at all.
+export function materialsText(event) {
+    if (!event) return null;
+    const override = MATERIALS_OVERRIDES[normName(event.name)];
+    if (override) return `Teams should expect to need ${override}.`;
+
+    const flagged = String(event.materials || '').toLowerCase() === 'yes';
+    if (flagged && event.buildType && BUILD_MATERIALS[event.buildType]) {
+        return `Teams should expect to need ${BUILD_MATERIALS[event.buildType]}. Check the official event guide for exact specifications.`;
+    }
+    if (flagged) {
+        return "Teams should expect to need some physical materials or supplies for their display or final product, along with a computer for the design and written components. Check the official event guide for the specifics.";
+    }
+
+    const types = Array.isArray(event.projectType) ? event.projectType : [];
+    if (types.includes('code')) {
+        return 'Most of the work can be done with a computer and the relevant programming or development environment. No special physical equipment is typically needed.';
+    }
+    if (types.includes('design')) {
+        return 'Most of the work can be done with a computer and the required design or CAD software. No physical materials are typically needed for the submission itself.';
+    }
+    if (types.every((t) => t === 'present' || t === 'research' || t === 'test')) {
+        return 'This event is mostly about preparation and practice. No special equipment or materials are typically needed beyond notes and research.';
+    }
+    return 'Most of the work can be completed with a computer and the required software. No major physical equipment is typically needed.';
+}
 
 function normName(s) { return (s || '').replace(/\*+$/, '').trim().toLowerCase(); }
 
@@ -193,45 +335,32 @@ export function answerEventIntent(event, intent, { style = 'normal', seed: extra
 
         case 'cost.isExpensive':
         case 'cost.general': {
+            const label = COST_LABEL[event.costBand];
             const variants = COST_NATURAL[event.costBand];
-            if (!variants) return { text: pick(["I don't have cost info for " + name + " yet.", "No cost classification is available for " + name + " right now."], s), sourceType: DERIVED, missing: true };
+            if (!label || !variants) return { text: pick(["I don't have cost info for " + name + " yet.", "No cost classification is available for " + name + " right now."], s), sourceType: DERIVED, missing: true };
             const desc = pick(variants, s);
             // What actually drives real-world cost for this kind of event —
-            // makes the classification useful instead of just a label.
+            // makes the label useful instead of just a word.
             const costFactors = costFactorsFor(event);
-            const tail = style === 'short' ? '' : ` Your actual cost really depends on ${costFactors}. Tell me what your team already has, and I can help you figure out what you'd still need to cover.`;
-            if (intent === 'cost.isExpensive') {
-                return ok(pick([
-                    `${name} is ${desc}. TSA doesn't publish a fixed price, but TSA Hub places it in that range based on typical materials.${tail}`,
-                    `Budget-wise, ${name} is ${desc}. That's TSA Hub's classification, not an official TSA number.${tail}`,
-                ], s), DERIVED);
-            }
-            return ok(pick([
-                `TSA doesn't publish a single project price for ${name}. Based on typical materials, TSA Hub classifies it as ${desc}.${tail}`,
-                `${name} is ${desc}. That's a TSA Hub estimate, not an official TSA figure.${tail}`,
-            ], s), DERIVED);
+            const tail = style === 'short' ? '' : ` Your actual cost mostly comes down to ${costFactors}.`;
+            return ok(`${label} cost. ${name} is ${desc}.${tail}`, DERIVED);
         }
 
         case 'time.general': {
             const variants = TIME_NATURAL[event.timeBand];
             if (!variants) return { text: "I don't have time commitment info for " + name + ".", sourceType: DERIVED, missing: true };
-            return ok(pick([
-                `Expect ${pick(variants, s)}. That's TSA Hub's classification based on the typical workload.`,
-                `${name} is ${pick(variants, s + '2')}. TSA Hub's estimate, not an official number.`,
-            ], s), DERIVED);
+            return ok(`Expect ${pick(variants, s)}.`, DERIVED);
         }
 
         case 'difficulty.general': {
             const variants = DIFF_NATURAL[event.difficulty];
             if (!variants) return { text: "I don't have a difficulty classification for " + name + " yet.", sourceType: DERIVED, missing: true };
-            const wp = workPhrase(event);
-            const context = wp
-                ? ` A lot of that comes down to your own experience with ${wp}. TSA doesn't publish an official difficulty rating, so "hard" is relative to what you've done before.`
-                : ` TSA doesn't publish an official difficulty rating, so how hard it feels really depends on your own experience with the skills it involves.`;
-            return ok(pick([
-                `${name} is ${pick(variants, s)}.${context} That's TSA Hub's assessment, not an official TSA rating.`,
-                `On TSA Hub's scale, ${name} is ${pick(variants, s + '2')}.${context}`,
-            ], s), DERIVED);
+            const types = Array.isArray(event.projectType) ? event.projectType : [];
+            const reasonKey = types.find((t) => DIFF_REASON[t]);
+            const reason = reasonKey
+                ? ` A lot of that comes down to ${DIFF_REASON[reasonKey]}, and prior experience with it goes a long way.`
+                : ' A lot of that comes down to how much prior experience you have with the skills the event involves.';
+            return ok(`${name} is ${pick(variants, s)}.${reason}`, DERIVED);
         }
 
         case 'overview.general': {
@@ -298,17 +427,7 @@ export function answerEventIntent(event, intent, { style = 'normal', seed: extra
                     `No verified materials info is on file for ${name} yet. Rather than guess, I'd point you to the current official rules. Want me to look for the submission requirements instead?`,
                 ], s), sourceType: OFFICIAL, missing: true };
             }
-            const flagged = String(event.materials).trim().toLowerCase() === 'yes';
-            if (!flagged) {
-                return ok(pick([
-                    `TSA Hub doesn't flag ${name} as needing materials or equipment beyond what the challenge itself calls for. That's TSA Hub's read on it, not a line from the official rules, so check the current-year guide if you want the official wording.`,
-                    `${name} isn't marked as needing extra materials or equipment on TSA Hub's side. That's our classification, not an official TSA statement, so the current rules are the real source if you need to be sure.`,
-                ], s), DERIVED);
-            }
-            return ok(pick([
-                `TSA Hub flags ${name} as needing materials or equipment beyond the basics, but I don't have the specific list. Want me to check the current official rules for exactly what's required?`,
-                `${name} is marked as needing some materials or equipment, though I don't have the exact list on file. The current-year rules would have the specifics.`,
-            ], s), DERIVED);
+            return ok(materialsText(event), DERIVED);
         }
 
         default:

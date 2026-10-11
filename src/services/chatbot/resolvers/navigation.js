@@ -45,11 +45,6 @@ const HOWTO_TOPICS = [
         action: ['Open Calendar', 'calendar'],
     },
     {
-        match: /\bhow do i (install|add (this|it) to my (home screen|phone))\b/,
-        text: 'TSA Hub runs in your browser, so there\'s no app store download. Add a shortcut to your home screen instead for quick access.',
-        action: ['Open installation guide', 'help:install'],
-    },
-    {
         match: /\bhow do i contact support\b|\bwhere do i contact support\b|\bhow do i report a bug\b/,
         text: 'Contact Support is in the Help Center. Pick a category and describe the issue, and you\'ll see exactly what gets sent before anything goes out.',
         action: ['Contact Support', 'help:contacting-support'],
