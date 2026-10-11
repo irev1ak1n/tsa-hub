@@ -21,22 +21,6 @@
     padding: 0 0 40px;
 }
 
-/* ── Official source link under Theme & Problem — small and subtle, never
-   as prominent as the theme content itself ── */
-.eth-source-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    margin-top: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--muted);
-    text-decoration: none;
-}
-.eth-source-link:hover {
-    color: var(--ink);
-    text-decoration: underline;
-}
 
 /* ── Top description ── */
 .eth-desc {
@@ -267,6 +251,47 @@ html[data-theme="light"] .eth-access-btn {
 }
 html[data-theme="light"] .eth-access-btn:hover {
     background: rgba(0,0,0,.07);
+}
+
+/* Official TSA source link under Theme & Problem — same card recipe as
+   "Access full details" above (icon left, label middle, chevron right,
+   dark rounded card with a thin border, whole thing clickable), just a
+   touch more compact so it reads as a secondary action, not the main CTA. */
+.eth-source-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 7px 12px;
+    width: 100%;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 8px;
+    color: var(--ink);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    text-decoration: none;
+    transition: background .15s, border-color .15s;
+}
+.eth-source-btn span {
+    flex: 1;
+}
+.eth-source-btn:hover {
+    background: rgba(255,255,255,.09);
+    border-color: rgba(255,255,255,.18);
+}
+html[data-theme="light"] .eth-source-btn {
+    background: rgba(0,0,0,.04);
+    border-color: rgba(0,0,0,.1);
+    color: var(--ink);
+}
+html[data-theme="light"] .eth-source-btn:hover {
+    background: rgba(0,0,0,.07);
+}
+@media (max-width: 420px) {
+    .eth-source-btn { font-size: 12px; padding: 7px 10px; }
 }
 
 /* ── Dual-division theme blocks in modal ── */

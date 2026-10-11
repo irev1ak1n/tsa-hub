@@ -16,8 +16,8 @@ function officialThemeSource(event) {
     const specific = links.find((l) => {
         try { return new URL(l.url).hostname.endsWith('tsaweb.org'); } catch { return false; }
     });
-    if (specific) return { url: specific.url, label: 'View official event page' };
-    return { url: 'https://tsaweb.org/competitions', label: 'View on TSA' };
+    if (specific) return { url: specific.url, label: 'Official TSA Event Page' };
+    return { url: 'https://tsaweb.org/competitions', label: 'View Official TSA Page' };
 }
 
 // Same resource-type icon/label convention as the old EventThemePage, reused
@@ -157,9 +157,10 @@ export default function EventFullPage() {
                             {(() => {
                                 const src = officialThemeSource(event);
                                 return (
-                                    <a href={src.url} target="_blank" rel="noreferrer" className="eth-source-link">
-                                        {src.label}
-                                        <Icon name="external-link" size={12} />
+                                    <a href={src.url} target="_blank" rel="noreferrer" className="eth-source-btn">
+                                        <Icon name="globe" size={14} />
+                                        <span>{src.label}</span>
+                                        <Icon name="chevron-right" size={14} />
                                     </a>
                                 );
                             })()}
