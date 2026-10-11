@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Icon } from '../components/UI.jsx';
 import { CALENDAR_EVENTS } from '../data/tsaCalendar.js';
+import { STATE_CONFERENCE_EVENTS } from '../data/stateConferenceDates.js';
 import { now, ymd, addDays, isSameMonth } from '../utils/date.js';
 import { mergeCalendarItems, indexItemsByDate } from '../utils/calendarItems.js';
 import { usePersonalCalendar } from '../hooks/usePersonalCalendar.js';
@@ -16,6 +17,12 @@ const VIEWS = [
     { id: 'schedule', label: 'Schedule' },
 ];
 const VIEW_STORAGE_KEY = 'tsa-hub-calendar-view';
+
+// National TSA's synced calendar (tsaCalendar.js) plus the hand-verified
+// state conference dates (stateConferenceDates.js) — two sources, same
+// official-event shape, merged once here so the rest of the screen never
+// has to know they came from different files.
+const OFFICIAL_EVENTS = [...CALENDAR_EVENTS, ...STATE_CONFERENCE_EVENTS];
 
 function loadDefaultView() {
     try {
@@ -54,7 +61,7 @@ export default function Calendar() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const mergedItems = useMemo(() => mergeCalendarItems(CALENDAR_EVENTS, personalItems), [personalItems]);
+    const mergedItems = useMemo(() => mergeCalendarItems(OFFICIAL_EVENTS, personalItems), [personalItems]);
     const itemsByDate = useMemo(() => indexItemsByDate(mergedItems), [mergedItems]);
 
     const openItem = openItemId ? mergedItems.find((i) => i.id === openItemId) || null : null;

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Icon } from './UI.jsx';
 import { CALENDAR_EVENTS } from '../data/tsaCalendar.js';
+import { STATE_CONFERENCE_EVENTS } from '../data/stateConferenceDates.js';
 import { now, ymd, monthMatrix, weekdayLabels, sameDay, isSameMonth, formatTime } from '../utils/date.js';
 import { mergeCalendarItems, indexItemsByDate } from '../utils/calendarItems.js';
 import { resolveItemColor } from '../utils/color.js';
@@ -9,6 +10,11 @@ import { ItemDetailsModal, ItemEditorModal } from '../screens/calendar/CalendarP
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const MONTHS_SHORT = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+// Same two official sources as the full Calendar page (Calendar.jsx) —
+// National TSA's synced calendar plus the hand-verified state conference
+// dates — so this mini widget never drifts out of sync with it.
+const OFFICIAL_EVENTS = [...CALENDAR_EVENTS, ...STATE_CONFERENCE_EVENTS];
 
 // One row of one item on the right-hand day list — icon marks event vs
 // reminder, dot carries the same color the full Calendar page uses for it.
@@ -68,7 +74,7 @@ export default function HomeCalendarWidget() {
     // Calendar (and vice versa) the moment either page is (re)opened.
     const { items: personalItems, createItem, updateItem, removeItem, toggleComplete, setOfficialReminder, removeOfficialReminder } = usePersonalCalendar();
 
-    const mergedItems = useMemo(() => mergeCalendarItems(CALENDAR_EVENTS, personalItems), [personalItems]);
+    const mergedItems = useMemo(() => mergeCalendarItems(OFFICIAL_EVENTS, personalItems), [personalItems]);
     const itemsByDate = useMemo(() => indexItemsByDate(mergedItems), [mergedItems]);
 
     const todayKey = ymd(today);

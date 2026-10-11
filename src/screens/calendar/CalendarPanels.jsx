@@ -166,19 +166,22 @@ export function ItemDetailsModal({ item, onClose, onEdit, onDelete, onToggleComp
                         </div>
                     )}
 
-                    {item.kind === 'official' && item.sourceUrl && (
-                        <div className="rec-modal-section">
-                            <div className="rec-modal-section-title">Official Resources</div>
-                            <a href={item.sourceUrl} target="_blank" rel="noreferrer" className="eth-resource-row">
-                                <span className="eth-resource-ico"><Icon name="external-link" size={14} /></span>
-                                <span className="eth-resource-text">
-                                    <span className="eth-resource-title">View on National TSA</span>
-                                    <span className="eth-resource-label">National TSA</span>
-                                </span>
-                                <Icon name="external-link" size={14} />
-                            </a>
-                        </div>
-                    )}
+                    {item.kind === 'official' && item.sourceUrl && (() => {
+                        const provider = item.raw?.source?.provider || 'National TSA';
+                        return (
+                            <div className="rec-modal-section">
+                                <div className="rec-modal-section-title">Official Resources</div>
+                                <a href={item.sourceUrl} target="_blank" rel="noreferrer" className="eth-resource-row">
+                                    <span className="eth-resource-ico"><Icon name="external-link" size={14} /></span>
+                                    <span className="eth-resource-text">
+                                        <span className="eth-resource-title">{`View on ${provider}`}</span>
+                                        <span className="eth-resource-label">{provider}</span>
+                                    </span>
+                                    <Icon name="external-link" size={14} />
+                                </a>
+                            </div>
+                        );
+                    })()}
 
                     {item.kind === 'official' && (
                         <OfficialReminderControl
