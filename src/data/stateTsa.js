@@ -19,7 +19,7 @@ export const STATE_TSA = {
             { img: instagramIcon, title: 'Official Arkansas TSA Instagram', desc: 'Announcements, event highlights, and student stories.', url: 'https://www.instagram.com/arkansastsa' },
             { img: facebookIcon, title: 'Official Arkansas TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/ARKANSASTSA' },
             { role: 'advisor', icon: 'user', title: 'State Advisor', desc: 'Contact your state advisor for official guidance and questions.', contact: { name: 'Jeff Parks', email: 'Jeffery.Parks@ade.arkansas.gov', phone: '501-683-2955' } },
-            { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://www.arkansastsa.org/stateofficers24' },
+            { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://www.arkansastsa.org/2026-2027-state-officers' },
         ],
     },
     'California': {
@@ -88,7 +88,7 @@ export const STATE_TSA = {
     'Idaho': {
         name: 'Idaho TSA',
         links: [
-            { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official Idaho TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'http://idahotsa.com/' },
+            { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official Idaho TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'https://idahotsa.com/' },
             { img: instagramIcon, title: 'Official Idaho TSA Instagram', desc: 'Announcements, event highlights, and student stories.', url: 'https://www.instagram.com/idaho_tsa' },
             { img: facebookIcon, title: 'Official Idaho TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/idahotsa/' },
             { role: 'advisor', icon: 'user', title: 'State Advisor', desc: 'Contact your state advisor for official guidance and questions.', contact: { name: 'Jared Lewis', email: 'jared.lewis@cte.idaho.gov', phone: '208-989-5425' } },
@@ -367,7 +367,7 @@ export const STATE_TSA = {
     'West Virginia': {
         name: 'West Virginia TSA',
         links: [
-            { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official West Virginia TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'http://www.wvtsaweb.org/' },
+            { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official West Virginia TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'https://www.wvtsaweb.org/' },
             { img: instagramIcon, title: 'Official West Virginia TSA Instagram', desc: 'Announcements, event highlights, and student stories.', url: 'https://www.instagram.com/westvirginiatsa/' },
             { img: facebookIcon, title: 'Official West Virginia TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/WestVirginiaTsa/' },
             { role: 'advisor', icon: 'user', title: 'State Advisor', desc: 'Contact your state advisor for official guidance and questions.', contact: { name: 'Nicole Shipman', email: 'nshipman@k12.wv.us', phone: '304-639-6542' } },

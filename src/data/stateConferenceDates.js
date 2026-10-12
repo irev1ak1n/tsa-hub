@@ -285,6 +285,6 @@ export const STATE_CONFERENCE_EVENTS = [
         category: "conference",
         description: "",
         location: "",
-        source: { provider: "West Virginia TSA", url: "http://www.wvtsaweb.org/", sourceType: "official-website" },
+        source: { provider: "West Virginia TSA", url: "https://www.wvtsaweb.org/", sourceType: "official-website" },
     },
 ];
