@@ -25,7 +25,7 @@ export const CONFERENCE_CONTENT = {
                     { label: 'Shirt', text: 'Official royal blue TSA shirt.' },
                     {
                         label: 'Pants or Skirt',
-                        text: 'Gray pants or a gray skirt that is at least knee length.',
+                        text: 'Gray or black pants, or a gray or black skirt that is at least knee length. Starting June 25, 2028, only black will be allowed.',
                         notAllowed: ['jeans', 'jeggings', 'leggings', 'baggy pants', 'pants with exterior pockets', 'shorts'],
                     },
                     {
@@ -48,6 +48,9 @@ export const CONFERENCE_CONTENT = {
             },
             {
                 heading: 'General Session Attire',
+                paragraphs: [
+                    'Students serving as a voting delegate at the TSA business meeting, or accepting an award on stage, must wear competition attire instead of general session attire.',
+                ],
                 items: [
                     {
                         label: 'Shirt',
@@ -86,8 +89,17 @@ export const CONFERENCE_CONTENT = {
                     'Official TSA clothing and accessories may be purchased through the Shop section of the TSA website.',
                 ],
             },
+            {
+                heading: 'State Conferences',
+                paragraphs: [
+                    'This dress code is for the National TSA Conference. State conference dress codes may be different, so check your state TSA website or ask your state advisor what to wear.',
+                ],
+            },
         ],
-        footer: 'Official source: National TSA Conference Dress Code and Official Conference Attire Guidelines.',
+        footer: {
+            text: 'Official source: National TSA Conference Dress Code',
+            url: 'https://tsaweb.org/docs/default-source/default-document-library/tsa-dress-code.pdf',
+        },
     },
 
     'code-of-conduct': {
@@ -266,7 +278,7 @@ export const CONFERENCE_CONTENT = {
                 heading: 'TSA Attire',
                 list: [
                     'Official royal blue TSA shirt',
-                    'Gray pants or a gray skirt',
+                    'Gray or black pants, or a gray or black skirt',
                     'Black dress shoes',
                     'Black or dark blue dress socks',
                     'Navy blazer with official TSA patch, if required',

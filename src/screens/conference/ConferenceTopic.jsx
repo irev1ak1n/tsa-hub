@@ -75,7 +75,15 @@ export default function ConferenceTopic() {
                         </div>
                     ))}
 
-                    {content.footer && <p className="rk-footer">{content.footer}</p>}
+                    {content.footer && (
+                        typeof content.footer === 'string' ? (
+                            <p className="rk-footer">{content.footer}</p>
+                        ) : (
+                            <p className="rk-footer">
+                                <a className="aw-link" href={content.footer.url} target="_blank" rel="noreferrer">{content.footer.text}</a>
+                            </p>
+                        )
+                    )}
                 </>
             )}
         </div>
