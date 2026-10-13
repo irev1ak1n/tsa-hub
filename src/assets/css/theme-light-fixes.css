@@ -449,6 +449,18 @@ html[data-theme="light"] .rs-modal-close:hover {
     color: #111111;
 }
 
+/* Get Involved modal — a clean solid white in Light Theme instead of the
+   glassy translucent gray every other .rs-modal uses, scoped to .gi-modal
+   so Contact/Report/State-picker modals keep their current look. */
+html[data-theme="light"] .rs-modal.gi-modal {
+    background: #ffffff;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+}
+
+html[data-theme="light"] .gi-modal .rs-modal-head {
+    background: #ffffff;
+}
+
 /* State picker list */
 html[data-theme="light"] .rs-state-search {
     background: var(--search-bg);

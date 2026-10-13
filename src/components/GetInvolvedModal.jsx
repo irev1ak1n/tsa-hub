@@ -95,7 +95,7 @@ export default function GetInvolvedModal({ onClose }) {
     return (
         <div className="rs-modal-backdrop" onClick={onClose}>
             <div
-                className="rs-modal"
+                className="rs-modal gi-modal"
                 role="dialog"
                 aria-modal="true"
                 aria-label="Get Involved with TSA Hub"
