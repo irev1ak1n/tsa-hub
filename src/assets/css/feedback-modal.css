@@ -53,6 +53,15 @@
     margin: 10px 0 0;
 }
 
+/* Inline per-field error, directly beneath the input it belongs to. */
+.fb-field-error {
+    font-family: var(--font-system);
+    font-size: 12.5px;
+    line-height: 17px;
+    color: var(--red-400, #ff5a6e);
+    margin: 6px 0 0;
+}
+
 .fb-thanks {
     font-family: var(--font-system);
     font-size: 15px;

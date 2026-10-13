@@ -59,6 +59,15 @@ export default function PrivacyPolicy() {
                     do not include sensitive personal information in feedback messages.
                 </p>
 
+                <h2 className="doc-h2">Get Involved submissions</h2>
+                <p className="doc-p">
+                    If you choose to fill out the Get Involved form, we collect the name, email
+                    address, and other information you enter so we can follow up with you about
+                    helping with TSA Hub. This is optional and separate from using the rest of
+                    the app. Getting involved with TSA Hub is not the same as joining TSA as an
+                    organization, and this form does not enroll you in TSA membership.
+                </p>
+
                 <h2 className="doc-h2">Smart search answers</h2>
                 <p className="doc-p">
                     TSA Hub's search may include an automatically generated answer that helps
