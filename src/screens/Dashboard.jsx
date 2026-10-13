@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext.jsx';
 import { Icon } from '../components/UI.jsx';
 import SubmitModal from '../components/SubmitModal.jsx';
+import GetInvolvedModal from '../components/GetInvolvedModal.jsx';
 import QuickActionsEditor from '../components/QuickActionsEditor.jsx';
 import { RowIcon } from './resources/resourcesShared.jsx';
 import { NATIONAL_TSA } from './resources/resourceSearch.jsx';
@@ -12,6 +13,7 @@ import HomeMyEvents from '../components/HomeMyEvents.jsx';
 import HomeLeadershipLinks from '../components/HomeLeadershipLinks.jsx';
 import { submitFeedback, submitReport } from '../services/feedbackService.js';
 import nationalOfficersImg from '../assets/img/national-officers.png';
+import getInvolvedImg from '../assets/img/get-involved-home.png';
 
 // One Quick Actions tile. `action.kind` decides how it behaves:
 //   route    -> <Link>, optionally carrying router state (e.g. Calendar's
@@ -51,7 +53,7 @@ function QuickActionTile({ action, onOpenModal, onToggleTheme }) {
 export default function Dashboard() {
     const { quickActions, setQuickActions, toggleTheme } = useApp();
     const [showEditor, setShowEditor] = useState(false);
-    const [modal, setModal] = useState(null); // 'feedback' | 'report' | null
+    const [modal, setModal] = useState(null); // 'feedback' | 'report' | 'get-involved' | null
 
     const actions = resolveQuickActions(quickActions);
 
@@ -115,6 +117,19 @@ export default function Dashboard() {
                 </Link>
             </div>
 
+            {/* GET INVOLVED — opens a modal collecting how someone wants to help
+                with TSA Hub itself, not TSA membership. Same card recipe as the
+                Officers promo above, its own classes so that card is untouched. */}
+            <div className="section">
+                <button type="button" className="home-get-involved-card" onClick={() => setModal('get-involved')}>
+                    <img src={getInvolvedImg} alt="Get Involved with TSA Hub" className="home-get-involved-img" />
+                    <span className="home-get-involved-bar">
+                        <span className="home-get-involved-bar-label">Get Involved</span>
+                        <Icon name="chevron-right" size={18} />
+                    </span>
+                </button>
+            </div>
+
             {/* NATIONAL TSA LINKS — same NATIONAL_TSA data the Resources page and
                 search index already use, not a second copy of these links. */}
             <div className="section">
@@ -170,6 +185,10 @@ export default function Dashboard() {
                     onSubmit={submitReport}
                     onClose={() => setModal(null)}
                 />
+            )}
+
+            {modal === 'get-involved' && (
+                <GetInvolvedModal onClose={() => setModal(null)} />
             )}
         </>
     );

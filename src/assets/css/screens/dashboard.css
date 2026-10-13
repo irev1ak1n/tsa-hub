@@ -577,6 +577,60 @@
 .home-officers-bar svg { flex-shrink: 0; color: #ffffff; }
 
 /* ============================================================================
+   Get Involved — same card recipe as the National TSA Officers promo above
+   (dark rounded card, thin border, photo background, translucent footer bar
+   in bold white text, chevron right, whole card clickable). The source image
+   already has its own "GET INVOLVED" footer baked in, so the <img> is
+   cropped to its top ~83% with object-fit/object-position, hiding that
+   baked-in footer, and the visible label/chevron below are rendered as real
+   HTML/CSS rather than duplicating what the image already shows.
+   ============================================================================ */
+.home-get-involved-card {
+  position: relative;
+  display: block;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid #333333;
+  background: #0a0a0a;
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+  padding: 0;
+  cursor: pointer;
+}
+
+.home-get-involved-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1448 / 900;
+  object-fit: cover;
+  object-position: top;
+}
+
+.home-get-involved-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffffff;
+}
+
+.home-get-involved-bar-label {
+  font-family: var(--font-display, var(--font-system));
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.home-get-involved-bar svg { flex-shrink: 0; color: #ffffff; }
+
+/* ============================================================================
    National TSA Links — compact searchbar-shaped external link blocks, 2x2
    on mobile/tablet. Same dark card + subtle border language as the rest of
    Home (light theme override in theme-light-fixes.css).

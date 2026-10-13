@@ -35,3 +35,24 @@ export function submitFeedback(message) {
 export function submitReport(message) {
     return submit(message, 'report');
 }
+
+// Get Involved — a richer structured payload (name, email, role, state,
+// how they'd like to help, optional message) rather than a single message
+// string, but posts to the same endpoint and table as feedback/report above.
+export async function submitGetInvolved(fields) {
+    let page = null;
+    try { page = window.location.pathname; } catch { /* ignore */ }
+
+    try {
+        const res = await fetch('/api/submit-feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: 'get-involved', page, ...fields }),
+        });
+        const data = await res.json().catch(() => null);
+        if (!res.ok || !data?.ok) return { ok: false, error: data?.error || 'failed' };
+        return { ok: true };
+    } catch {
+        return { ok: false, error: 'network error' };
+    }
+}

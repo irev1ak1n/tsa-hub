@@ -61,11 +61,59 @@
     margin: 4px 0;
 }
 
+.fb-thanks-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.fb-checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.fb-checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 2px;
+    font-family: var(--font-system);
+    font-size: 14px;
+    color: var(--ink);
+    cursor: pointer;
+}
+
+.fb-checkbox-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    accent-color: var(--red-600, #e63946);
+    cursor: pointer;
+}
+
+/* Honeypot — present in the DOM for bots to fill in, invisible and
+   unreachable for real visitors (off-screen, not display:none, since some
+   bots skip fields hidden that way). */
+.fb-honeypot {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+    left: -9999px;
+}
+
 html[data-theme="light"] .fb-hint {
     color: #4a4a55;
 }
 
 html[data-theme="light"] .fb-thanks {
+    color: #111111;
+}
+
+html[data-theme="light"] .fb-checkbox-item {
     color: #111111;
 }
 
