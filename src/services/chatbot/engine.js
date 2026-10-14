@@ -96,6 +96,14 @@ const NAME_ATTEMPT_STOPWORDS = new Set(['it', 'that', 'this', 'them', 'those', '
 // february 30" is a (garbage) calendar question, not an attempted event
 // name, even though it matches the same "what is X" shape.
 const NAME_ATTEMPT_REJECT_RE = /\d|\b(happening|going on|next week|next month|this week|this month|january|february|march|april|may|june|july|august|september|october|november|december)\b/i;
+// Known multi-word TOPIC phrases, not event names. NAME_ATTEMPT_STOPWORDS
+// above only filters word-by-word, so a two-word topic phrase where neither
+// word is individually a stopword ("dress code") still looked like a
+// plausible 2+-word fake event name — "what is the dress code" was being
+// swallowed as an unknown-event lookup instead of ever reaching the real
+// rules-domain dress-code answer. Checked against the whole captured name,
+// with an optional leading "TSA" ("what is the TSA dress code").
+const NAME_ATTEMPT_KNOWN_TOPIC_RE = /^(tsa )?(dress code|code of conduct)$/i;
 function extractAttemptedEventName(text) {
     const t = text || '';
     for (const re of EVENT_NAME_ATTEMPT_PATTERNS) {
@@ -103,6 +111,7 @@ function extractAttemptedEventName(text) {
         if (!m) continue;
         const name = m[m.length - 1].trim();
         if (NAME_ATTEMPT_REJECT_RE.test(name)) return null;
+        if (NAME_ATTEMPT_KNOWN_TOPIC_RE.test(name)) return null;
         const words = name.split(/\s+/).filter((w) => w && !NAME_ATTEMPT_STOPWORDS.has(w.toLowerCase()));
         if (words.length < 2) return null;
         return name;

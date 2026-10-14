@@ -4,9 +4,11 @@ import { pick } from '../core/variation.js';
 
 function lower(s) { return (s || '').toLowerCase(); }
 
-// Search ALL_RULES by keyword overlap, returning the best matches.
+// Search ALL_RULES by keyword overlap, returning the best matches with
+// their scores (kept, not just the rules themselves — answerRule below
+// needs them to compare against searchTopics' best score).
 function searchRules(tokens, eventId) {
-    const scored = ALL_RULES.map((rule) => {
+    return ALL_RULES.map((rule) => {
         let score = 0;
         const title = lower(rule.title);
         const text = lower(rule.text);
@@ -17,8 +19,7 @@ function searchRules(tokens, eventId) {
         if (eventId && rule.eventId === eventId) score += 3;
         if (eventId && rule.eventId && rule.eventId !== eventId) score -= 2;
         return { rule, score };
-    }).filter((r) => r.score >= 3).sort((a, b) => b.score - a.score);
-    return scored.slice(0, 3).map((s) => s.rule);
+    }).filter((r) => r.score >= 3).sort((a, b) => b.score - a.score).slice(0, 3);
 }
 
 // Search the structured COMPETITION_RULES categories/topics.
@@ -47,9 +48,20 @@ function topicToText(topic) {
 }
 
 export function answerRule(tokens, { eventId = null, seed = '' } = {}) {
-    // First try the structured competition rules (richer answers).
+    // Structured competition-rules topics are the richer answer format, but
+    // a single generic token (e.g. "tsa") can clear their low match bar
+    // without the topic actually being about what was asked — "what is the
+    // TSA dress code" once matched "Copyright Permission & TSA Branding" on
+    // the word "tsa" alone (score 3) before the much stronger flat-rules
+    // dress-code match (score 9, from "dress"+"code" in both its title and
+    // text) ever got a chance to compete. Run both searches and let whoever
+    // scored higher win; topics keep their edge only on an actual tie.
     const topicHits = searchTopics(tokens);
-    if (topicHits.length) {
+    const ruleHits = searchRules(tokens, eventId);
+    const topicScore = topicHits.length ? topicHits[0].score : -Infinity;
+    const ruleScore = ruleHits.length ? ruleHits[0].score : -Infinity;
+
+    if (topicHits.length && topicScore >= ruleScore) {
         const { cat, topic } = topicHits[0];
         const body = topicToText(topic);
         const source = topic.sourceSection || cat.sourceSection || '';
@@ -61,11 +73,9 @@ export function answerRule(tokens, { eventId = null, seed = '' } = {}) {
         };
     }
 
-    // Fallback to the flat ALL_RULES search.
-    const hits = searchRules(tokens, eventId);
-    if (!hits.length) return null;
+    if (!ruleHits.length) return null;
 
-    const r = hits[0];
+    const r = ruleHits[0].rule;
     const cite = r.id ? ` [${r.id}]` : '';
     const scope = r.scope === 'Event rule' && r.eventId ? ` (${r.eventId})` : '';
     return {
