@@ -1,4 +1,5 @@
 import { COMPETITION_REQUIREMENTS } from '../../../data/competitionRequirements.js';
+import { getEventGuidance } from '../../../data/eventGuidance.js';
 import { fmtSize } from '../../../data/events.js';
 import { pick, hash } from '../core/variation.js';
 import { isMissing, checkTeamSizeConsistency, CONFLICT_MESSAGE } from '../guards/dataGuards.js';
@@ -194,9 +195,26 @@ function topKeys(weighted, n) {
         .map(([k]) => k);
 }
 
-// "Best suited for" — grounded in the event's own real interest/skill
-// weights, never invented. Returns null when there's nothing on file.
+const COST_LEVEL_WORDS = /\b(low|modest|inexpensive|moderate|minimal|capped|cheap|affordable)\b/i;
+
+// Per-event written guidance (src/data/eventGuidance.js) for one topic, or
+// null when the event has none. A cost note that doesn't already say how
+// expensive the event is gets the cost category as a lead-in.
+export function guidanceFor(event, topic) {
+    const text = getEventGuidance(event)?.[topic];
+    if (!text) return null;
+    if (topic !== 'cost') return text;
+    const label = COST_LABEL[event.costBand];
+    const firstSentence = text.split(/(?<=\.)\s/)[0];
+    return label && !COST_LEVEL_WORDS.test(firstSentence) ? `${label} cost. ${text}` : text;
+}
+
+// "Best suited for" — the event's written guidance when it has any,
+// otherwise grounded in the event's own real interest/skill weights, never
+// invented. Returns null when there's nothing on file.
 export function bestSuitedFor(event) {
+    const written = guidanceFor(event, 'bestFor');
+    if (written) return written;
     const interests = topKeys(event?.interests, 2).map((k) => INTEREST_PHRASE[k]).filter(Boolean);
     if (!interests.length) return null;
     const interestText = interests.length > 1 ? `${interests[0]} and ${interests[1]}` : interests[0];
@@ -215,6 +233,8 @@ export function bestSuitedFor(event) {
 // style-based fallback for events with no physical build at all.
 export function materialsText(event) {
     if (!event) return null;
+    const written = guidanceFor(event, 'materials');
+    if (written) return written;
     const override = MATERIALS_OVERRIDES[normName(event.name)];
     if (override) return `Teams should expect to need ${override}.`;
 
@@ -335,6 +355,8 @@ export function answerEventIntent(event, intent, { style = 'normal', seed: extra
 
         case 'cost.isExpensive':
         case 'cost.general': {
+            const writtenCost = style === 'short' ? null : guidanceFor(event, 'cost');
+            if (writtenCost) return ok(writtenCost, DERIVED);
             const label = COST_LABEL[event.costBand];
             const variants = COST_NATURAL[event.costBand];
             if (!label || !variants) return { text: pick(["I don't have cost info for " + name + " yet.", "No cost classification is available for " + name + " right now."], s), sourceType: DERIVED, missing: true };
@@ -347,12 +369,16 @@ export function answerEventIntent(event, intent, { style = 'normal', seed: extra
         }
 
         case 'time.general': {
+            const writtenTime = guidanceFor(event, 'time');
+            if (writtenTime) return ok(writtenTime, DERIVED);
             const variants = TIME_NATURAL[event.timeBand];
             if (!variants) return { text: "I don't have time commitment info for " + name + ".", sourceType: DERIVED, missing: true };
             return ok(`Expect ${pick(variants, s)}.`, DERIVED);
         }
 
         case 'difficulty.general': {
+            const writtenDifficulty = guidanceFor(event, 'difficulty');
+            if (writtenDifficulty) return ok(writtenDifficulty, DERIVED);
             const variants = DIFF_NATURAL[event.difficulty];
             if (!variants) return { text: "I don't have a difficulty classification for " + name + " yet.", sourceType: DERIVED, missing: true };
             const types = Array.isArray(event.projectType) ? event.projectType : [];

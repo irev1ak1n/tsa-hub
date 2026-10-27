@@ -5,7 +5,7 @@ import { BackLink } from './resourcesShared.jsx';
 import { EVENTS, getEvent, teamSizeLabel } from '../../data/events.js';
 import { getEventTheme } from '../../data/eventThemes.js';
 import { getRelatedEvents } from '../../data/eventDetailAdapter.js';
-import { preconferenceFor, advisorApprovalFor, answerEventIntent, materialsText, bestSuitedFor, CAREER_LABELS } from '../../services/chatbot/resolvers/events.js';
+import { preconferenceFor, advisorApprovalFor, answerEventIntent, materialsText, bestSuitedFor, guidanceFor, CAREER_LABELS } from '../../services/chatbot/resolvers/events.js';
 
 // Official source link for the Theme & Problem section. Prefers a
 // tsaweb.org link already on file for this specific event (its theme PDF,
@@ -83,9 +83,14 @@ export default function EventFullPage() {
     const advisor = advisorApprovalFor(event);
     const materials = String(event.materials || '').trim().toLowerCase();
 
-    const difficulty = answerEventIntent(event, 'difficulty.general');
-    const time = answerEventIntent(event, 'time.general');
-    const cost = answerEventIntent(event, 'cost.general', { style: 'short' });
+    const derivedNote = (intent, options) => {
+        const answer = answerEventIntent(event, intent, options);
+        return answer && !answer.missing ? answer.text : null;
+    };
+    const materialsNote = guidanceFor(event, 'materials') || (materials === 'yes' || materials === 'no' ? materialsText(event) : null);
+    const difficultyNote = guidanceFor(event, 'difficulty') || derivedNote('difficulty.general');
+    const timeNote = guidanceFor(event, 'time') || derivedNote('time.general');
+    const costNote = guidanceFor(event, 'cost') || derivedNote('cost.general', { style: 'short' });
     const bestSuited = bestSuitedFor(event);
 
     const careers = Object.entries(event.careers || {})
@@ -198,27 +203,27 @@ export default function EventFullPage() {
                 </Section>
             )}
 
-            {(materials === 'yes' || materials === 'no') && (
+            {materialsNote && (
                 <Section title="Materials / Equipment">
-                    <p className="rec-modal-desc" style={{ margin: 0 }}>{materialsText(event)}</p>
+                    <p className="rec-modal-desc" style={{ margin: 0 }}>{materialsNote}</p>
                 </Section>
             )}
 
-            {difficulty && !difficulty.missing && (
+            {difficultyNote && (
                 <Section title="Difficulty">
-                    <p className="rec-modal-desc" style={{ margin: 0 }}>{difficulty.text}</p>
+                    <p className="rec-modal-desc" style={{ margin: 0 }}>{difficultyNote}</p>
                 </Section>
             )}
 
-            {time && !time.missing && (
+            {timeNote && (
                 <Section title="Time Commitment">
-                    <p className="rec-modal-desc" style={{ margin: 0 }}>{time.text}</p>
+                    <p className="rec-modal-desc" style={{ margin: 0 }}>{timeNote}</p>
                 </Section>
             )}
 
-            {cost && !cost.missing && (
+            {costNote && (
                 <Section title="Cost">
-                    <p className="rec-modal-desc" style={{ margin: 0 }}>{cost.text}</p>
+                    <p className="rec-modal-desc" style={{ margin: 0 }}>{costNote}</p>
                 </Section>
             )}
 

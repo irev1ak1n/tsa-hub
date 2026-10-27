@@ -182,6 +182,9 @@ html[data-theme="light"] .eth-no-theme {
     padding-top: 0;
     border-top: 0;
 }
+.evd-section .rec-fact:last-child {
+    border-bottom: 0;
+}
 
 /* Related-event chip that's actually a link, not just a tag */
 .rec-tag-link {

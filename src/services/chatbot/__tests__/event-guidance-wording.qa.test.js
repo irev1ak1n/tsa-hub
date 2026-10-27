@@ -5,7 +5,8 @@
 
 import { describe, it, expect } from 'vitest';
 import { loadRealData, events } from './setup.js';
-import { materialsText, bestSuitedFor, answerEventIntent } from '../resolvers/events.js';
+import { materialsText, bestSuitedFor, answerEventIntent, guidanceFor } from '../resolvers/events.js';
+import { EVENT_GUIDANCE } from '../../../data/eventGuidance.js';
 
 loadRealData();
 
@@ -46,9 +47,73 @@ describe('bestSuitedFor is grounded in real interest/skill data and never throws
         for (const event of events()) {
             const text = bestSuitedFor(event);
             if (text == null) continue; // fine — no interest data on file for this event
-            if (!/^Best for students who enjoy /.test(text)) failures.push(`${event.id}: unexpected shape: "${text}"`);
+            if (!/^Best for students\b/.test(text)) failures.push(`${event.id}: unexpected shape: "${text}"`);
             if (BROKEN.test(text)) failures.push(`${event.id}: broken interpolation: "${text}"`);
         }
         expect(failures, failures.join('\n')).toEqual([]);
+    });
+});
+
+const TOPICS = ['materials', 'difficulty', 'time', 'cost', 'bestFor'];
+const sentenceCount = (text) => text.split(/(?<=[.!?])\s+(?=[A-Z])/).length;
+
+describe('written event guidance covers every current event', () => {
+    it('every non-archived event has all five sections', () => {
+        const failures = [];
+        for (const event of events().filter((e) => !e.archived)) {
+            const entry = EVENT_GUIDANCE[event.id];
+            if (!entry) { failures.push(`${event.id}: no guidance entry`); continue; }
+            for (const topic of TOPICS) {
+                if (typeof entry[topic] !== 'string' || !entry[topic].trim()) failures.push(`${event.id}.${topic}: missing`);
+            }
+        }
+        expect(failures, failures.join('\n')).toEqual([]);
+    });
+
+    it('every entry belongs to a real event', () => {
+        const ids = new Set(events().map((e) => e.id));
+        expect(Object.keys(EVENT_GUIDANCE).filter((id) => !ids.has(id))).toEqual([]);
+    });
+});
+
+describe('written event guidance follows the house style and stays specific', () => {
+    it('has no dashes, colons, brand self-reference, broken text, or one-line answers', () => {
+        const failures = [];
+        for (const [id, entry] of Object.entries(EVENT_GUIDANCE)) {
+            for (const topic of TOPICS) {
+                const text = entry[topic];
+                if (/[–—]/.test(text)) failures.push(`${id}.${topic}: dash`);
+                if (/:/.test(text)) failures.push(`${id}.${topic}: colon`);
+                if (SELF_REFERENTIAL.test(text) || /TSA Hub/i.test(text)) failures.push(`${id}.${topic}: self-referential`);
+                if (BROKEN.test(text)) failures.push(`${id}.${topic}: broken text`);
+                if (sentenceCount(text) < 2) failures.push(`${id}.${topic}: fewer than two sentences`);
+            }
+        }
+        expect(failures, failures.join('\n')).toEqual([]);
+    });
+
+    it('does not reuse the same paragraph across events', () => {
+        for (const topic of ['materials', 'difficulty', 'time', 'bestFor']) {
+            const texts = Object.values(EVENT_GUIDANCE).map((entry) => entry[topic]);
+            expect(new Set(texts).size, topic).toBe(texts.length);
+        }
+    });
+});
+
+describe('Coach and the event page read the same written guidance', () => {
+    it('returns the written text for time, difficulty, cost, materials, and best suited for', () => {
+        const event = events().find((e) => e.id === 'architectural-design');
+        expect(answerEventIntent(event, 'time.general').text).toBe(guidanceFor(event, 'time'));
+        expect(answerEventIntent(event, 'difficulty.general').text).toBe(guidanceFor(event, 'difficulty'));
+        expect(answerEventIntent(event, 'cost.general').text).toBe(guidanceFor(event, 'cost'));
+        expect(materialsText(event)).toBe(guidanceFor(event, 'materials'));
+        expect(bestSuitedFor(event)).toBe(guidanceFor(event, 'bestFor'));
+    });
+
+    it('adds the cost category only when the note does not already say how expensive the event is', () => {
+        const pricey = events().find((e) => e.id === 'animatronics');
+        expect(guidanceFor(pricey, 'cost')).toMatch(/^Higher cost\. /);
+        const cheap = events().find((e) => e.id === 'cad-architecture');
+        expect(guidanceFor(cheap, 'cost')).toBe(EVENT_GUIDANCE['cad-architecture'].cost);
     });
 });
