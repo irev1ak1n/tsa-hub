@@ -651,7 +651,7 @@
 .home-recommender-img {
   display: block;
   width: 100%;
-  height: calc(100cqw * 770 / 1536 + 15px);
+  height: calc(100cqw * 770 / 1536 + 35px);
   object-fit: cover;
   object-position: top;
 }
