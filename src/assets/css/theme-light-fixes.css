@@ -101,6 +101,7 @@ html[data-theme="light"] .home-cal-add-btn:hover {
 }
 html[data-theme="light"] .home-officers-card { border-color: #d0d0da; }
 html[data-theme="light"] .home-get-involved-card { border-color: #d0d0da; }
+html[data-theme="light"] .home-recommender-card { border-color: #d0d0da; }
 
 /* National TSA Links blocks — same light inversion as Home's other cards. */
 html[data-theme="light"] .home-link-item {

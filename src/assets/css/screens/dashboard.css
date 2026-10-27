@@ -596,6 +596,7 @@
   color: inherit;
   width: 100%;
   padding: 0;
+  font: inherit;
   cursor: pointer;
 }
 
@@ -608,7 +609,10 @@
 }
 
 .home-get-involved-bar {
-  position: relative;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -629,6 +633,53 @@
 }
 
 .home-get-involved-bar svg { flex-shrink: 0; color: #ffffff; }
+
+/* Event Recommender promo, same recipe as Get Involved. The image's baked-in
+   footer is cropped away and the overlay bar is real HTML. */
+.home-recommender-card {
+  position: relative;
+  display: block;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid #333333;
+  background: #0a0a0a;
+  text-decoration: none;
+  color: inherit;
+}
+
+.home-recommender-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1536 / 770;
+  object-fit: cover;
+  object-position: top;
+}
+
+.home-recommender-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffffff;
+}
+
+.home-recommender-bar-label {
+  font-family: var(--font-display, var(--font-system));
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.home-recommender-bar svg { flex-shrink: 0; color: #ffffff; }
 
 /* ============================================================================
    National TSA Links — compact searchbar-shaped external link blocks, 2x2

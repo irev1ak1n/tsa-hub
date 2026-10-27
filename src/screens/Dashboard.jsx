@@ -14,6 +14,7 @@ import HomeLeadershipLinks from '../components/HomeLeadershipLinks.jsx';
 import { submitFeedback, submitReport } from '../services/feedbackService.js';
 import nationalOfficersImg from '../assets/img/national-officers.png';
 import getInvolvedImg from '../assets/img/get-involved-home.png';
+import recommenderImg from '../assets/img/event-recommender-home.webp';
 
 // One Quick Actions tile. `action.kind` decides how it behaves:
 //   route    -> <Link>, optionally carrying router state (e.g. Calendar's
@@ -75,6 +76,16 @@ export default function Dashboard() {
             {/* CALENDAR WIDGET — same shared IndexedDB-backed personal calendar
                 store as the full Calendar page; nothing Home-only here. */}
             <HomeCalendarWidget />
+
+            <div className="section">
+                <Link to="/recommend" className="home-recommender-card">
+                    <img src={recommenderImg} alt="Event Recommender" className="home-recommender-img" />
+                    <span className="home-recommender-bar">
+                        <span className="home-recommender-bar-label">Event Recommender</span>
+                        <Icon name="chevron-right" size={18} />
+                    </span>
+                </Link>
+            </div>
 
             {/* QUICK ACTIONS ----------------------------------------------------- */}
             <div className="section">
