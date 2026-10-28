@@ -10,9 +10,9 @@ TSA Hub also helps students discover competitions that match their interests, or
 
 TSA Hub allows students to explore competitive events, view eligibility requirements, themes, and competition details, and receive personalized event recommendations based on their interests and skills. The app also includes smart search, a calendar for conference dates and personal reminders, saved events for quick access, and resources for state TSA delegations. Students can submit feedback, report incorrect information, and get involved in improving the platform.
 
-## What It Can Do
+# What It Can Do
 
-# Browse TSA competitive events and access detailed information about each competition.
+## Browse TSA competitive events and access detailed information about each competition.
 - Explore High School and Middle School competitive events
 - Search events by name and filter available competitions
 - View event descriptions and competition categories
@@ -23,7 +23,7 @@ TSA Hub allows students to explore competitive events, view eligibility requirem
 - Discover related careers and skills
 - Access official TSA event sources
 
-# Find TSA competitions that match your interests, experience, and preferences.
+## Find TSA competitions that match your interests, experience, and preferences.
 - Answer questions about your interests and skills
 - Select preferred types of projects and activities
 - Specify available preparation time and team preferences
@@ -33,7 +33,7 @@ TSA Hub allows students to explore competitive events, view eligibility requirem
 - Compare options and explore their requirements
 - Save competitions that interest you
 
-# Quickly find TSA-related information without navigating through multiple pages.
+## Quickly find TSA-related information without navigating through multiple pages.
 - Search across TSA resources and competition information
 - Find eligibility rules and competition requirements
 - Look up conference information and deadlines
@@ -41,7 +41,7 @@ TSA Hub allows students to explore competitive events, view eligibility requirem
 - Access relevant resources and official sources
 - Discover related information through keyword searches
 
-# Keep track of important TSA dates and organize your personal schedule.
+## Keep track of important TSA dates and organize your personal schedule.
 - View national and state TSA conference dates
 - Track important competition and submission deadlines
 - Browse events using a monthly calendar
@@ -51,7 +51,7 @@ TSA Hub allows students to explore competitive events, view eligibility requirem
 - Export calendar events to compatible device calendars
 - Set reminders with supported browser notifications
 
-# Save your competitive events and organize your preparation.
+## Save your competitive events and organize your preparation.
 - Save competitions for quick access
 - View saved events directly from the homepage
 - Open event details without searching again
@@ -60,7 +60,7 @@ TSA Hub allows students to explore competitive events, view eligibility requirem
 - Remove events when they are no longer needed
 - Keep saved information locally on your device
 
-# Access important TSA information through an organized resource directory.
+## Access important TSA information through an organized resource directory.
 - Learn about TSA and its programs
 - Explore national competition requirements
 - Review eligibility charts and submission procedures
@@ -71,7 +71,7 @@ TSA Hub allows students to explore competitive events, view eligibility requirem
 - Access official TSA websites and social media accounts
 - Open official documents and external resources directly
 
-# Access frequently used tools and information from one place.
+## Access frequently used tools and information from one place.
 - Search TSA information from the homepage
 - View upcoming calendar events
 - Quickly access saved competitions
@@ -81,7 +81,7 @@ TSA Hub allows students to explore competitive events, view eligibility requirem
 - Switch between Dark and Light Theme
 - Explore National TSA leadership and important links
 
-# Help improve TSA Hub by sharing feedback, reporting problems, or contributing to the project.
+## Help improve TSA Hub by sharing feedback, reporting problems, or contributing to the project.
 - Submit feedback and feature suggestions
 - Report incorrect or outdated information
 - Contact TSA Hub support
