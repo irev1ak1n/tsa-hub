@@ -195,7 +195,7 @@ export const EVENT_THEMES = {
         resources: [
             {
                 title: 'Official Theme PDF (Operation Lifeline — full mission details, obstacle build instructions, scoring sheet)',
-                url: 'https://tsaweb.org/docs/default-source/competitions/themes-and-problems-2026-2027/middle-school/2027-ms-drone-theme.pdf?sfvrsn=26c64b18_1',
+                url: 'https://tsaweb.org/docs/default-source/competitions/themes-and-problems-2026-2027/middle-school/2027-ms-drone-theme.pdf?sfvrsn=26c64b18_2',
                 type: 'pdf',
             },
         ],
@@ -888,7 +888,7 @@ export const EVENT_THEMES = {
         resources: [
             {
                 title: 'Official Theme PDF (full rules, field build instructions, scoring sheet)',
-                url: 'https://tsaweb.org/docs/default-source/competitions/themes-and-problems-2026-2027/high-school/2027-hs-robotics.pdf?sfvrsn=6c629180_2',
+                url: 'https://tsaweb.org/docs/default-source/competitions/themes-and-problems-2026-2027/high-school/2027-hs-robotics.pdf?sfvrsn=6c629180_3',
                 type: 'pdf',
             },
         ],

@@ -72,7 +72,7 @@ export const ABOUT_TSA_CONTENT = {
             'From 1978 to 1988, the organization grew in size, strength, structure, and impact on students and secondary school programs. In the summer of 1988, AIASA became the Technology Student Association.',
         ],
         links: [
-            { id: 'tsa-website', title: 'TSA Website', url: 'https://www.tsaweb.org/' },
+            { id: 'tsa-website', title: 'TSA Website', url: 'https://tsaweb.org/' },
         ],
     },
 

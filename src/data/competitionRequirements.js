@@ -192,7 +192,7 @@ export const COMPETITION_REQUIREMENTS = [
                 ],
                 links: [
                     { text: 'Middle school and high school competitions with preconference submission requirements', url: 'https://tsaweb.org/competitions/competitive-event-preconference-submission-requirements' },
-                    { text: 'Instructions for uploading competition components', url: 'https://tsaweb.org/docs/default-source/national-conferences/2025/instructions/competition-component-upload-instructions.pdf' },
+                    { text: 'Instructions for uploading competition components', url: 'https://tsaweb.org/docs/default-source/national-conferences/instructions/competition-component-upload-instructions.pdf' },
                 ],
             },
             {

@@ -62,18 +62,40 @@ describe('unknown state conference date — honest, not a fake exact date', () =
     });
 });
 
-describe('North Carolina regionals — window, not a fabricated exact date', () => {
-    it('communicates the January/February 2027 window and that exact dates are not officially announced', () => {
+describe('North Carolina regionals use the published dates', () => {
+    it('gives both regional dates and does not call them unannounced', () => {
         const res = ask('when are regionals for north carolina');
-        expect(res.text).toContain('January and February 2027');
-        expect(res.text.toLowerCase()).toMatch(/not.*officially announced/);
-        const nc = datesForState('North Carolina');
-        expect(nc.regionals.status).toBe('window');
+        expect(res.text).toContain('Eastern Region on February 12, 2027');
+        expect(res.text).toContain('Western Region on February 19, 2027');
+        expect(res.text.toLowerCase()).not.toMatch(/not.*officially announced/);
+        expect(datesForState('North Carolina').regionals.status).toBe('exact');
     });
 
     it('a state with no regional information on file says so honestly, not a copy of another state\'s window', () => {
         const res = ask('when are regionals for texas');
         expect(res.text.toLowerCase()).toMatch(/verified regional conference dates.*(not|aren't) available/);
-        expect(res.text).not.toContain('January and February 2027');
+        expect(res.text).not.toContain('Eastern Region');
+    });
+});
+
+describe('state conference answers match the calendar data', () => {
+    it('gives the verified date range for a state with a published conference', () => {
+        const res = ask('when is the state conference for north carolina');
+        expect(res.text).toContain('April 15 through April 17, 2027');
+        expect(datesForState('North Carolina').states.status).toBe('exact');
+    });
+
+    it('lists both Utah conferences', () => {
+        const res = datesForState('Utah').states;
+        expect(res.parts.map((p) => p.date)).toEqual(['2027-03-15', '2027-03-16']);
+    });
+
+    it('keeps West Virginia and Virginia separate', () => {
+        expect(datesForState('Virginia').states.date).toBe('2027-04-29');
+        expect(datesForState('West Virginia').states.date).toBe('2027-03-17');
+    });
+
+    it('still says unannounced for a state with no published date', () => {
+        expect(datesForState('Texas').states.status).toBe('unannounced');
     });
 });

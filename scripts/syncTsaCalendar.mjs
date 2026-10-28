@@ -89,6 +89,105 @@ const MANUAL_ENTRIES = [
         // and 2027, whose Conference-Calendar records DO come back from that
         // endpoint) — sourced directly from the Conferences page instead.
     },
+    {
+        id: 'manual-2027-registration-opens',
+        title: 'Conference Registration Opens',
+        startDate: '2027-04-05',
+        endDate: '2027-04-05',
+        allDay: true,
+        category: 'event',
+        description: '',
+        location: '',
+        source: { provider: 'National TSA', url: 'https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027', sourceType: 'event-page' },
+    },
+    {
+        id: 'manual-2027-meeting-room-request',
+        title: 'State delegation meeting room request deadline',
+        startDate: '2027-05-03',
+        endDate: '2027-05-03',
+        allDay: true,
+        category: 'event',
+        description: '',
+        location: '',
+        source: { provider: 'National TSA', url: 'https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027', sourceType: 'event-page' },
+    },
+    {
+        id: 'manual-2027-competitive-registration',
+        title: 'Competitive event participant conference registration deadline',
+        startDate: '2027-05-12',
+        endDate: '2027-05-12',
+        allDay: true,
+        category: 'event',
+        description: '',
+        location: '',
+        source: { provider: 'National TSA', url: 'https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027', sourceType: 'event-page' },
+    },
+    {
+        id: 'manual-2027-special-needs',
+        title: 'Special Needs Request form submission deadline',
+        startDate: '2027-05-12',
+        endDate: '2027-05-12',
+        allDay: true,
+        category: 'event',
+        description: '',
+        location: '',
+        source: { provider: 'National TSA', url: 'https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027', sourceType: 'event-page' },
+    },
+    {
+        id: 'manual-2027-refund-request',
+        title: 'Conference registration refund request deadline',
+        startDate: '2027-05-12',
+        endDate: '2027-05-12',
+        allDay: true,
+        category: 'event',
+        description: '',
+        location: '',
+        source: { provider: 'National TSA', url: 'https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027', sourceType: 'event-page' },
+    },
+    {
+        id: 'manual-2027-advisor-slotting',
+        title: 'State advisors slot registered competitors for the state advisor approval events',
+        startDate: '2027-05-13',
+        endDate: '2027-05-14',
+        allDay: true,
+        category: 'event',
+        description: '',
+        location: '',
+        source: { provider: 'National TSA', url: 'https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027', sourceType: 'event-page' },
+    },
+    {
+        id: 'manual-2027-component-upload',
+        title: 'Competition component upload platform is open and accessible to student members for events with pre-submission requirements',
+        startDate: '2027-05-17',
+        endDate: '2027-05-19',
+        allDay: true,
+        category: 'event',
+        description: '',
+        location: '',
+        source: { provider: 'National TSA', url: 'https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027', sourceType: 'event-page' },
+    },
+    {
+        id: 'manual-2027-hotel-reservation',
+        title: 'Conference hotel room reservation deadline',
+        startDate: '2027-06-03',
+        endDate: '2027-06-03',
+        allDay: true,
+        category: 'event',
+        description: '',
+        location: '',
+        source: { provider: 'National TSA', url: 'https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027', sourceType: 'event-page' },
+    },
+    {
+        id: 'manual-2027-payment-deadline',
+        title: 'Deadline for conference registration payment (via credit card or check)',
+        startDate: '2027-06-10',
+        endDate: '2027-06-10',
+        allDay: true,
+        category: 'event',
+        description: '',
+        location: '',
+        source: { provider: 'National TSA', url: 'https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027', sourceType: 'event-page' },
+    },
 ];
 
 // ----------------------------------------------------------------------------
@@ -333,7 +432,9 @@ async function main() {
     const genuineRaw = rawRecords.filter(isGenuinelyPublishedOccurrence);
 
     const normalized = genuineRaw.map(normalize).filter(Boolean).filter(inRange);
-    const withManual = dedupe([...normalized, ...MANUAL_ENTRIES]);
+    const officialKeys = new Set(normalized.map((e) => `${e.startDate}|${e.title.toLowerCase()}`));
+    const manual = MANUAL_ENTRIES.filter((e) => !officialKeys.has(`${e.startDate}|${e.title.toLowerCase()}`));
+    const withManual = dedupe([...normalized, ...manual]);
     const finalEvents = sortEvents(withManual);
 
     const previousIds = new Set(previousEvents.map((e) => e.id));

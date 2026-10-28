@@ -1,4 +1,5 @@
 import { CALENDAR_EVENTS } from './tsaCalendar.js';
+import { STATE_CONFERENCE_EVENTS } from './stateConferenceDates.js';
 
 export const STATES = [
   'Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware',
@@ -35,28 +36,41 @@ export function formatDateRange(startIso, endIso) {
   return `${startStr} through ${endStr}`;
 }
 
-// Every regionals/state-conference value below has an explicit status:
-//   'exact'       — a specific, officially-sourced date
+// Every regionals/state-conference value has an explicit status:
+//   'exact'       — a specific, officially-sourced date (optionally with
+//                   `parts` when a state holds separate conferences)
 //   'window'      — a general month/season range, not an exact date
 //   'unannounced' — TSA Hub has no verified information yet
-// IMPORTANT: a legacy-looking exact date is not proof it's official.
-// tsaCalendar.js (the one place in this repo with real, sourced calendar
-// entries) has ZERO state or regional conference entries, so none of the
-// previously-hardcoded per-state ISO dates here had any verifiable
-// provenance — they are intentionally NOT carried forward as 'exact'. Only
-// North Carolina has any confirmed detail at all right now (a general
-// regionals window). When an official date is published for a state,
-// replace its entry here with { status: 'exact', date: 'YYYY-MM-DD' } —
-// this is the one place to update.
+// State conference dates come from stateConferenceDates.js, the same source
+// the Calendar uses, so Coach and Calendar cannot disagree. Regionals are
+// listed here only where a state has published them.
 export const STATE_DATES = {
-  'North Carolina': { regionals: { status: 'window', label: 'January and February 2027' }, states: { status: 'unannounced' } },
+  'North Carolina': {
+    regionals: {
+      status: 'exact',
+      date: '2027-02-12',
+      parts: [
+        { label: 'the Eastern Region', date: '2027-02-12' },
+        { label: 'the Western Region', date: '2027-02-19' },
+      ],
+    },
+  },
 };
+
+function stateConference(state) {
+  const prefix = `${state} TSA `;
+  const parts = STATE_CONFERENCE_EVENTS
+    .filter((e) => e.title.startsWith(prefix))
+    .map((e) => ({ label: `the ${e.title.slice(prefix.length).replace(/ ?State Conference$/, '')}`.replace(/^the $/, 'the state conference'), date: e.startDate, endDate: e.endDate }));
+  if (!parts.length) return { status: 'unannounced' };
+  return { status: 'exact', date: parts[0].date, endDate: parts[0].endDate, parts: parts.length > 1 ? parts : undefined };
+}
 
 export function datesForState(state) {
   const entry = STATE_DATES[state];
   return {
     regionals: entry?.regionals || { status: 'unannounced' },
-    states: entry?.states || { status: 'unannounced' },
+    states: stateConference(state),
     nationals: NATIONALS,
   };
 }

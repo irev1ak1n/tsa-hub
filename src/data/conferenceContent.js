@@ -98,7 +98,7 @@ export const CONFERENCE_CONTENT = {
         ],
         footer: {
             text: 'Official source: National TSA Conference Dress Code',
-            url: 'https://tsaweb.org/docs/default-source/default-document-library/tsa-dress-code.pdf',
+            url: 'https://tsaweb.org/docs/default-source/national-conferences/tsa-dress-code.pdf',
         },
     },
 

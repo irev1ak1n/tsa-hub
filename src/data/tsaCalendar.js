@@ -10,16 +10,16 @@ export const CALENDAR_SYNC = {
         "start": "2025-01-01",
         "end": "2030-12-31"
     },
-    "lastSyncAt": "2026-08-25T20:18:52.467Z",
+    "lastSyncAt": "2026-10-27T23:56:07.475Z",
     "countsByYear": {
         "2025": 95,
-        "2026": 96,
-        "2027": 8,
+        "2026": 117,
+        "2027": 17,
         "2028": 2,
         "2029": 2,
         "2030": 2
     },
-    "totalEvents": 205
+    "totalEvents": 235
 };
 
 export const CALENDAR_EVENTS = [
@@ -2814,6 +2814,66 @@ export const CALENDAR_EVENTS = [
         }
     },
     {
+        "id": "24c0e9a9-9662-46cf-a500-85ad74886317",
+        "title": "Welcome Back to School",
+        "startDate": "2026-08-27",
+        "endDate": "2026-08-27",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/08/27/default-calendar/welcome-back-to-school",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "4461b4cf-5ba2-4cbc-91b4-b33da44b7216",
+        "title": "TSA Resources",
+        "startDate": "2026-09-01",
+        "endDate": "2026-09-01",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/09/01/default-calendar/tsa-resources",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "d69e97cf-bcb6-4cb8-8d29-c2ca39ca5858",
+        "title": "TSA Voices",
+        "startDate": "2026-09-03",
+        "endDate": "2026-09-03",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/09/03/default-calendar/tsa-voices",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "3e1b03d3-bea5-4a62-a29e-225c78d8fc65",
+        "title": "TSA Chapter Affiliation",
+        "startDate": "2026-09-08",
+        "endDate": "2026-09-08",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/09/08/default-calendar/tsa-chapter-affiliation",
+            "sourceType": "calendar"
+        }
+    },
+    {
         "id": "53b0ab2b-faee-4d6e-bac8-0e8fe53a2334",
         "title": "National TSA's 48th Anniversary",
         "startDate": "2026-09-14",
@@ -2829,6 +2889,126 @@ export const CALENDAR_EVENTS = [
         }
     },
     {
+        "id": "fb9dfe9e-2c25-4ef5-8014-7d3b2f5f3eb2",
+        "title": "DOE Competition Opportunity",
+        "startDate": "2026-09-14",
+        "endDate": "2026-09-14",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/09/14/default-calendar/doe-competition-opportunity",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "baaa0252-bbf4-4ef9-8aef-de4fcd277d95",
+        "title": "National TSA Officers",
+        "startDate": "2026-09-15",
+        "endDate": "2026-09-15",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/09/15/default-calendar/national-tsa-officers",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "bb097fee-78db-48d4-b3f6-769511a086d5",
+        "title": "Competition Overviews",
+        "startDate": "2026-09-17",
+        "endDate": "2026-09-17",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/09/17/default-calendar/competition-overviews",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "00b581c3-1029-43ec-bcfb-4d37294b0368",
+        "title": "Themes and Problems",
+        "startDate": "2026-09-22",
+        "endDate": "2026-09-22",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/09/22/default-calendar/themes-and-problems",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "f07f2155-127f-4eff-ad42-6f6e86ce262d",
+        "title": "Chapter Advisor Guide",
+        "startDate": "2026-09-24",
+        "endDate": "2026-09-24",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/09/24/default-calendar/chapter-advisor-guide",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "cc954705-7873-4ca2-8814-a2dd8131c715",
+        "title": "TSA Week",
+        "startDate": "2026-09-29",
+        "endDate": "2026-09-29",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/09/29/default-calendar/tsa-week",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "690ad72e-44e9-4435-b626-8197d9007309",
+        "title": "Advisor Academy Videos",
+        "startDate": "2026-10-01",
+        "endDate": "2026-10-01",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/10/01/default-calendar/advisor-academy-videos",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "7ff50c68-d439-4f65-9225-69176123c72a",
+        "title": "TSA Week",
+        "startDate": "2026-10-05",
+        "endDate": "2026-10-05",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/10/05/default-calendar/tsa-week",
+            "sourceType": "calendar"
+        }
+    },
+    {
         "id": "f82e18a0-2cd2-4ef3-bd41-45a9bc896d60",
         "title": "National TSA Week",
         "startDate": "2026-10-05",
@@ -2840,6 +3020,126 @@ export const CALENDAR_EVENTS = [
         "source": {
             "provider": "National TSA",
             "url": "https://tsaweb.org/events/2026/10/05/default-calendar/national-tsa-week",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "6d5eae8a-543e-4ddb-9665-ef5e9848ba93",
+        "title": "Chapter Member Guide",
+        "startDate": "2026-10-07",
+        "endDate": "2026-10-07",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/10/07/default-calendar/chapter-member-guide",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "383a8cd6-5b0f-42f1-b795-a4ff7e06c6af",
+        "title": "Competitive Event Guides",
+        "startDate": "2026-10-08",
+        "endDate": "2026-10-08",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/10/08/default-calendar/competitive-event-guides",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "787b3fa0-5b34-47cf-b71f-8705ccc50f52",
+        "title": "Dress Code Update",
+        "startDate": "2026-10-13",
+        "endDate": "2026-10-13",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/10/13/default-calendar/dress-code-update",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "ee4a357b-b5c6-4073-91bc-6260736544c7",
+        "title": "Leadership",
+        "startDate": "2026-10-15",
+        "endDate": "2026-10-15",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/10/15/default-calendar/leadership",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "8ba8a2ea-8dee-4487-a6fb-ff5106a28d26",
+        "title": "Conference Save the Date",
+        "startDate": "2026-10-20",
+        "endDate": "2026-10-20",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/10/20/default-calendar/conference-save-the-date",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "08effdf4-1b92-4306-adde-ee15a00d8463",
+        "title": "Chapter Advisor Guide",
+        "startDate": "2026-10-21",
+        "endDate": "2026-10-21",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/10/21/default-calendar/chapter-advisor-guide",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "03460c56-8b35-4687-a6af-b2afc1a23f7f",
+        "title": "TSA TEAMS Registration",
+        "startDate": "2026-10-22",
+        "endDate": "2026-10-22",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/10/22/default-calendar/tsa-teams-registration",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "7e08bab0-e6b7-4f5a-bbc8-1a7769bad0e4",
+        "title": "Priority Membership",
+        "startDate": "2026-10-27",
+        "endDate": "2026-10-27",
+        "allDay": true,
+        "category": "constant-contact",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/10/27/default-calendar/priority-membership",
             "sourceType": "calendar"
         }
     },
@@ -2885,6 +3185,21 @@ export const CALENDAR_EVENTS = [
         "source": {
             "provider": "National TSA",
             "url": "https://tsaweb.org/events/2026/12/05/default-calendar/computer-science-education-week",
+            "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "f9193c94-5e1d-4acd-a2ff-d78b4cab9b1d",
+        "title": "Priority Membership due to National TSA",
+        "startDate": "2026-12-10",
+        "endDate": "2026-12-10",
+        "allDay": true,
+        "category": "important-date",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/events/2026/12/10/default-calendar/priority-membership-due-to-national-tsa",
             "sourceType": "calendar"
         }
     },
@@ -2964,6 +3279,21 @@ export const CALENDAR_EVENTS = [
         }
     },
     {
+        "id": "manual-2027-registration-opens",
+        "title": "Conference Registration Opens",
+        "startDate": "2027-04-05",
+        "endDate": "2027-04-05",
+        "allDay": true,
+        "category": "event",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027",
+            "sourceType": "event-page"
+        }
+    },
+    {
         "id": "20fb101b-a923-4894-af2d-80e68a588475:2027-05-01",
         "title": "National TSA awards, recognitions, and scholarships deadline",
         "startDate": "2027-05-01",
@@ -2979,6 +3309,96 @@ export const CALENDAR_EVENTS = [
         }
     },
     {
+        "id": "manual-2027-meeting-room-request",
+        "title": "State delegation meeting room request deadline",
+        "startDate": "2027-05-03",
+        "endDate": "2027-05-03",
+        "allDay": true,
+        "category": "event",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027",
+            "sourceType": "event-page"
+        }
+    },
+    {
+        "id": "manual-2027-competitive-registration",
+        "title": "Competitive event participant conference registration deadline",
+        "startDate": "2027-05-12",
+        "endDate": "2027-05-12",
+        "allDay": true,
+        "category": "event",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027",
+            "sourceType": "event-page"
+        }
+    },
+    {
+        "id": "manual-2027-refund-request",
+        "title": "Conference registration refund request deadline",
+        "startDate": "2027-05-12",
+        "endDate": "2027-05-12",
+        "allDay": true,
+        "category": "event",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027",
+            "sourceType": "event-page"
+        }
+    },
+    {
+        "id": "manual-2027-special-needs",
+        "title": "Special Needs Request form submission deadline",
+        "startDate": "2027-05-12",
+        "endDate": "2027-05-12",
+        "allDay": true,
+        "category": "event",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027",
+            "sourceType": "event-page"
+        }
+    },
+    {
+        "id": "manual-2027-advisor-slotting",
+        "title": "State advisors slot registered competitors for the state advisor approval events",
+        "startDate": "2027-05-13",
+        "endDate": "2027-05-14",
+        "allDay": true,
+        "category": "event",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027",
+            "sourceType": "event-page"
+        }
+    },
+    {
+        "id": "manual-2027-component-upload",
+        "title": "Competition component upload platform is open and accessible to student members for events with pre-submission requirements",
+        "startDate": "2027-05-17",
+        "endDate": "2027-05-19",
+        "allDay": true,
+        "category": "event",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027",
+            "sourceType": "event-page"
+        }
+    },
+    {
         "id": "51510d98-aabc-4915-a51c-cb6cde1158bf:2027-06-01",
         "title": "American Red Cross contributions due",
         "startDate": "2027-06-01",
@@ -2991,6 +3411,36 @@ export const CALENDAR_EVENTS = [
             "provider": "National TSA",
             "url": "https://tsaweb.org/events/2026/06/01/default-calendar/american-cancer-society-contributions-due",
             "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "manual-2027-hotel-reservation",
+        "title": "Conference hotel room reservation deadline",
+        "startDate": "2027-06-03",
+        "endDate": "2027-06-03",
+        "allDay": true,
+        "category": "event",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027",
+            "sourceType": "event-page"
+        }
+    },
+    {
+        "id": "manual-2027-payment-deadline",
+        "title": "Deadline for conference registration payment (via credit card or check)",
+        "startDate": "2027-06-10",
+        "endDate": "2027-06-10",
+        "allDay": true,
+        "category": "event",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027",
+            "sourceType": "event-page"
         }
     },
     {

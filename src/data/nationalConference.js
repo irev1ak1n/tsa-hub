@@ -45,8 +45,8 @@ export const CONFERENCE_GUIDES = [
     {
         id: 'nc-2027',
         title: '2027 National TSA Conference',
-        detail: 'Status: Upcoming',
-        url: '',
+        detail: 'Orlando, Florida · June 23-27, 2027',
+        route: '/resources/national-conference/2027',
     },
     {
         id: 'nc-2026',

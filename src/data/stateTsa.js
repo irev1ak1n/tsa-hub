@@ -5,11 +5,11 @@ export const STATE_TSA = {
     'Alabama': {
         name: 'Alabama TSA',
         links: [
-            { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official Alabama TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'https://alabamatsa.rocks/' },
+            { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official Alabama TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'https://alabamatsa.org/' },
             { img: instagramIcon, title: 'Official Alabama TSA Instagram', desc: 'Announcements, event highlights, and student stories.', url: 'https://www.instagram.com/alabamatsa' },
             { img: facebookIcon, title: 'Official Alabama TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/alabamatsa/' },
             { role: 'advisor', icon: 'user', title: 'State Advisor', desc: 'Contact your state advisor for official guidance and questions.', contact: { name: 'Dena Moncrief', email: 'dena.moncrief@alsde.edu', phone: '334-694-4765' } },
-            { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://alabamatsa.rocks/about/state-officers/' },
+            { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://alabamatsa.org/about/state-officers/' },
         ],
     },
     'Arkansas': {
@@ -68,7 +68,7 @@ export const STATE_TSA = {
     'Florida': {
         name: 'Florida TSA',
         links: [
-            { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official Florida TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'https://www.floridatsa.com/' },
+            { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official Florida TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'https://floridatsa.org/' },
             { img: instagramIcon, title: 'Official Florida TSA Instagram', desc: 'Announcements, event highlights, and student stories.', url: 'https://www.instagram.com/fltsa' },
             { img: facebookIcon, title: 'Official Florida TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/groups/78494829486/' },
             { role: 'advisor', icon: 'user', title: 'State Advisor', desc: 'Contact your state advisor for official guidance and questions.', contact: { name: 'Justin Lauer', email: 'tsa@justinLauer.net', phone: '321-728-9732' } },
@@ -80,9 +80,9 @@ export const STATE_TSA = {
         links: [
             { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official Georgia TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'https://www.gatsa.org/' },
             { img: instagramIcon, title: 'Official Georgia TSA Instagram', desc: 'Announcements, event highlights, and student stories.', url: 'https://www.instagram.com/georgiatsa' },
-            { img: facebookIcon, title: 'Official Georgia TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/GeorgiaTSA1/' },
+            { img: facebookIcon, title: 'Official Georgia TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/GeorgiaTSA' },
             { role: 'advisor', icon: 'user', title: 'State Advisor', desc: 'Contact your state advisor for official guidance and questions.', contact: { name: 'Steve Price', email: 'sprice@gatsa.org', phone: '678-551-0840' } },
-            { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://www.gatsa.org/about/state-officer-team' },
+            { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://www.gatsa.org/about-us/state-officers' },
         ],
     },
     'Idaho': {
@@ -215,7 +215,7 @@ export const STATE_TSA = {
             { img: instagramIcon, title: 'Official NJ TSA Instagram', desc: 'Announcements, event highlights, and student stories.', url: 'https://www.instagram.com/nj_tsa/' },
             { img: facebookIcon, title: 'Official NJ TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/p/New-Jersey-Technology-Student-Association-100083381294136/' },
             { role: 'advisor', icon: 'user', title: 'State Advisor', desc: 'Contact your state advisor for official guidance and questions.', contact: { name: 'Alison Goeke', email: 'goeke2@tcnj.edu', phone: '609-771-3244' } },
-            { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://njtsa.tcnj.edu/2025-2026-state-officers/' },
+            { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://njtsa.tcnj.edu/2026-2027-state-officers/' },
         ],
     },
     'New Mexico': {
@@ -223,7 +223,7 @@ export const STATE_TSA = {
         links: [
             { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official NM TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'https://www.nmtsa.com/' },
             { img: instagramIcon, title: 'Official NM TSA Instagram', desc: 'Announcements, event highlights, and student stories.', url: 'https://www.instagram.com/newmexicotsa/' },
-            { img: facebookIcon, title: 'Official NM TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/nmtsa1/' },
+            { img: facebookIcon, title: 'Official NM TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/newmexicotsa' },
             { role: 'advisor', icon: 'user', title: 'State Advisor', desc: 'Contact your state advisor for official guidance and questions.', contact: { name: 'Mario Garcia', email: 'neomars@nmsu.edu', phone: '575-646-3988' } },
             { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://www.nmtsa.com/state-officers-sy2425' },
         ],
@@ -242,7 +242,7 @@ export const STATE_TSA = {
         links: [
             { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official NC TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'https://nctsa.org/' },
             { img: instagramIcon, title: 'Official NC TSA Instagram', desc: 'Announcements, event highlights, and student stories.', url: 'https://www.instagram.com/northcarolinatsa' },
-            { img: facebookIcon, title: 'Official NC TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/nctsa' },
+            { img: facebookIcon, title: 'Official NC TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/northcarolinatsa' },
             { role: 'advisor', icon: 'user', title: 'State Advisor', desc: 'Contact your state advisor for official guidance and questions.', contact: { name: 'Jerianne Taylor', email: 'stateadvisor@nctsa.org', phone: '(C) 336-692-4794' } },
             { role: 'officer-team', icon: 'users', title: 'State Officer Team', desc: 'Meet your state\u2019s elected student officers.', url: 'https://www.nctsa.org/officer-team' },
         ],
@@ -252,7 +252,7 @@ export const STATE_TSA = {
         links: [
             { icon: 'globe', iconColor: 'var(--ig-blue)', title: 'Official ND TSA Website', desc: 'Official resources and updates from your state delegation.', url: 'https://www.northdakotatsa.org/' },
             { img: instagramIcon, title: 'Official ND TSA Instagram', desc: 'Announcements, event highlights, and student stories.', url: 'https://www.instagram.com/northdakotatsa/' },
-            { img: facebookIcon, title: 'Official ND TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/p/North-Dakota-TSA-61577591795092/' },
+            { img: facebookIcon, title: 'Official ND TSA Facebook', desc: 'News, photos, and updates from across the state.', url: 'https://www.facebook.com/NDTechnologyStudentAssociation' },
             { role: 'advisor', icon: 'user', title: 'State Advisor', desc: 'Contact your state advisor for official guidance and questions.', contact: { name: 'Brad Hoffarth', email: 'hoffarthbradley@nd.gov', phone: '701-328-3158' } },
         ],
     },
