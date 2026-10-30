@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Icon } from './UI.jsx';
 import { useApp } from '../context/AppContext.jsx';
 import { getEvent } from '../data/events.js';
@@ -6,14 +7,10 @@ import { useEventImage } from '../data/eventImages.js';
 import { useImageLoad } from '../hooks/useImageLoad.js';
 import { Skeleton, LoadError } from './Skeleton.jsx';
 import AddMyEventModal from './AddMyEventModal.jsx';
-import EventInfoModal from '../screens/events/EventInfoModal.jsx';
 
-// One saved event's card — reuses the same event data/image resolution as
-// the rest of the app (getEvent + useEventImage). Clicking it opens the
-// exact same EventInfoModal the Events page uses (via onOpen, passed down
-// from HomeMyEvents), never a navigation and never a second modal.
-// Removal lives behind a small ••• menu, never a large delete button
-// directly on the card.
+// Saved event cards open a private workspace for that event.
+// The official event detail page remains available inside each workspace.
+// Removal stays behind the existing compact options menu.
 function MyEventCard({ event, onOpen, onRemove }) {
     const img = useEventImage(event);
     const [broken, setBroken] = useState(false);
@@ -73,9 +70,9 @@ function MyEventCard({ event, onOpen, onRemove }) {
 // that ordering) is: after adding an event, jump the carousel to that new
 // event so it becomes active immediately, instead of leaving Add focused.
 export default function HomeMyEvents() {
+    const navigate = useNavigate();
     const { myEvents, removeEvent, eventsLoading, eventsError, reloadEvents } = useApp();
     const [addOpen, setAddOpen] = useState(false);
-    const [openEvent, setOpenEvent] = useState(null);
     const [activeIndex, setActiveIndex] = useState(0);
     const trackRef = useRef(null);
     const prevEventCountRef = useRef(null);
@@ -214,7 +211,7 @@ export default function HomeMyEvents() {
                             ) : (
                                 <MyEventCard
                                     event={s.event}
-                                    onOpen={() => setOpenEvent(s.event)}
+                                    onOpen={() => navigate('/my-events/' + encodeURIComponent(s.event.id))}
                                     onRemove={() => removeEvent(s.event.id)}
                                 />
                             )}
@@ -240,7 +237,6 @@ export default function HomeMyEvents() {
             )}
 
             {addOpen && <AddMyEventModal onClose={() => setAddOpen(false)} />}
-            {openEvent && <EventInfoModal event={openEvent} onClose={() => setOpenEvent(null)} />}
         </div>
     );
 }
