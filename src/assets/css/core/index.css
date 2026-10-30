@@ -3,6 +3,7 @@
 @import '../layout.css';
 @import 'components.css';
 @import '../screens/dashboard.css';
+@import '../screens/event-workspace.css';
 @import '../screens/events.css';
 @import '../screens/profile.css';
 @import '../screens/settings.css';
