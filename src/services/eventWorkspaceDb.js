@@ -140,14 +140,14 @@ function blobToDataUrl(blob) {
     });
 }
 
-export async function exportPortfolio(eventId) {
+export async function exportPortfolio(eventId, plan = {}) {
     const [portfolio, fileMeta] = await Promise.all([readPortfolio(eventId), listPortfolioFiles(eventId)]);
     const files = [];
     for (const meta of fileMeta) {
         const record = await getPortfolioFile(meta.id);
         files.push({ name: record.name, type: record.type, createdAt: record.createdAt, data: await blobToDataUrl(record.blob) });
     }
-    const data = JSON.stringify({ format: 'tsa-hub-workspace', version: 1, eventId, exportedAt: new Date().toISOString(), portfolio, files }, null, 2);
+    const data = JSON.stringify({ format: 'tsa-hub-workspace', version: 1, eventId, exportedAt: new Date().toISOString(), portfolio, checklist: plan.checklist || [], milestones: plan.milestones || [], files }, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -157,4 +157,60 @@ export async function exportPortfolio(eventId) {
     link.click();
     link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 30_000);
+}
+
+
+// Restoring a backup is explicit and replaces this event's workspace.
+// Caller confirms before invoking it, then restores checklist/milestones
+// through AppContext using the returned plan.
+export async function importPortfolio(eventId, backup) {
+    if (!backup || backup.size > 150 * 1024 * 1024) throw new Error('Choose a workspace JSON backup under 150 MB.');
+    let data;
+    try { data = JSON.parse(await backup.text()); }
+    catch { throw new Error('This is not a valid JSON backup.'); }
+    if (data?.format !== 'tsa-hub-workspace' || data.version !== 1 || data.eventId !== eventId) {
+        throw new Error('This backup belongs to a different event or is not a supported TSA Hub workspace backup.');
+    }
+    if (!data.portfolio || typeof data.portfolio !== 'object') throw new Error('Workspace data is missing.');
+    const cleanText = (value, max = 100000) => typeof value === 'string' ? value.slice(0, max) : '';
+    const cleanList = (key, fields) => Array.isArray(data.portfolio[key])
+        ? data.portfolio[key].slice(0, 500).map(entry => Object.fromEntries([
+            ['id', newWorkspaceId()],
+            ...fields.map(field => [field, cleanText(entry?.[field], 5000)]),
+        ]))
+        : [];
+    const portfolio = {
+        ...emptyPortfolio(eventId),
+        summary: cleanText(data.portfolio.summary),
+        project: cleanText(data.portfolio.project),
+        ideas: cleanText(data.portfolio.ideas),
+        references: cleanList('references', ['title', 'url']),
+        team: cleanList('team', ['name', 'role', 'contact']),
+        awards: cleanList('awards', ['title', 'result', 'year']),
+    };
+    const entries = Array.isArray(data.files) ? data.files : [];
+    if (entries.length > 100) throw new Error('This backup contains too many files.');
+    let totalSize = 0;
+    const incomingFiles = [];
+    for (const entry of entries) {
+        if (typeof entry?.name !== 'string' || !/^data:[^,]*;base64,/.test(entry?.data || '')) throw new Error('An attachment in the backup is invalid.');
+        // Decode into blobs only after confirming the file is a data URL.
+        const response = await fetch(entry.data);
+        const blob = await response.blob();
+        totalSize += blob.size;
+        if (blob.size > MAX_FILE_BYTES || totalSize > MAX_WORKSPACE_BYTES) throw new Error('Backup attachments exceed this device’s workspace limits.');
+        incomingFiles.push(new File([blob], entry.name.slice(0, 180), { type: blob.type || 'application/octet-stream' }));
+    }
+
+    // Validation finished; from here the user's confirmed restoration begins.
+    // Files are replaced instead of duplicated on repeated imports.
+    const previousFiles = await listPortfolioFiles(eventId);
+    await savePortfolio(portfolio);
+    for (const old of previousFiles) await deletePortfolioFile(old.id);
+    for (const file of incomingFiles) await addPortfolioFile(eventId, file);
+    return {
+        portfolio,
+        checklist: Array.isArray(data.checklist) ? data.checklist : null,
+        milestones: Array.isArray(data.milestones) ? data.milestones : null,
+    };
 }
