@@ -31,6 +31,7 @@ function MyEventCard({ event, onOpen, onRemove }) {
                 <span className="ev-tile-name myev-card-name">
                     {event.name}
                     {event.category && <span className="myev-card-category">{event.category}</span>}
+                    <span className="myev-card-workspace-label">Open workspace →</span>
                 </span>
             </button>
 
