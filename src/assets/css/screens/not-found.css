@@ -1,0 +1,59 @@
+.nf-page {
+  min-height: calc(100dvh - var(--nav-h) - 96px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px 8px;
+}
+
+.nf-code {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(96px, 30vw, 168px);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  background: linear-gradient(180deg, var(--ink-hi) 0%, var(--muted) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 0.9;
+}
+
+.nf-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  margin: 10px 0 8px;
+  color: var(--ink-hi);
+}
+
+.nf-text {
+  max-width: 320px;
+  margin: 0 0 26px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.nf-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 280px;
+}
+
+.nf-actions .btn {
+  padding: 13px 18px;
+  font-size: 0.95rem;
+}
+
+@media (min-width: 640px) {
+  .nf-actions {
+    flex-direction: row;
+    max-width: none;
+    width: auto;
+  }
+  .nf-actions .btn { min-width: 170px; }
+}

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AppProvider } from './context/AppContext.jsx';
 import Layout from './components/Layout.jsx';
 import Dashboard from './screens/Dashboard.jsx';
@@ -35,6 +35,7 @@ import ConferenceTopicPage from './screens/conference/ConferenceTopicPage.jsx';
 import Conference2027 from './screens/conference/Conference2027.jsx';
 
 import Calendar from './screens/Calendar.jsx';
+import NotFound from './screens/NotFound.jsx';
 
 import Help from './screens/help/Help.jsx';
 import HelpArticlesIndex from './screens/help/HelpArticlesIndex.jsx';
@@ -90,7 +91,7 @@ export default function App() {
                         <Route path="/resources/national-conference/2027" element={<Conference2027 />} />
                         <Route path="/resources/national-conference/:topic" element={<ConferenceTopic />} />
 
-                        <Route path="*" element={<Navigate to="/" replace />} />
+                        <Route path="*" element={<NotFound />} />
                     </Route>
                 </Routes>
             </BrowserRouter>
