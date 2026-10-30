@@ -163,6 +163,31 @@ export function AppProvider({ children }) {
       }));
     },
 
+    // Restore a single event's preparation plan from a user-chosen backup.
+    // Never overwrite tasks/checklists belonging to other saved events.
+    replaceEventPlan(eventId, incomingChecklist, incomingMilestones) {
+      setState((s) => {
+        const clean = (value) => typeof value === 'string' ? value.trim().slice(0, 180) : '';
+        const nextChecklist = Array.isArray(incomingChecklist)
+          ? incomingChecklist.slice(0, 300).filter(row => clean(row?.label)).map(row => ({
+              id: uid(), label: clean(row.label), done: Boolean(row.done),
+            }))
+          : (s.checklists[eventId] || []);
+        const nextTasks = Array.isArray(incomingMilestones)
+          ? [
+              ...s.tasks.filter(task => task.eventId !== eventId),
+              ...incomingMilestones.slice(0, 300).filter(row => clean(row?.title)).map(row => ({
+                id: uid(), eventId, title: clean(row.title),
+                due: /^\d{4}-\d{2}-\d{2}$/.test(row.due) ? row.due : '',
+                status: row.status === 'done' ? 'done' : 'todo',
+                assignee: clean(row.assignee),
+              })),
+            ]
+          : s.tasks;
+        return { ...s, checklists: { ...s.checklists, [eventId]: nextChecklist }, tasks: nextTasks };
+      });
+    },
+
     // ---- tasks ----
     addTask({ title, assignee, eventId, due }) {
       setState((s) => ({
