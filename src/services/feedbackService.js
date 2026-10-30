@@ -7,6 +7,10 @@
 // (context for the email, not stored in Supabase) to that endpoint.
 // ============================================================
 
+// Empty on the web (same-origin /api). A native build sets VITE_API_BASE_URL to
+// the deployed site, where a relative path would resolve inside the app.
+const ENDPOINT = `${String(import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')}/api/submit-feedback`;
+
 async function submit(message, type) {
     const text = String(message || '').trim();
     if (!text) return { ok: false, error: 'empty' };
@@ -15,7 +19,7 @@ async function submit(message, type) {
     try { page = window.location.pathname; } catch { /* ignore */ }
 
     try {
-        const res = await fetch('/api/submit-feedback', {
+        const res = await fetch(ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type, message: text, page }),
@@ -44,7 +48,7 @@ export async function submitGetInvolved(fields) {
     try { page = window.location.pathname; } catch { /* ignore */ }
 
     try {
-        const res = await fetch('/api/submit-feedback', {
+        const res = await fetch(ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type: 'get-involved', page, ...fields }),
