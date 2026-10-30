@@ -3,6 +3,8 @@ import { Icon } from './UI.jsx';
 import { useApp } from '../context/AppContext.jsx';
 import { getEvent } from '../data/events.js';
 import { useEventImage } from '../data/eventImages.js';
+import { useImageLoad } from '../hooks/useImageLoad.js';
+import { Skeleton, LoadError } from './Skeleton.jsx';
 import AddMyEventModal from './AddMyEventModal.jsx';
 import EventInfoModal from '../screens/events/EventInfoModal.jsx';
 
@@ -18,12 +20,13 @@ function MyEventCard({ event, onOpen, onRemove }) {
     const [menuOpen, setMenuOpen] = useState(false);
     useEffect(() => setBroken(false), [img]);
     const showImage = Boolean(img) && !broken;
+    const { ref, loaded, onLoad } = useImageLoad(img);
 
     return (
-        <div className="myev-card">
+        <div className={`myev-card${showImage && !loaded ? ' is-img-loading' : ''}`}>
             <button type="button" className="myev-card-media" onClick={onOpen}>
                 {showImage ? (
-                    <img className="myev-card-img" src={img} alt="" loading="lazy" onError={() => setBroken(true)} />
+                    <img ref={ref} className={`myev-card-img sk-img${loaded ? ' is-loaded' : ''}`} src={img} alt="" loading="lazy" onLoad={onLoad} onError={() => setBroken(true)} />
                 ) : (
                     <div className="myev-card-img myev-card-fallback" aria-hidden="true" />
                 )}
@@ -70,7 +73,7 @@ function MyEventCard({ event, onOpen, onRemove }) {
 // that ordering) is: after adding an event, jump the carousel to that new
 // event so it becomes active immediately, instead of leaving Add focused.
 export default function HomeMyEvents() {
-    const { myEvents, removeEvent, eventsLoading } = useApp();
+    const { myEvents, removeEvent, eventsLoading, eventsError, reloadEvents } = useApp();
     const [addOpen, setAddOpen] = useState(false);
     const [openEvent, setOpenEvent] = useState(null);
     const [activeIndex, setActiveIndex] = useState(0);
@@ -78,7 +81,11 @@ export default function HomeMyEvents() {
     const prevEventCountRef = useRef(null);
 
     const events = myEvents.map(getEvent).filter(Boolean);
-    const slides = [...events.map((e) => ({ kind: 'event', event: e })), { kind: 'add' }];
+    const pendingCount = eventsLoading ? myEvents.length : 0;
+    const slides = [
+        ...(pendingCount ? myEvents.map((id) => ({ kind: 'pending', id })) : events.map((e) => ({ kind: 'event', event: e }))),
+        { kind: 'add' },
+    ];
 
     function scrollToIndex(i) {
         const track = trackRef.current;
@@ -175,7 +182,7 @@ export default function HomeMyEvents() {
                 <h2>My Events</h2>
             </div>
 
-            <div className={`myev-carousel${events.length === 0 ? ' myev-carousel--empty' : ''}`}>
+            <div className={`myev-carousel${slides.length === 1 ? ' myev-carousel--empty' : ''}`}>
                 <button
                     type="button"
                     className="myev-arrow myev-arrow-left"
@@ -191,11 +198,15 @@ export default function HomeMyEvents() {
                 <div className="myev-track" ref={trackRef}>
                     {slides.map((s, i) => (
                         <div
-                            key={s.kind === 'add' ? 'add' : s.event.id}
+                            key={s.kind === 'add' ? 'add' : s.kind === 'pending' ? `pending-${s.id}` : s.event.id}
                             data-index={i}
                             className={`myev-slide${i === activeIndex ? ' is-active' : ''}`}
                         >
-                            {s.kind === 'add' ? (
+                            {s.kind === 'pending' ? (
+                                <div className="myev-card" role="status" aria-busy="true" aria-label="Loading event">
+                                    <Skeleton className="sk-fill" />
+                                </div>
+                            ) : s.kind === 'add' ? (
                                 <button type="button" className="myev-add-card" onClick={() => setAddOpen(true)}>
                                     <span className="myev-add-circle"><Icon name="plus" size={28} /></span>
                                     <span className="myev-add-label">Add Event</span>
@@ -221,6 +232,12 @@ export default function HomeMyEvents() {
                     <Icon name="chevron-right" size={18} />
                 </button>
             </div>
+
+            {eventsError && myEvents.length > 0 && events.length === 0 && (
+                <div style={{ marginTop: 12 }}>
+                    <LoadError message="We couldn't load your saved events." onRetry={reloadEvents} />
+                </div>
+            )}
 
             {addOpen && <AddMyEventModal onClose={() => setAddOpen(false)} />}
             {openEvent && <EventInfoModal event={openEvent} onClose={() => setOpenEvent(null)} />}

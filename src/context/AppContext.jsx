@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { fetchEvents } from '../services/eventsService.js';
 import { setEvents } from '../data/events.js';
 
@@ -39,11 +39,20 @@ function load() {
   }
 }
 
+const EVENTS_TIMEOUT_MS = 20000;
+
 const Ctx = createContext(null);
 
 export function AppProvider({ children }) {
   const [state, setState] = useState(load);
   const [eventsLoading, setEventsLoading] = useState(true);
+  const [eventsError, setEventsError] = useState(false);
+  const [eventsAttempt, setEventsAttempt] = useState(0);
+  const reloadEvents = useCallback(() => {
+    setEventsError(false);
+    setEventsLoading(true);
+    setEventsAttempt((n) => n + 1);
+  }, []);
 
   // Persist everything (there is no account, so all state is local).
   useEffect(() => {
@@ -63,22 +72,32 @@ export function AppProvider({ children }) {
   // Events are read anonymously (no login required).
   useEffect(() => {
     let alive = true;
+    const timer = setTimeout(() => {
+      if (!alive) return;
+      setEventsError(true);
+      setEventsLoading(false);
+    }, EVENTS_TIMEOUT_MS);
     fetchEvents()
         .then((rows) => {
           if (!alive) return;
           console.log('EVENT SAMPLE:', JSON.stringify(rows.slice(0, 3), null, 2));
           setEvents(rows);
+          setEventsError(false);
         })
         .catch(() => {
-          if (alive) setEvents([]);
+          if (!alive) return;
+          setEvents([]);
+          setEventsError(true);
         })
         .finally(() => {
+          clearTimeout(timer);
           if (alive) setEventsLoading(false);
         });
     return () => {
       alive = false;
+      clearTimeout(timer);
     };
-  }, []);
+  }, [eventsAttempt]);
 
   const actions = {
     // ---- preferences ----
@@ -226,6 +245,8 @@ export function AppProvider({ children }) {
             ...state,
             ...actions,
             eventsLoading,
+            eventsError,
+            reloadEvents,
             progressFor,
             // back-compat shims (there is no account/profile or chats anymore)
             profile: null,

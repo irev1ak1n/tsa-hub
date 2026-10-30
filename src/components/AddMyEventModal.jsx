@@ -3,6 +3,7 @@ import { Icon } from './UI.jsx';
 import { EVENTS } from '../data/events.js';
 import { matchesQuery } from '../data/eventSearch.js';
 import { useApp } from '../context/AppContext.jsx';
+import { Skeleton, LoadingRegion, LoadError } from './Skeleton.jsx';
 
 // Reuses the exact same event catalog (EVENTS) and search logic
 // (matchesQuery) as the main Events search page — never a second copy of
@@ -11,7 +12,7 @@ import { useApp } from '../context/AppContext.jsx';
 // "this exact id is already in myEvents", which useApp().addEvent already
 // guards against.
 export default function AddMyEventModal({ onClose }) {
-    const { myEvents, addEvent } = useApp();
+    const { myEvents, addEvent, eventsLoading, eventsError, reloadEvents } = useApp();
     const [query, setQuery] = useState('');
 
     const q = query.trim();
@@ -46,6 +47,22 @@ export default function AddMyEventModal({ onClose }) {
                         />
                     </div>
 
+                    {eventsLoading ? (
+                        <LoadingRegion className="myev-modal-list" label="Loading events">
+                            {Array.from({ length: 7 }, (_, i) => (
+                                <div className="myev-modal-row" key={i}>
+                                    <Skeleton w={30} h={20} r={999} />
+                                    <span className="myev-modal-row-text">
+                                        <Skeleton w={`${60 + (i % 3) * 12}%`} h={14} />
+                                        <Skeleton w="38%" h={11} />
+                                    </span>
+                                    <Skeleton w={16} h={16} r={999} />
+                                </div>
+                            ))}
+                        </LoadingRegion>
+                    ) : eventsError ? (
+                        <LoadError message="We couldn't load events right now." onRetry={reloadEvents} />
+                    ) : (
                     <div className="myev-modal-list">
                         {list.map((event) => {
                             const added = myEvents.includes(event.id);
@@ -69,6 +86,7 @@ export default function AddMyEventModal({ onClose }) {
                         })}
                         {list.length === 0 && <p className="rs-state-empty">No events match your search.</p>}
                     </div>
+                    )}
                 </div>
             </div>
         </div>

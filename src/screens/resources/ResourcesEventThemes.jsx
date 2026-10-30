@@ -4,9 +4,33 @@ import { useApp } from '../../context/AppContext.jsx';
 import { Icon } from '../../components/UI.jsx';
 import { EVENTS } from '../../data/events.js';
 import { BackLink } from './resourcesShared.jsx';
+import { Skeleton, LoadingRegion, LoadError } from '../../components/Skeleton.jsx';
 
 function byName(a, b) {
     return a.name.localeCompare(b.name);
+}
+
+const SKELETON_WIDTHS = ['72%', '58%', '66%', '80%', '54%', '70%'];
+
+function GuideListSkeleton() {
+    return (
+        <LoadingRegion label="Loading events">
+            {['Middle School', 'High School'].map((label) => (
+                <div key={label}>
+                    <div className="rs-group-label">{label}</div>
+                    <div className="rs-card">
+                        <div className="rs-event-grid">
+                            {SKELETON_WIDTHS.map((w, i) => (
+                                <div className="rs-event-link" key={i}>
+                                    <Skeleton w={w} h={16} />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            ))}
+        </LoadingRegion>
+    );
 }
 
 function DivisionGroup({ label, events }) {
@@ -29,7 +53,7 @@ function DivisionGroup({ label, events }) {
 }
 
 export default function ResourcesEventThemes() {
-    const { eventsLoading } = useApp();
+    const { eventsLoading, eventsError, reloadEvents } = useApp();
     const [query, setQuery] = useState('');
 
     const q = query.trim().toLowerCase();
@@ -69,16 +93,20 @@ export default function ResourcesEventThemes() {
                 )}
             </div>
 
-            {eventsLoading && <p className="muted small">Loading events…</p>}
+            {eventsLoading && <GuideListSkeleton />}
 
-            {!eventsLoading && (
+            {!eventsLoading && eventsError && (
+                <LoadError message="We couldn't load events right now." onRetry={reloadEvents} />
+            )}
+
+            {!eventsLoading && !eventsError && (
                 <>
                     <DivisionGroup label="Middle School" events={msEvents} />
                     <DivisionGroup label="High School" events={hsEvents} />
                 </>
             )}
 
-            {!eventsLoading && msEvents.length === 0 && hsEvents.length === 0 && (
+            {!eventsLoading && !eventsError && msEvents.length === 0 && hsEvents.length === 0 && (
                 <p className="rs-note">
                     {q ? `No events match "${query}".` : 'Event data isn’t available right now. Try again in a moment.'}
                 </p>

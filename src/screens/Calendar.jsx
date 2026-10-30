@@ -6,7 +6,7 @@ import { STATE_CONFERENCE_EVENTS } from '../data/stateConferenceDates.js';
 import { now, ymd, addDays, isSameMonth } from '../utils/date.js';
 import { mergeCalendarItems, indexItemsByDate } from '../utils/calendarItems.js';
 import { usePersonalCalendar } from '../hooks/usePersonalCalendar.js';
-import { MonthView, YearView, WeekView, ScheduleView, buildScheduleDates } from './calendar/views.jsx';
+import { MonthView, YearView, WeekView, ScheduleView, ScheduleSkeleton, buildScheduleDates } from './calendar/views.jsx';
 import { DayPanel, ItemDetailsModal, ItemEditorModal } from './calendar/CalendarPanels.jsx';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -237,7 +237,9 @@ export default function Calendar() {
                 />
             )}
 
-            {viewMode === 'schedule' && (
+            {viewMode === 'schedule' && loading && <ScheduleSkeleton />}
+
+            {viewMode === 'schedule' && !loading && (
                 <ScheduleView
                     dates={scheduleDates}
                     today={today}

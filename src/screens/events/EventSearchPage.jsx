@@ -4,13 +4,14 @@ import { Icon } from '../../components/UI.jsx';
 import { BackLink } from '../resources/resourcesShared.jsx';
 import { EVENTS } from '../../data/events.js';
 import { matchesQuery } from '../../data/eventSearch.js';
-import { EventGrid } from './eventsShared.jsx';
+import { EventGrid, EventGridSkeleton } from './eventsShared.jsx';
+import { LoadError } from '../../components/Skeleton.jsx';
 import EventInfoModal from './EventInfoModal.jsx';
 
 const RECENT_KEY = 'ev-recent';
 
 export default function EventSearchPage() {
-    const { eventsLoading } = useApp();
+    const { eventsLoading, eventsError, reloadEvents } = useApp();
     const inputRef = useRef(null);
 
     const [query, setQuery] = useState('');
@@ -65,9 +66,16 @@ export default function EventSearchPage() {
 
             {q ? (
                 <>
-                    {eventsLoading && <p className="muted" style={{ marginTop: 12 }}>Loading events…</p>}
-                    <EventGrid events={results} animKey={q} onSelect={setOpenEvent} />
-                    {!eventsLoading && results.length === 0 && (
+                    {eventsLoading ? (
+                        <EventGridSkeleton count={9} />
+                    ) : eventsError ? (
+                        <div style={{ marginTop: 16 }}>
+                            <LoadError message="We couldn't load events right now." onRetry={reloadEvents} />
+                        </div>
+                    ) : (
+                        <EventGrid events={results} animKey={q} onSelect={setOpenEvent} />
+                    )}
+                    {!eventsLoading && !eventsError && results.length === 0 && (
                         <p className="muted" style={{ marginTop: 16 }}>No events match that search.</p>
                     )}
                 </>

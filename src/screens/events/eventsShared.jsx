@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useEventImage } from '../../data/eventImages.js';
+import { useImageLoad } from '../../hooks/useImageLoad.js';
+import { Skeleton, LoadingRegion } from '../../components/Skeleton.jsx';
 
 // Combined division badge, MS before HS (e.g. "MS/HS").
 export function divisionLabel(divs) {
@@ -63,16 +65,19 @@ export function EventTile({ event, onSelect }) {
     const [broken, setBroken] = useState(false);
     useEffect(() => setBroken(false), [img]);
     const showImage = Boolean(img) && !broken;
+    const { ref, loaded, onLoad } = useImageLoad(img);
 
     const inner = (
         <>
             {badge && <span className="ev-tile-badge">{badge}</span>}
             {showImage ? (
                 <img
-                    className="ev-tile-img"
+                    ref={ref}
+                    className={`ev-tile-img sk-img${loaded ? ' is-loaded' : ''}`}
                     src={img}
                     alt=""
                     loading="lazy"
+                    onLoad={onLoad}
                     onError={() => setBroken(true)}
                 />
             ) : (
@@ -86,7 +91,7 @@ export function EventTile({ event, onSelect }) {
         return (
             <button
                 type="button"
-                className="ev-tile ev-tile-btn"
+                className={`ev-tile ev-tile-btn${showImage && !loaded ? ' is-img-loading' : ''}`}
                 onClick={() => onSelect(event)}
                 aria-label={event.name}
             >
@@ -95,7 +100,7 @@ export function EventTile({ event, onSelect }) {
         );
     }
 
-    return <figure className="ev-tile">{inner}</figure>;
+    return <figure className={`ev-tile${showImage && !loaded ? ' is-img-loading' : ''}`}>{inner}</figure>;
 }
 
 // Render a merged grid from a plain event list, with a key that re-animates
@@ -107,5 +112,17 @@ export function EventGrid({ events, animKey = '', onSelect }) {
                 <EventTile key={e.id} event={e} onSelect={onSelect} />
             ))}
         </div>
+    );
+}
+
+export function EventGridSkeleton({ count = 18 }) {
+    return (
+        <LoadingRegion className="ev-grid" label="Loading events">
+            {Array.from({ length: count }, (_, i) => (
+                <div className="ev-tile ev-tile-sk" key={i}>
+                    <Skeleton className="sk-fill" />
+                </div>
+            ))}
+        </LoadingRegion>
     );
 }

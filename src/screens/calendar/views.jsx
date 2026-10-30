@@ -1,6 +1,7 @@
 import { useMemo, useRef, useEffect } from 'react';
 import { addDays, formatTime, monthMatrix, sameDay, timeToMinutes, weekDates, weekdayLabels, ymd } from '../../utils/date.js';
 import { resolveItemColor } from '../../utils/color.js';
+import { Skeleton, LoadingRegion } from '../../components/Skeleton.jsx';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -363,3 +364,28 @@ export function buildScheduleDates(centerDate, daysBack, daysForward) {
     for (let i = -daysBack; i <= daysForward; i++) dates.push(addDays(centerDate, i));
     return dates;
 }
+
+export function ScheduleSkeleton() {
+    return (
+        <LoadingRegion className="cal-schedule" label="Loading your calendar">
+            {[0, 1, 2].map((i) => (
+                <div key={i} className="cal-schedule-day">
+                    <div className="cal-schedule-day-head">
+                        <Skeleton w={110} h={14} />
+                    </div>
+                    <div className="cal-schedule-items">
+                        {[0, 1].map((j) => (
+                            <div key={j} className="cal-schedule-item">
+                                <Skeleton w={10} h={10} r={999} />
+                                <span className="cal-item-row-text" style={{ width: '100%' }}>
+                                    <Skeleton w={`${55 + ((i + j) % 3) * 12}%`} h={14} />
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ))}
+        </LoadingRegion>
+    );
+}
+

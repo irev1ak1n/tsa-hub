@@ -2,14 +2,19 @@ import { Link, useParams } from 'react-router-dom';
 import { useApp } from '../../context/AppContext.jsx';
 import { getEvent, teamSizeLabel } from '../../data/events.js';
 import { Icon } from '../../components/UI.jsx';
+import { DetailSkeleton, LoadError } from '../../components/Skeleton.jsx';
 
 export default function EventDetail() {
     const { id } = useParams();
-    const { myEvents, addEvent, removeEvent, eventsLoading } = useApp();
+    const { myEvents, addEvent, removeEvent, eventsLoading, eventsError, reloadEvents } = useApp();
     const event = getEvent(id);
 
     if (eventsLoading) {
-        return <p className="muted">Loading…</p>;
+        return <DetailSkeleton label="Loading event" />;
+    }
+
+    if (!event && eventsError) {
+        return <LoadError message="We couldn't load this event right now." onRetry={reloadEvents} />;
     }
 
     if (!event) {

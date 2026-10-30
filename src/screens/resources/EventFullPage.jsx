@@ -2,6 +2,7 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { useApp } from '../../context/AppContext.jsx';
 import { Icon } from '../../components/UI.jsx';
 import { BackLink } from './resourcesShared.jsx';
+import { DetailSkeleton, LoadError } from '../../components/Skeleton.jsx';
 import { EVENTS, getEvent, teamSizeLabel } from '../../data/events.js';
 import { getEventTheme } from '../../data/eventThemes.js';
 import { getRelatedEvents } from '../../data/eventDetailAdapter.js';
@@ -61,11 +62,26 @@ function Section({ title, children, first }) {
 
 export default function EventFullPage() {
     const { id } = useParams();
-    const { eventsLoading } = useApp();
+    const { eventsLoading, eventsError, reloadEvents } = useApp();
     const event = getEvent(id);
     const theme = getEventTheme(id);
 
-    if (eventsLoading) return <p className="muted" style={{ margin: '20px 4px' }}>Loading…</p>;
+    if (eventsLoading) {
+        return (
+            <>
+                <BackLink to="/resources/events/themes" label="Back" />
+                <DetailSkeleton label="Loading event" />
+            </>
+        );
+    }
+    if (!event && eventsError) {
+        return (
+            <>
+                <BackLink to="/resources/events/themes" label="Back" />
+                <LoadError message="We couldn't load this event right now." onRetry={reloadEvents} />
+            </>
+        );
+    }
     if (!event) return <Navigate to="/resources/events/themes" replace />;
 
     const divisionLabel = event.division === 'HS' ? 'High School' : 'Middle School';

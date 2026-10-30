@@ -5,6 +5,7 @@ import { Icon } from '../../components/UI.jsx';
 import { getStateTsa } from '../../data/stateTsa.js';
 import { BackLink } from './resourcesShared.jsx';
 import { buildResourceIndex, searchResources, SearchResults } from './resourceSearch.jsx';
+import { Skeleton, LoadingRegion } from '../../components/Skeleton.jsx';
 import { getSearchAssistAnswer } from '../../services/chatbot/searchAssist.js';
 
 // TSA Coach's direct-answer suggestion for a question-like search — reuses
@@ -30,7 +31,7 @@ function CoachSearchAssist({ query }) {
 }
 
 export default function ResourceSearch() {
-    const { prefs } = useApp();
+    const { prefs, eventsLoading } = useApp();
     const stateInfo = getStateTsa(prefs?.state);
     const inputRef = useRef(null);
 
@@ -87,6 +88,12 @@ export default function ResourceSearch() {
                 <>
                     <CoachSearchAssist query={query} />
                     <SearchResults results={results} query={query} onPick={() => addRecent(query)} />
+                    {eventsLoading && (
+                        <LoadingRegion label="Loading more results" className="rs-card" style={{ marginTop: 8 }}>
+                            <div className="rs-row"><Skeleton w={20} h={20} r={6} /><Skeleton w="62%" h={14} /></div>
+                            <div className="rs-row"><Skeleton w={20} h={20} r={6} /><Skeleton w="48%" h={14} /></div>
+                        </LoadingRegion>
+                    )}
                 </>
             ) : recent.length > 0 ? (
                 <div className="rs-recent">

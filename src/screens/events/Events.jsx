@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '../../context/AppContext.jsx';
 import { EVENTS, CATEGORIES } from '../../data/events.js';
 import { Icon, SlidersIcon } from '../../components/UI.jsx';
-import { EventGrid } from './eventsShared.jsx';
+import { EventGrid, EventGridSkeleton } from './eventsShared.jsx';
+import { LoadError } from '../../components/Skeleton.jsx';
 import EventInfoModal from './EventInfoModal.jsx';
 import SupportButton from '../../components/SupportButton.jsx';
 
@@ -102,7 +103,7 @@ function optKey(groupKey, optionId) {
 }
 
 export default function Events() {
-    const { eventsLoading } = useApp();
+    const { eventsLoading, eventsError, reloadEvents } = useApp();
     const location = useLocation();
     // Callers (e.g. the Home page's "High School events" preview) can pass a
     // starting division via navigate('/events', { state: { division } })
@@ -241,7 +242,7 @@ export default function Events() {
                     className={`ev-chip ev-chip-all ${category === 'All' ? 'on' : ''}`}
                     onClick={() => setCategory('All')}
                 >
-                    All ({divisionCount})
+                    All ({eventsLoading ? '…' : divisionCount})
                 </button>
 
                 {CATEGORIES.map((c) => (
@@ -256,11 +257,17 @@ export default function Events() {
                 ))}
             </div>
 
-            {eventsLoading && <p className="muted" style={{ marginTop: 12 }}>Loading events…</p>}
+            {eventsLoading ? (
+                <EventGridSkeleton />
+            ) : eventsError ? (
+                <div style={{ marginTop: 16 }}>
+                    <LoadError message="We couldn't load events right now." onRetry={reloadEvents} />
+                </div>
+            ) : (
+                <EventGrid events={list} animKey={`${division}|${category}|${sort}|${activeCount}`} onSelect={setOpenEvent} />
+            )}
 
-            <EventGrid events={list} animKey={`${division}|${category}|${sort}|${activeCount}`} onSelect={setOpenEvent} />
-
-            {!eventsLoading && list.length === 0 && (
+            {!eventsLoading && !eventsError && list.length === 0 && (
                 <p className="muted" style={{ marginTop: 16 }}>No events match that filter.</p>
             )}
 

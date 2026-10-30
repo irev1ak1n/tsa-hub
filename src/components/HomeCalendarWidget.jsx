@@ -7,6 +7,7 @@ import { mergeCalendarItems, indexItemsByDate } from '../utils/calendarItems.js'
 import { resolveItemColor } from '../utils/color.js';
 import { usePersonalCalendar } from '../hooks/usePersonalCalendar.js';
 import { ItemDetailsModal, ItemEditorModal } from '../screens/calendar/CalendarPanels.jsx';
+import { Skeleton, LoadingRegion } from './Skeleton.jsx';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const MONTHS_SHORT = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -72,7 +73,7 @@ export default function HomeCalendarWidget() {
     // writes through — never a Home-only copy of this data. Each mount
     // reloads from that one source, so a change made here shows up on
     // Calendar (and vice versa) the moment either page is (re)opened.
-    const { items: personalItems, createItem, updateItem, removeItem, toggleComplete, setOfficialReminder, removeOfficialReminder } = usePersonalCalendar();
+    const { items: personalItems, loading: personalLoading, createItem, updateItem, removeItem, toggleComplete, setOfficialReminder, removeOfficialReminder } = usePersonalCalendar();
 
     const mergedItems = useMemo(() => mergeCalendarItems(OFFICIAL_EVENTS, personalItems), [personalItems]);
     const itemsByDate = useMemo(() => indexItemsByDate(mergedItems), [mergedItems]);
@@ -162,7 +163,12 @@ export default function HomeCalendarWidget() {
                         </button>
                     </div>
                     <div className="home-cal-items-list">
-                        {selectedItems.length === 0 ? (
+                        {personalLoading ? (
+                            <LoadingRegion label="Loading your calendar">
+                                <div className="home-cal-item"><Skeleton w={14} h={14} r={999} /><Skeleton w="70%" h={12} /></div>
+                                <div className="home-cal-item"><Skeleton w={14} h={14} r={999} /><Skeleton w="55%" h={12} /></div>
+                            </LoadingRegion>
+                        ) : selectedItems.length === 0 ? (
                             <p className="home-cal-empty">No events or reminders for this day.</p>
                         ) : (
                             selectedItems.map((item) => (
