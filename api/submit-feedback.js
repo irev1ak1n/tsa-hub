@@ -12,7 +12,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import {
-    sha256, getClientIp, setApiHeaders, isTrustedOrigin, isJsonRequest, parseBody, getServiceClient, allowRequest, releaseRequest,
+    sha256, getClientIp, setApiHeaders, isTrustedOrigin, isJsonRequest, parseBody, getServiceClient, allowRequest, releaseRequest, isProduction, LimiterUnavailableError,
 } from './_lib/security.js';
 
 export const config = { api: { bodyParser: { sizeLimit: '32kb' } } };
@@ -64,8 +64,11 @@ const EMAIL_LIMIT = { max: 3, windowSeconds: 3600 };
 const GLOBAL_LIMIT = { max: 120, windowSeconds: 3600 };
 const DUPLICATE_WINDOW_SECONDS = 600;
 
+// Production writes always use the service-role client. The anon-key
+// fallback exists only for local development and non-production deployments.
 function getWriteClient(serviceClient) {
     if (serviceClient) return serviceClient;
+    if (isProduction()) return null;
     const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
     const anonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
     return url && anonKey ? createClient(url, anonKey, { auth: { persistSession: false } }) : null;
@@ -208,7 +211,7 @@ async function sendNotificationEmail(payload) {
     }
 }
 
-export default async function handler(req, res) {
+async function handle(req, res) {
     setApiHeaders(res);
 
     if (req.method !== 'POST') {
@@ -220,6 +223,10 @@ export default async function handler(req, res) {
     if (Number(req.headers['content-length']) > MAX_BODY_BYTES) return res.status(413).json({ ok: false, error: 'payload too large' });
 
     const serviceClient = getServiceClient();
+    if (isProduction() && !serviceClient) {
+        console.error('submit-feedback: SUPABASE_SERVICE_ROLE_KEY is not configured in production.');
+        return res.status(503).json({ ok: false, error: 'service temporarily unavailable' });
+    }
 
     if (!(await allowRequest(serviceClient, `feedback:ip:${sha256(getClientIp(req))}`, IP_LIMIT.max, IP_LIMIT.windowSeconds))) {
         return res.status(429).json({ ok: false, error: 'too many submissions, please try again later' });
@@ -272,4 +279,16 @@ ${storedMessage}`)}`;
     }
 
     return res.status(200).json({ ok: true });
+}
+
+export default async function handler(req, res) {
+    try {
+        return await handle(req, res);
+    } catch (err) {
+        if (err instanceof LimiterUnavailableError) {
+            return res.status(503).json({ ok: false, error: 'service temporarily unavailable' });
+        }
+        console.error('submit-feedback: unexpected error', err?.name);
+        return res.status(500).json({ ok: false, error: 'server error' });
+    }
 }

@@ -5,7 +5,8 @@
 // write-up. The Gemini key lives ONLY in this function's secrets, never in the
 // browser. Deploy:  supabase functions deploy ai-feedback
 // Set secrets:      supabase secrets set GEMINI_API_KEY=... ALLOWED_ORIGINS=https://your-domain
-// Not called by the current app; deploy only if the feature is turned on.
+// Not called by the current app and slated for retirement (SECURITY.md step 8);
+// redeploy only if an AI feature is added.
 // ============================================================================
 
 // Origins allowed to call this function (comma-separated, e.g.

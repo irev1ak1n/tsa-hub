@@ -46,6 +46,7 @@ beforeEach(() => {
     vi.stubEnv('VITE_SUPABASE_URL', 'https://example.supabase.co');
     vi.stubEnv('VITE_SUPABASE_ANON_KEY', 'anon-key');
     vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY', '');
+    vi.stubEnv('VERCEL_ENV', '');
     vi.stubEnv('RESEND_API_KEY', 'resend-key');
     vi.stubEnv('FEEDBACK_TO_EMAIL', 'owner@example.com');
     insert.mockReset().mockResolvedValue({ error: null });
@@ -249,5 +250,50 @@ describe('rate limiting', () => {
         rpc.mockResolvedValue({ data: null, error: { message: 'function does not exist' } });
         const res = await call({ body: { type: 'feedback', message: 'limiter not migrated yet' } });
         expect(res.statusCode).toBe(200);
+    });
+});
+
+describe('production failure modes', () => {
+    beforeEach(() => vi.stubEnv('VERCEL_ENV', 'production'));
+
+    it('refuses submissions when the service-role key is missing, with no anon write', async () => {
+        const res = await call({ body: { type: 'feedback', message: 'no service key' } });
+        expect(res.statusCode).toBe(503);
+        expect(JSON.stringify(res.body)).not.toMatch(/key|service_role|supabase/i);
+        expect(insert).not.toHaveBeenCalled();
+        expect(createClient.mock.calls.every(([, key]) => key !== 'anon-key')).toBe(true);
+    });
+
+    it('refuses when the shared limiter errors instead of using a weaker limit', async () => {
+        vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY', 'service-key');
+        rpc.mockResolvedValue({ data: null, error: { code: 'PGRST202', message: 'function not found' } });
+        const res = await call({ body: { type: 'feedback', message: 'limiter missing' } });
+        expect(res.statusCode).toBe(503);
+        expect(insert).not.toHaveBeenCalled();
+        expect(emailFetch).not.toHaveBeenCalled();
+    });
+
+    it('refuses when the limiter call throws', async () => {
+        vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY', 'service-key');
+        rpc.mockRejectedValue(new Error('network down'));
+        const res = await call({ body: { type: 'feedback', message: 'limiter throws' } });
+        expect(res.statusCode).toBe(503);
+        expect(insert).not.toHaveBeenCalled();
+    });
+
+    it('works normally with the service key and a healthy limiter', async () => {
+        vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY', 'service-key');
+        rpc.mockResolvedValue({ data: true, error: null });
+        const res = await call({ body: { type: 'feedback', message: 'all healthy' } });
+        expect(res.statusCode).toBe(200);
+        expect(insert).toHaveBeenCalledTimes(1);
+        expect(emailFetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('treats NODE_ENV=production outside Vercel as production', async () => {
+        vi.stubEnv('VERCEL_ENV', '');
+        vi.stubEnv('NODE_ENV', 'production');
+        const res = await call({ body: { type: 'feedback', message: 'node env production' } });
+        expect(res.statusCode).toBe(503);
     });
 });

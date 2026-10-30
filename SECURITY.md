@@ -1,34 +1,143 @@
-# TSA Hub security notes
+# TSA Hub security notes and deployment runbook
 
-## Request flow
+## Architecture
 
 - Browser: `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` only. The anon key is public by design; RLS limits it to reading published events.
-- `POST /api/submit-feedback` (Vercel): the only write path for Feedback, Report Incorrect Information and Get Involved. Holds `SUPABASE_SERVICE_ROLE_KEY` and `RESEND_API_KEY`, and sends the single notification email.
-- `supabase/functions/ai-feedback`: not called by the current app (the recommender runs locally). Deploy it only if that feature is switched on.
+- `POST /api/submit-feedback` (Vercel): the only write path for Feedback, Report Incorrect Information and Get Involved. It holds `SUPABASE_SERVICE_ROLE_KEY` and `RESEND_API_KEY` and sends the single notification email.
+- `supabase/functions/ai-feedback`: never called by the app (no reference in `src/` or `api/`, and none in any commit). Retire it.
+- `supabase/functions/feedback-email`: only ever called by the `on_feedback_insert` trigger, which Phase A drops. Retire it.
 
 ## What the API enforces
 
-Same-origin check (own host plus `ALLOWED_ORIGINS`), JSON-only, 32 KB body cap, field validation and control-character stripping, honeypot and minimum fill time for Get Involved, identical-resubmission dedupe, and rate limits shared across instances through `public.check_rate_limit` (8 per IP per 10 min, 3 per email per hour for Get Involved, 120 per hour overall). If the limiter is unavailable it falls back to per-instance memory. Errors returned to clients carry no internal detail. `vercel.json` sets CSP, HSTS, frame, referrer and permissions headers.
+Same-origin check (own host plus `ALLOWED_ORIGINS`), JSON only, 32 KB body cap, field validation, control-character stripping, honeypot and minimum fill time for Get Involved, and de-duplication of identical resubmissions. Rate limits are shared across serverless instances through `public.check_rate_limit`: 8 per IP per 10 minutes, 3 per email per hour (Get Involved), 120 per hour overall.
 
-## Deployment order
+Production fails closed. When `VERCEL_ENV=production` (or `NODE_ENV=production` outside Vercel):
 
-1. Take a backup: Supabase Dashboard > Database > Backups, and run `supabase/security/00_backup.sql`.
-2. Vercel env vars (Production and Preview): add `SUPABASE_SERVICE_ROLE_KEY` (server only, never `VITE_`), optionally `ALLOWED_ORIGINS`. Confirm `RESEND_API_KEY`, `FEEDBACK_TO_EMAIL`, `RESEND_FROM_EMAIL` are set.
-3. Deploy this commit to Vercel.
-4. Run `supabase/security/01_phase_a.sql`. It adds the rate limiter, drops the duplicate-email trigger, locks down `notify_feedback()`, adds feedback constraints, trims table privileges and consolidates RLS policies. Validated in a rolled-back transaction against production; not applied.
-5. Submit one test of each form on the deployed site. Confirm one email each and a new row in `feedback`.
-6. Run `supabase/security/02_phase_b.sql` to remove public inserts into `feedback`. Do this only after step 5 passes; it breaks submissions if the service key is missing.
-7. Undeploy the retired function: `supabase functions delete feedback-email`.
-8. If `ai-feedback` stays deployed: redeploy it (JWT verification on), set `ALLOWED_ORIGINS` and `GEMINI_API_KEY` as secrets, and set `GEMINI_MODEL` to a current model, or delete it.
-9. Dashboard: enable leaked-password protection under Auth.
+- no `SUPABASE_SERVICE_ROLE_KEY` -> `503`, nothing written (no anon-key fallback);
+- shared limiter missing, erroring or unreachable -> `503`, nothing written (no in-memory fallback).
 
-Rollback: `supabase/security/rollback.sql` (and `security_backup_20261030` holds the original rows, policies and function definitions).
+Only development, tests and non-production deployments use the anon key and per-instance memory. `vercel.json` sets CSP, HSTS, frame, referrer and permissions headers.
+
+## State on 2026-10-30 (verified, not assumed)
+
+- Commit `c05ac7d` auto-deployed to Vercel Production: deployment `dpl_9pvtmuVGanqHA5L5w2qH1YyKBzxb`, state `READY`, aliased to `tsa-hub.vercel.app`. The live site serves the new CSP headers and returns `403` to a cross-origin POST.
+- The Vercel project has only four variables, all Production-only: `FEEDBACK_TO_EMAIL`, `RESEND_API_KEY`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`. There is no `SUPABASE_SERVICE_ROLE_KEY` yet and nothing for Preview.
+- The Supabase database and the two deployed Edge Functions are unchanged. Phase A/B SQL has not been applied.
+- **Consequence:** the build that adds the fail-closed behavior returns `503` for all three forms until steps 3 and 4 below are done. Do them in one sitting. Event browsing and the recommender are unaffected.
+
+## Environment variables
+
+- Add `SUPABASE_SERVICE_ROLE_KEY` to the **Production** environment only, as a **Sensitive** variable. Do not tick Preview or Development. Preview deployments must never hold unrestricted production credentials; without it they simply refuse submissions.
+- Optional Production variables: `RESEND_FROM_EMAIL` (currently the `onboarding@resend.dev` default), `ALLOWED_ORIGINS` (extra custom domains).
+- Never prefix the service key with `VITE_`, never commit it, and do not run `vercel env pull` into a tracked file.
+
+## Backup (a gate before any production change)
+
+`supabase/security/00_backup.sql` is only an in-database snapshot of the rows and security settings the scripts touch. It lives in the same database, so it is lost with it. It is not a backup. Take a full logical export first.
+
+Get the connection details from Dashboard > Project Settings > Database (reset the DB password there if you do not have it). Keep the password in an environment variable, not in the command.
+
+Option 1, Supabase CLI (needs Docker Desktop running):
+
+```bash
+supabase link --project-ref zpjdybbvtolwwxsfjcny
+mkdir -p backup-20261030
+supabase db dump --linked -f backup-20261030/roles.sql --role-only
+supabase db dump --linked -f backup-20261030/schema.sql
+supabase db dump --linked -f backup-20261030/data.sql --data-only --use-copy
+```
+
+Option 2, `pg_dump` 17 (matches the server's Postgres 17):
+
+```bash
+pg_dump "$SUPABASE_DB_URL" --format=custom --no-owner --file=backup-20261030/tsa-hub.dump
+```
+
+Keep `backup-20261030/` outside the repo (it contains feedback submissions, including names and emails). Also confirm the dashboard backups under Database > Backups.
+
+Verify the export is usable before continuing:
+
+1. Files exist and are non-empty. For the CLI dump, `grep -c "^COPY public\." backup-20261030/data.sql` should be at least 3; for the custom dump, `pg_restore --list backup-20261030/tsa-hub.dump` should list `TABLE DATA public events`, `feedback` and `profiles`.
+2. Restore into a scratch database that is not production: `supabase start` (local, Docker), then load `roles.sql`, `schema.sql` and `data.sql` with `psql` (or `pg_restore --no-owner -d <scratch>`).
+3. In the scratch database, confirm the counts match production at export time (last seen: 83 events of which 79 have `archived = false`, 13 feedback rows, 4 profiles):
+
+```sql
+select (select count(*) from public.events) events,
+       (select count(*) from public.events where archived = false) active_events,
+       (select count(*) from public.feedback) feedback,
+       (select count(*) from public.profiles) profiles;
+```
+
+Do not go past this step until the restore check passes. (Not yet done: the machine used for this review has neither Docker nor `pg_dump`, so no export was produced or verified.)
+
+Also run `supabase/security/00_backup.sql` for the in-database snapshot.
+
+## Deployment runbook
+
+Run SQL with `supabase db query --linked -f <file>` (project is linked) or paste it into the Dashboard SQL editor.
+
+**1. Export and verify** as above. Rollback: none needed.
+
+**2. Snapshot** with `00_backup.sql`.
+
+**3. Phase A SQL** - `supabase/security/01_phase_a.sql` (one transaction, idempotent). Adds the shared limiter, drops the duplicate-email trigger, locks down `notify_feedback()`, bounds feedback rows, removes unused table privileges and consolidates RLS policies. Verify:
+
+```sql
+select to_regclass('public.rate_limits') as limiter_table,
+       (select count(*) from pg_trigger where tgname = 'on_feedback_insert') as trigger_left,
+       (select count(*) from public.events where archived = false) as active_events,
+       has_function_privilege('anon', 'public.check_rate_limit(text,integer,integer)', 'execute') as anon_can_call_limiter;
+```
+
+Expect `public.rate_limits`, `0`, `79`, `false`. Public event reads must still work and exclude archived rows:
+
+```bash
+curl -s "$SUPABASE_URL/rest/v1/events?select=id&archived=eq.false" -H "apikey: $ANON_KEY" | python -c "import json,sys; print(len(json.load(sys.stdin)))"
+```
+
+Expect `79`. Rollback: `rollback_phase_a.sql`.
+
+**4. Service-role key and redeploy.** In Vercel > tsa-hub > Settings > Environment Variables, add `SUPABASE_SERVICE_ROLE_KEY` (Dashboard > Project Settings > API Keys > service_role), Environment = Production only, Sensitive on. Then Deployments > latest Production > Redeploy (variables apply only to new deployments). Verify these probes, none of which store anything:
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" -X POST https://tsa-hub.vercel.app/api/submit-feedback -H "Content-Type: application/json" -H "Origin: https://evil.example" -d "{}"        # 403
+curl -s -o /dev/null -w "%{http_code}\n" -X POST https://tsa-hub.vercel.app/api/submit-feedback -H "Content-Type: application/json" -H "Origin: https://tsa-hub.vercel.app" -d "{}"   # 400 (503 means key or limiter missing)
+curl -s -o /dev/null -w "%{http_code}\n" https://tsa-hub.vercel.app/api/submit-feedback    # 405
+```
+
+Rollback: remove the variable and redeploy. Forms then return `503` (safe, not insecure); to restore the old anon behavior instead, redeploy commit `c05ac7d` and run `rollback_phase_b.sql` if Phase B was applied.
+
+**5. Test each form on the live site**, one submission each, using obviously fake text (start it with `TEST`): Feedback, Report Incorrect Information, Get Involved. Expect for each: success message, exactly one email, one new `feedback` row, and a row per key in `select key, hits from public.rate_limits order by window_start desc limit 10;`. Submit one a second time unchanged: no second row, no second email. Optionally remove the test rows afterwards: `delete from public.feedback where message like 'TEST%';`.
+
+**6. Phase B SQL** - `02_phase_b.sql`, only after step 5 passes. Verify direct anonymous writes are now refused (expect HTTP 401 or 403 with code 42501) and a form still works:
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" -X POST "$SUPABASE_URL/rest/v1/feedback" -H "apikey: $ANON_KEY" -H "Content-Type: application/json" -d '{"message":"TEST direct insert","type":"feedback"}'
+```
+
+Do not run this probe before Phase B: it would insert a row. Rollback: `rollback_phase_b.sql` (re-opens public inserts; emergency only).
+
+**7. Retire `feedback-email`** (after step 3 the trigger no longer calls it, and it requires a secret header it will never receive): `supabase functions delete feedback-email --project-ref zpjdybbvtolwwxsfjcny`. Verify with `supabase functions list --project-ref zpjdybbvtolwwxsfjcny`, and by submitting one form: still exactly one email. Rollback: redeploy the previous version from git history with `supabase functions deploy feedback-email --no-verify-jwt` (and re-create the trigger only if you want the duplicate email back).
+
+**8. Retire `ai-feedback`.** First check Dashboard > Edge Functions > ai-feedback > Invocations/Logs for traffic, and your Gemini usage page for unexplained spend; the function has been open to anyone, so any traffic there is not from this app. Then `supabase functions delete ai-feedback --project-ref zpjdybbvtolwwxsfjcny`. If you later add an AI feature, redeploy the hardened version from this repo with JWT verification on, `supabase secrets set ALLOWED_ORIGINS=... GEMINI_API_KEY=... GEMINI_MODEL=<current model>` and use the shared limiter. Delete the `GEMINI_API_KEY` secret if you stop using it.
+
+**9. Dashboard:** Authentication > Settings > enable leaked-password protection.
+
+## Rollback reference
+
+| Undo | Run | Effect |
+| --- | --- | --- |
+| Phase B | `rollback_phase_b.sql` | Re-opens public inserts into `feedback`. Independent of Phase A. |
+| Phase A | `rollback_phase_a.sql` | Restores original `events`/`profiles` policies, drops feedback constraints. Independent of Phase B. |
+| Everything | Phase B rollback, then Phase A rollback | See below. |
+
+`rollback_phase_a.sql` deliberately keeps the rate limiter, the dropped trigger, the hardened `notify_feedback()` and the revoked TRUNCATE/TRIGGER/REFERENCES privileges, so rolling back never re-opens a hole and never breaks the fail-closed API. Both scripts and Phase A are idempotent. Last resort is restoring the verified export from step 1.
 
 ## Known remaining risks
 
 - Per-IP limits can be sidestepped by rotating IPs; the global and per-email caps bound the damage.
-- Origin checks stop browsers on other sites, not scripts that set headers themselves.
-- `react-router` 6.x has moderate advisories fixed only in v7 (a major upgrade). The app has no SSR and navigates only to internal routes.
-- `vite`/`esbuild` advisories affect the development server only.
+- The origin check stops browsers on other sites, not scripts that set headers themselves.
+- `react-router` 6.x has moderate advisories fixed only in v7 (a major upgrade). The app has no SSR and navigates only to internal routes. `vite`/`esbuild` advisories affect the development server only.
 - `pg_net` is installed in `public`; it can be dropped once nothing else uses it.
-- The `feedback-email` and `ai-feedback` functions stay publicly reachable until steps 7-8.
+- The two Edge Functions remain publicly reachable until steps 7 and 8.
+- Preview deployments cannot load data or submit forms (they have no variables); that is intentional.

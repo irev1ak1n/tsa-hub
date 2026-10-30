@@ -62,6 +62,8 @@ $$;
 revoke execute on function public.notify_feedback() from public, anon, authenticated;
 
 -- 3. Bound what a feedback row can contain, whoever inserts it.
+alter table public.feedback drop constraint if exists feedback_message_length;
+alter table public.feedback drop constraint if exists feedback_type_allowed;
 alter table public.feedback
     add constraint feedback_message_length check (char_length(message) between 1 and 12000),
     add constraint feedback_type_allowed   check (type in ('feedback', 'report', 'get-involved'));
@@ -73,6 +75,7 @@ revoke truncate, trigger, references on public.events, public.feedback, public.p
 --    queries archived = false.
 drop policy if exists "events are readable by signed-in users" on public.events;
 drop policy if exists "Public read events" on public.events;
+drop policy if exists "Public read published events" on public.events;
 create policy "Public read published events" on public.events
     for select to anon, authenticated
     using (archived is not true);
@@ -82,6 +85,7 @@ drop policy if exists "read own profile" on public.profiles;
 drop policy if exists "read public profiles" on public.profiles;
 drop policy if exists "insert own profile" on public.profiles;
 drop policy if exists "update own profile" on public.profiles;
+drop policy if exists "read own or public profiles" on public.profiles;
 create policy "read own or public profiles" on public.profiles
     for select to authenticated
     using ((select auth.uid()) = id or is_private = false);

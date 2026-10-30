@@ -3,6 +3,14 @@ import { createClient } from '@supabase/supabase-js';
 
 const memoryHits = new Map();
 
+export class LimiterUnavailableError extends Error {}
+
+// Vercel sets VERCEL_ENV; outside Vercel, NODE_ENV=production counts too.
+export function isProduction() {
+    const vercelEnv = process.env.VERCEL_ENV;
+    return vercelEnv ? vercelEnv === 'production' : process.env.NODE_ENV === 'production';
+}
+
 export function sha256(value) {
     return createHash('sha256').update(String(value)).digest('hex');
 }
@@ -69,19 +77,24 @@ function memoryAllow(key, limit, windowSeconds) {
 }
 
 // Shared across serverless instances via public.check_rate_limit (see
-// supabase/migrations). Falls back to per-instance memory when the service
-// key or the function is not available yet, so requests are never blocked
-// by a limiter outage.
+// supabase/security). In production there is no weaker fallback: if the
+// shared limiter cannot answer, the request is refused. Per-instance memory
+// is used only in development, tests and non-production deployments.
 export async function allowRequest(client, key, limit, windowSeconds) {
     if (client) {
-        const { data, error } = await client.rpc('check_rate_limit', {
-            p_key: key,
-            p_limit: limit,
-            p_window_seconds: windowSeconds,
-        });
-        if (!error && typeof data === 'boolean') return data;
-        console.error('rate-limit rpc failed, using in-memory fallback:', error?.message);
+        try {
+            const { data, error } = await client.rpc('check_rate_limit', {
+                p_key: key,
+                p_limit: limit,
+                p_window_seconds: windowSeconds,
+            });
+            if (!error && typeof data === 'boolean') return data;
+            console.error('rate-limit rpc failed:', error?.code || error?.message);
+        } catch (err) {
+            console.error('rate-limit rpc threw:', err?.name);
+        }
     }
+    if (isProduction()) throw new LimiterUnavailableError('shared rate limiter unavailable');
     return memoryAllow(key, limit, windowSeconds);
 }
 
