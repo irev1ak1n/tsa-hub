@@ -18,13 +18,14 @@ Production fails closed. When `VERCEL_ENV=production` (or `NODE_ENV=production` 
 
 Only development, tests and non-production deployments use the anon key and per-instance memory. `vercel.json` sets CSP, HSTS, frame, referrer and permissions headers.
 
-## State on 2026-10-30 (verified, not assumed)
+## Production security status (2026-10-30)
 
-- Commit `c05ac7d` auto-deployed to Vercel Production: deployment `dpl_9pvtmuVGanqHA5L5w2qH1YyKBzxb`, state `READY`, aliased to `tsa-hub.vercel.app`. The live site serves the new CSP headers and returns `403` to a cross-origin POST.
-- The Vercel project has only four variables, all Production-only: `FEEDBACK_TO_EMAIL`, `RESEND_API_KEY`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`. There is no `SUPABASE_SERVICE_ROLE_KEY` yet and nothing for Preview.
-- Database rollout update (2026-10-30): after independently verifying the offsite logical dump, `00_backup.sql` and `01_phase_a.sql` were applied successfully to production. Verification showed 83 events (79 active), 13 feedback rows, 4 profiles, a service-role-only limiter, and no `on_feedback_insert` trigger. Phase B and both Edge Functions remain unchanged.
-- Vercel `SUPABASE_SERVICE_ROLE_KEY` was added through the dashboard; a new production deployment and live feedback checks are required before Phase B.
-- **Consequence:** the build that adds the fail-closed behavior returns `503` for all three forms until steps 3 and 4 below are done. Do them in one sitting. Event browsing and the recommender are unaffected.
+- Full logical backup of `public`, `auth`, and `storage` was independently restored and verified before rollout; archive stays outside Git.
+- `00_backup.sql` and `01_phase_a.sql` were applied; service-role-only rate limiting is active, and the old `on_feedback_insert` trigger is gone.
+- `SUPABASE_SERVICE_ROLE_KEY` is configured on Vercel Production only. Live Feedback, Report Incorrect Information, and Get Involved submissions all succeeded, creating one database row per form and one notification email each.
+- The `service_role` role needed an additional explicit `GRANT INSERT ON public.feedback`. After applying that grant, `02_phase_b.sql` was applied. `anon` and `authenticated` cannot insert directly; `service_role` can. A live Phase B feedback submission was saved successfully. Last verification: 83 events (79 active), 18 feedback rows, 4 profiles.
+- The *deployed* Supabase functions `feedback-email` and `ai-feedback` were older than their hardened GitHub source and had `verify_jwt=false`. Both were replaced in production with inert handlers returning HTTP 410 and `verify_jwt=true` (`feedback-email` v7, `ai-feedback` v10). They remain listed as ACTIVE until permanently deleted by Supabase CLI/dashboard; **do not redeploy the source-tree functions inadvertently**.
+- Final cleanup: delete the retired Edge Functions using `supabase functions delete feedback-email --project-ref zpjdybbvtolwwxsfjcny` and `supabase functions delete ai-feedback --project-ref zpjdybbvtolwwxsfjcny`; then list functions to confirm. Keep their historical source in Git history for recovery. Review whether stale Gemini credentials should be revoked separately. Keep the verified backup private.
 
 ## Environment variables
 
