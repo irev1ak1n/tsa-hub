@@ -22,7 +22,8 @@ Only development, tests and non-production deployments use the anon key and per-
 
 - Commit `c05ac7d` auto-deployed to Vercel Production: deployment `dpl_9pvtmuVGanqHA5L5w2qH1YyKBzxb`, state `READY`, aliased to `tsa-hub.vercel.app`. The live site serves the new CSP headers and returns `403` to a cross-origin POST.
 - The Vercel project has only four variables, all Production-only: `FEEDBACK_TO_EMAIL`, `RESEND_API_KEY`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`. There is no `SUPABASE_SERVICE_ROLE_KEY` yet and nothing for Preview.
-- The Supabase database and the two deployed Edge Functions are unchanged. Phase A/B SQL has not been applied.
+- Database rollout update (2026-10-30): after independently verifying the offsite logical dump, `00_backup.sql` and `01_phase_a.sql` were applied successfully to production. Verification showed 83 events (79 active), 13 feedback rows, 4 profiles, a service-role-only limiter, and no `on_feedback_insert` trigger. Phase B and both Edge Functions remain unchanged.
+- Vercel `SUPABASE_SERVICE_ROLE_KEY` was added through the dashboard; a new production deployment and live feedback checks are required before Phase B.
 - **Consequence:** the build that adds the fail-closed behavior returns `503` for all three forms until steps 3 and 4 below are done. Do them in one sitting. Event browsing and the recommender are unaffected.
 
 ## Environment variables
