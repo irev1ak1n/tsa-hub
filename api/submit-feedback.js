@@ -1,25 +1,23 @@
 // ============================================================================
 // TSA HUB — server-side handler for Send Feedback / Report Incorrect
-// Information.
+// Information / Get Involved.
 //
-// Runs as a Vercel serverless function (Node.js runtime), never in the
-// browser, so it's the only place allowed to hold RESEND_API_KEY. The React
-// form (src/services/feedbackService.js) POSTs here instead of talking to
-// Supabase or Resend directly.
-//
-// Flow per request:
-//   1. Validate the payload.
-//   2. Insert the Supabase `feedback` row — the exact same shape the client
-//      used to insert directly (message, type). This is the row of record;
-//      once it's saved, the submission has "succeeded" from the user's
-//      point of view.
-//   3. Best-effort send a notification email via Resend. A failure here is
-//      logged but never turns a successful Supabase save into a failure
-//      response — the report already exists and is not lost.
+// Runs as a Vercel serverless function and is the only place that holds
+// RESEND_API_KEY and SUPABASE_SERVICE_ROLE_KEY. Per request: same-origin
+// check, rate limits (shared via Supabase), validation, insert into
+// `feedback`, then one best-effort notification email. This is the only
+// sender of notification emails; the old database trigger is retired by the
+// supabase/migrations files.
 // ============================================================================
 
 import { createClient } from '@supabase/supabase-js';
+import {
+    sha256, getClientIp, setApiHeaders, isTrustedOrigin, isJsonRequest, parseBody, getServiceClient, allowRequest, releaseRequest,
+} from './_lib/security.js';
 
+export const config = { api: { bodyParser: { sizeLimit: '32kb' } } };
+
+const MAX_BODY_BYTES = 32 * 1024;
 const MAX_MESSAGE_LENGTH = 5000;
 const MAX_PAGE_LENGTH = 300;
 const MAX_NAME_LENGTH = 100;
@@ -61,79 +59,22 @@ const HELP_OPTIONS = ['Beta Testing', 'Suggesting Features', 'Development or Des
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const NAME_HAS_LETTER_RE = /\p{L}/u;
 
-function getSupabaseConfig() {
+const IP_LIMIT = { max: 8, windowSeconds: 600 };
+const EMAIL_LIMIT = { max: 3, windowSeconds: 3600 };
+const GLOBAL_LIMIT = { max: 120, windowSeconds: 3600 };
+const DUPLICATE_WINDOW_SECONDS = 600;
+
+function getWriteClient(serviceClient) {
+    if (serviceClient) return serviceClient;
     const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
     const anonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-    return { url, anonKey };
-}
-
-// ----------------------------------------------------------------------------
-// Rate limiting. Best-effort, not a hard guarantee: this is a single
-// serverless function instance's in-memory state, so it resets on cold start
-// and isn't shared across concurrent instances. It still stops the common
-// case (a script hammering this one endpoint from one IP) without needing
-// new infrastructure. See the "remaining limitations" note in the commit
-// this was added in for what it doesn't cover.
-// ----------------------------------------------------------------------------
-const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
-const RATE_LIMIT_MAX = 8;
-const requestsByIp = new Map();
-
-function getClientIp(req) {
-    const forwarded = req.headers?.['x-forwarded-for'];
-    if (typeof forwarded === 'string' && forwarded.length > 0) return forwarded.split(',')[0].trim();
-    return req.socket?.remoteAddress || 'unknown';
-}
-
-function isRateLimited(ip) {
-    const now = Date.now();
-    const recent = (requestsByIp.get(ip) || []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
-    recent.push(now);
-    requestsByIp.set(ip, recent);
-    // Keep this from growing without bound in a long-lived warm instance.
-    if (requestsByIp.size > 5000) requestsByIp.clear();
-    return recent.length > RATE_LIMIT_MAX;
-}
-
-function escapeLikePattern(value) {
-    return value.replace(/[%_\\]/g, (c) => `\\${c}`);
-}
-
-// A second, Supabase-backed check specific to Get Involved: even across cold
-// starts / multiple instances, the same email shouldn't be able to submit
-// repeatedly in a short window. The structured fields aren't in their own
-// columns (see buildGetInvolvedSummary), so this matches on the "Email: "
-// line the summary always writes.
-//
-// KNOWN LIMITATION: this SELECT runs as the `anon` key (the only Supabase
-// credential this function holds), and the current `feedback` table RLS
-// policy only grants `anon` INSERT, not SELECT — confirmed directly against
-// production (a REST SELECT with the anon key returns 42501 permission
-// denied). So this query currently always hits the catch below and fails
-// open (returns 0), meaning this check does not yet limit anything in
-// production. Fixing it needs a narrow, count-only RPC (a SECURITY DEFINER
-// Postgres function that returns a count, not row data) so `anon` never
-// gains raw read access to stored feedback messages — intentionally not
-// done in this change since it alters production database permissions.
-// The in-memory per-IP limiter below this still applies regardless.
-async function recentGetInvolvedSubmissionsByEmail(supabase, email) {
-    const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-    const { count, error } = await supabase
-        .from('feedback')
-        .select('id', { count: 'exact', head: true })
-        .eq('type', 'get-involved')
-        .ilike('message', `%Email: ${escapeLikePattern(email)}%`)
-        .gte('created_at', since);
-    if (error) {
-        console.error('submit-feedback: rate-limit lookup failed, allowing request', error.message);
-        return 0;
-    }
-    return count || 0;
+    return url && anonKey ? createClient(url, anonKey, { auth: { persistSession: false } }) : null;
 }
 
 function clampString(value, maxLength) {
     if (typeof value !== 'string') return '';
-    const trimmed = value.trim();
+    // eslint-disable-next-line no-control-regex
+    const trimmed = value.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '').trim();
     return trimmed.length > maxLength ? trimmed.slice(0, maxLength) : trimmed;
 }
 
@@ -257,68 +198,74 @@ async function sendNotificationEmail(payload) {
         });
 
         if (!res.ok) {
-            const body = await res.text().catch(() => '');
-            console.error('submit-feedback: Resend responded with an error', res.status, body);
+            console.error('submit-feedback: Resend responded with an error', res.status);
             return { sent: false };
         }
         return { sent: true };
     } catch (err) {
-        console.error('submit-feedback: failed to reach Resend', err);
+        console.error('submit-feedback: failed to reach Resend', err?.name);
         return { sent: false };
     }
 }
 
 export default async function handler(req, res) {
+    setApiHeaders(res);
+
     if (req.method !== 'POST') {
         res.setHeader('Allow', 'POST');
         return res.status(405).json({ ok: false, error: 'method not allowed' });
     }
+    if (!isTrustedOrigin(req)) return res.status(403).json({ ok: false, error: 'forbidden' });
+    if (!isJsonRequest(req)) return res.status(415).json({ ok: false, error: 'unsupported content type' });
+    if (Number(req.headers['content-length']) > MAX_BODY_BYTES) return res.status(413).json({ ok: false, error: 'payload too large' });
 
-    const clientIp = getClientIp(req);
-    if (isRateLimited(clientIp)) {
+    const serviceClient = getServiceClient();
+
+    if (!(await allowRequest(serviceClient, `feedback:ip:${sha256(getClientIp(req))}`, IP_LIMIT.max, IP_LIMIT.windowSeconds))) {
         return res.status(429).json({ ok: false, error: 'too many submissions, please try again later' });
     }
 
-    let body = req.body;
-    if (typeof body === 'string') {
-        try { body = JSON.parse(body); } catch { body = null; }
-    }
+    const body = parseBody(req);
+    if (body && JSON.stringify(body).length > MAX_BODY_BYTES) return res.status(413).json({ ok: false, error: 'payload too large' });
 
     const { value, error } = validatePayload(body || {});
     if (error) return res.status(400).json({ ok: false, error });
 
-    // Flagged as spam by the honeypot or too-fast-to-be-human check — report
-    // success without touching Supabase or Resend, so whatever sent it has
-    // no signal anything was rejected.
+    // Honeypot / too-fast submissions get a success response so the sender
+    // learns nothing, but nothing is stored or emailed.
     if (value.spam) return res.status(200).json({ ok: true });
 
-    const { url, anonKey } = getSupabaseConfig();
-    if (!url || !anonKey) {
-        console.error('submit-feedback: Supabase URL/anon key is not configured.');
-        return res.status(500).json({ ok: false, error: 'server misconfigured' });
+    if (!(await allowRequest(serviceClient, 'feedback:global', GLOBAL_LIMIT.max, GLOBAL_LIMIT.windowSeconds))) {
+        return res.status(429).json({ ok: false, error: 'too many submissions, please try again later' });
     }
 
-    const supabase = createClient(url, anonKey);
-
-    if (value.type === 'get-involved') {
-        const recentCount = await recentGetInvolvedSubmissionsByEmail(supabase, value.email);
-        if (recentCount >= 3) {
-            return res.status(429).json({ ok: false, error: 'too many submissions from this email, please try again later' });
-        }
+    if (value.type === 'get-involved'
+        && !(await allowRequest(serviceClient, `feedback:email:${sha256(value.email.toLowerCase())}`, EMAIL_LIMIT.max, EMAIL_LIMIT.windowSeconds))) {
+        return res.status(429).json({ ok: false, error: 'too many submissions from this email, please try again later' });
     }
 
     const storedMessage = value.type === 'get-involved' ? buildGetInvolvedSummary(value) : value.message;
-    const { error: dbError } = await supabase
-        .from('feedback')
-        .insert({ message: storedMessage, type: value.type }, { returning: 'minimal' });
 
+    // Identical resubmissions (double taps, replays) are acknowledged once.
+    const dedupeKey = `feedback:dup:${sha256(`${value.type}
+${storedMessage}`)}`;
+    if (!(await allowRequest(serviceClient, dedupeKey, 1, DUPLICATE_WINDOW_SECONDS))) {
+        return res.status(200).json({ ok: true });
+    }
+
+    const supabase = getWriteClient(serviceClient);
+    if (!supabase) {
+        console.error('submit-feedback: Supabase is not configured.');
+        return res.status(500).json({ ok: false, error: 'server misconfigured' });
+    }
+
+    const { error: dbError } = await supabase.from('feedback').insert({ message: storedMessage, type: value.type });
     if (dbError) {
-        console.error('submit-feedback: Supabase insert failed', dbError.message);
+        console.error('submit-feedback: Supabase insert failed', dbError.code);
+        await releaseRequest(serviceClient, dedupeKey).catch(() => {});
         return res.status(500).json({ ok: false, error: 'failed to save submission' });
     }
 
-    // The record is saved — this is now a successful submission no matter
-    // what happens with email delivery below.
     const { sent } = await sendNotificationEmail(value);
     if (!sent) {
         console.error(`submit-feedback: submission saved but notification email was not sent (type=${value.type}).`);

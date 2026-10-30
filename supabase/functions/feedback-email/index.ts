@@ -9,18 +9,31 @@
 //   FEEDBACK_TO      the email that should receive submissions
 //   FEEDBACK_FROM    verified sender, e.g. "TSA Hub <onboarding@resend.dev>"
 //
-// Deploy:  supabase functions deploy feedback-email --no-verify-jwt
+//   WEBHOOK_SECRET   shared secret the caller must send in x-webhook-secret
+//
+// RETIRING: api/submit-feedback.js now sends the notification email itself,
+// so the on_feedback_insert trigger that called this function is dropped by
+// supabase/migrations. After that migration, undeploy this function:
+//   supabase functions delete feedback-email
+// Until then it rejects any request that lacks WEBHOOK_SECRET.
 // ============================================================================
 
-const CORS = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "authorization, content-type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+const CORS = {};
 
 Deno.serve(async (req) => {
-    if (req.method === "OPTIONS") {
-        return new Response("ok", { headers: CORS });
+    if (req.method !== "POST") {
+        return new Response(JSON.stringify({ error: "method not allowed" }), {
+            status: 405,
+            headers: { ...CORS, "Content-Type": "application/json" },
+        });
+    }
+
+    const secret = Deno.env.get("WEBHOOK_SECRET");
+    if (!secret || req.headers.get("x-webhook-secret") !== secret) {
+        return new Response(JSON.stringify({ error: "unauthorized" }), {
+            status: 401,
+            headers: { ...CORS, "Content-Type": "application/json" },
+        });
     }
 
     try {
@@ -30,7 +43,7 @@ Deno.serve(async (req) => {
 
         if (!apiKey || !to) {
             return new Response(
-                JSON.stringify({ error: "Missing RESEND_API_KEY or FEEDBACK_TO secret" }),
+                JSON.stringify({ error: "service unavailable" }),
                 { status: 500, headers: { ...CORS, "Content-Type": "application/json" } },
             );
         }
@@ -75,8 +88,8 @@ Deno.serve(async (req) => {
         });
 
         if (!res.ok) {
-            const detail = await res.text();
-            return new Response(JSON.stringify({ error: "Resend failed", detail }), {
+            console.error("Resend failed", res.status);
+            return new Response(JSON.stringify({ error: "email failed" }), {
                 status: 502,
                 headers: { ...CORS, "Content-Type": "application/json" },
             });
@@ -86,7 +99,8 @@ Deno.serve(async (req) => {
             headers: { ...CORS, "Content-Type": "application/json" },
         });
     } catch (e) {
-        return new Response(JSON.stringify({ error: String(e) }), {
+        console.error("feedback-email error", String(e));
+        return new Response(JSON.stringify({ error: "server error" }), {
             status: 500,
             headers: { ...CORS, "Content-Type": "application/json" },
         });

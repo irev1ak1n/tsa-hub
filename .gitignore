@@ -31,3 +31,5 @@ coverage/
 
 # Test cases
 .claude/
+
+!.env.example
