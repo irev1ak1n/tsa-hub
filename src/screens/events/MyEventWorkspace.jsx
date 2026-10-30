@@ -4,7 +4,7 @@ import { useApp } from '../../context/AppContext.jsx';
 import { getEvent } from '../../data/events.js';
 import {
     addPortfolioFile, deletePortfolioFile, downloadPortfolioFile, emptyPortfolio,
-    exportPortfolio, listPortfolioFiles, newWorkspaceId, readPortfolio, savePortfolio,
+    exportPortfolio, importPortfolio, listPortfolioFiles, newWorkspaceId, readPortfolio, savePortfolio,
 } from '../../services/eventWorkspaceDb.js';
 import { Icon } from '../../components/UI.jsx';
 
@@ -87,7 +87,7 @@ function Collection({ title, hint, entries, fields, onAdd, onUpdate, onRemove })
 
 export default function MyEventWorkspace() {
     const { id } = useParams();
-    const { myEvents, eventsLoading, checklists, tasks, addChecklistItem, toggleChecklist, removeChecklistItem, addTask, moveTask, deleteTask } = useApp();
+    const { myEvents, eventsLoading, checklists, tasks, addChecklistItem, toggleChecklist, removeChecklistItem, addTask, moveTask, deleteTask, replaceEventPlan } = useApp();
     const event = getEvent(id);
     const isSaved = myEvents.includes(id);
     const checklist = checklists?.[id] || [];
@@ -177,9 +177,28 @@ export default function MyEventWorkspace() {
         setBusy(true);
         try {
             await saveQueue.current;
-            await exportPortfolio(id);
+            await exportPortfolio(id, { checklist, milestones });
         } catch (err) {
             setError(err.message || 'Could not export the workspace.');
+        } finally { setBusy(false); }
+    }
+
+    async function restoreBackup(e) {
+        const file = e.target.files?.[0];
+        e.target.value = '';
+        if (!file) return;
+        if (!window.confirm('Replace this event’s existing portfolio, attached files, checklist and milestones with the selected backup? This cannot be undone.')) return;
+        setBusy(true);
+        setError('');
+        try {
+            await saveQueue.current;
+            const restored = await importPortfolio(id, file);
+            portfolioRef.current = restored.portfolio;
+            setPortfolio(restored.portfolio);
+            setFiles(await listPortfolioFiles(id));
+            replaceEventPlan(id, restored.checklist, restored.milestones);
+        } catch (err) {
+            setError(err.message || 'Could not restore this backup.');
         } finally { setBusy(false); }
     }
 
@@ -357,8 +376,13 @@ export default function MyEventWorkspace() {
                                 onAdd={() => addEntry('awards', { title: '', result: '', year: '' })} onUpdate={(entryId, key, value) => editEntry('awards', entryId, key, value)}
                                 onRemove={entryId => removeEntry('awards', entryId)} />
                             <section className="ew-panel ew-backup">
-                                <div><h2>Keep a copy of your work</h2><p>Download an offline JSON backup containing portfolio notes, links, team details, awards, and attached files. Checklist tasks and deadlines remain in app preferences and are not included in this backup yet.</p></div>
-                                <button type="button" className="ew-button ew-button-primary" onClick={backupWorkspace} disabled={busy}><Icon name="file-text" size={16} /> Export portfolio backup</button>
+                                <div><h2>Back up your workspace</h2><p>Export a JSON file with project notes, attachments, checklists, and milestones. You can restore it on this or another device. Keep backups private.</p></div>
+                                <div className="ew-backup-actions">
+                                    <button type="button" className="ew-button ew-button-primary" onClick={backupWorkspace} disabled={busy}><Icon name="download" size={16} /> Export backup</button>
+                                    <label className={'ew-button ew-button-light ew-upload' + (busy ? ' disabled' : '')}>Import backup
+                                        <input type="file" accept=".json,application/json" disabled={busy} onChange={restoreBackup} aria-label="Import a workspace backup" />
+                                    </label>
+                                </div>
                             </section>
                         </>
                     )}
