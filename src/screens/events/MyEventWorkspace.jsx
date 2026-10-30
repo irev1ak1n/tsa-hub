@@ -77,7 +77,7 @@ function Collection({ title, hint, entries, fields, onAdd, onUpdate, onRemove })
                             ))}
                             {entry.url && safeUrl(entry.url) && <a className="ew-open-link" href={safeUrl(entry.url)} target="_blank" rel="noopener noreferrer">Open reference <Icon name="chevron-right" size={13} /></a>}
                         </div>
-                        <button type="button" className="ew-icon-button ew-delete" onClick={() => onRemove(entry.id)} aria-label={'Remove ' + title.toLowerCase().replace(/s$/, '')}><Icon name="trash-2" size={16} /></button>
+                        <button type="button" className="ew-icon-button ew-delete" onClick={() => onRemove(entry.id)} aria-label={'Remove ' + title.toLowerCase().replace(/s$/, '')}><Icon name="trash" size={16} /></button>
                     </div>
                 ))}
             </div>
@@ -201,7 +201,7 @@ export default function MyEventWorkspace() {
     const tabs = [
         { id: 'checklist', name: 'Checklist', icon: 'check' },
         { id: 'deadlines', name: 'Deadlines', icon: 'cal' },
-        { id: 'portfolio', name: 'Portfolio', icon: 'folder' },
+        { id: 'portfolio', name: 'Portfolio', icon: 'book' },
     ];
 
     return (
@@ -296,7 +296,7 @@ export default function MyEventWorkspace() {
                                                 <div className="ew-milestone-info"><strong>{task.title}</strong><span className={'ew-status ' + status.tone}>{status.label}</span></div>
                                                 <div className="ew-milestone-actions">
                                                     <button type="button" className="ew-button ew-button-light" onClick={() => moveTask(task.id, done ? 'todo' : 'done')}>{done ? 'Reopen' : 'Mark done'}</button>
-                                                    <button type="button" className="ew-icon-button ew-delete" aria-label={'Delete ' + task.title} onClick={() => deleteTask(task.id)}><Icon name="trash-2" size={15} /></button>
+                                                    <button type="button" className="ew-icon-button ew-delete" aria-label={'Delete ' + task.title} onClick={() => deleteTask(task.id)}><Icon name="trash" size={15} /></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -343,7 +343,7 @@ export default function MyEventWorkspace() {
                                             <Icon name="file-text" size={20} />
                                             <span className="ew-file-name"><strong>{file.name}</strong><small><FileSize bytes={file.size} /></small></span>
                                             <button type="button" className="ew-button ew-button-light" onClick={() => downloadFile(file.id)}>Download</button>
-                                            <button type="button" className="ew-icon-button ew-delete" aria-label={'Remove ' + file.name} onClick={() => removeFile(file.id)}><Icon name="trash-2" size={16} /></button>
+                                            <button type="button" className="ew-icon-button ew-delete" aria-label={'Remove ' + file.name} onClick={() => removeFile(file.id)}><Icon name="trash" size={16} /></button>
                                         </div>
                                     ))}
                                 </div>
