@@ -68,7 +68,9 @@ select (select count(*) from public.events) events,
        (select count(*) from public.profiles) profiles;
 ```
 
-Do not go past this step until the restore check passes. (Not yet done: the machine used for this review has neither Docker nor `pg_dump`, so no export was produced or verified.)
+Do not go past this step until the restore check passes.
+
+Status (2026-10-30): done and verified. `pg_dump` 18.6 (installed with Scoop, no Docker) exported `public`, `auth` and `storage` to `C:\Users\illia\tsa-hub-backups\20261030\tsa-portal.dump` (outside the repo; SHA-256 in `tsa-portal.dump.sha256`). It was restored twice into a local scratch PostgreSQL (127.0.0.1:54329, never production). Row counts, row-content checksums, columns, indexes, RLS flags, policies, grants, triggers and functions all match production. The only differences are PostgreSQL 18 listing NOT NULL rules as constraints and a different ordering inside one `auth.jwt()` permission list. A schema dump does not capture, and a brand-new project would need set up separately: database roles and extensions (`pg_net`, `pgcrypto`, `uuid-ossp`, which Supabase provides), Auth settings (providers, SMTP, JWT secret), API keys, Edge Function code and secrets, and Vercel variables. The `auth` data (4 users, 167 refresh tokens) restored; `storage` has no buckets or files.
 
 Also run `supabase/security/00_backup.sql` for the in-database snapshot.
 
@@ -132,6 +134,18 @@ Do not run this probe before Phase B: it would insert a row. Rollback: `rollback
 | Everything | Phase B rollback, then Phase A rollback | See below. |
 
 `rollback_phase_a.sql` deliberately keeps the rate limiter, the dropped trigger, the hardened `notify_feedback()` and the revoked TRUNCATE/TRIGGER/REFERENCES privileges, so rolling back never re-opens a hole and never breaks the fail-closed API. Both scripts and Phase A are idempotent. Last resort is restoring the verified export from step 1.
+
+## Mobile (Capacitor) readiness
+
+Not implemented yet. These are the decisions to keep in mind so the backend does not need rebuilding.
+
+1. **API base URL.** A relative `/api/...` call inside a native WebView resolves to the app's own origin. The feedback client now reads `VITE_API_BASE_URL` (empty on the web, the deployed origin in a native build). Any new endpoint call must go through a base-URL helper the same way.
+2. **Origins and CORS.** A native WebView calls the site cross-origin (`capacitor://localhost` on iOS, `https://localhost` on Android), and a JSON POST triggers a preflight. The API sends no CORS headers and rejects `OPTIONS`, so native calls would fail. Two fixes for when Capacitor is added: use Capacitor's native HTTP (`CapacitorHttp`), which bypasses WebView CORS, or add exact-origin CORS plus `OPTIONS` handling for just those two origins through `ALLOWED_ORIGINS`. Never `*`. The origin check is not authentication, so rate limits stay the real control; plan Play Integrity / App Attest if abuse appears. Per-IP limits can throttle many students behind one carrier or school NAT address, so revisit the 8-per-10-minutes limit with real traffic.
+3. **Local data.** Preferences and saved events live in `localStorage` (`tsa-hub-state-v1`), the personal calendar in IndexedDB (`tsa-hub-personal-calendar`, versioned). A native app has a different origin from the website, so web data does not carry over, reinstalling deletes it, and iOS can evict WebView storage under pressure. Keep all access inside `AppContext` and `personalCalendarDb`; before launch add an export/import (or account sync) path and consider Capacitor Preferences for the small state blob. Never drop the IndexedDB store on upgrade.
+4. **Reminders and calendar export.** `notificationService` already isolates the browser Notification API and documents the native swap (Local Notifications plugin). `deviceCalendarService` downloads an `.ics` through a Blob link, which does not work in a WebView; replace it with Filesystem plus Share or a calendar plugin behind the same function.
+5. **Offline.** Rules, resources, themes and the calendar are bundled and work offline. The `events` table is fetched at launch with no cache, so an offline launch shows the error state. Add a last-good-copy cache (optionally a bundled snapshot) for events. Data that changes often (calendar, deadlines) needs either an app update or a remote JSON with a bundled fallback.
+6. **Navigation and links.** `BrowserRouter` works in Capacitor with the index fallback. Universal/App Links need files under `/.well-known/`; the Vercel rewrite skips any path containing a dot, so those static files are served as-is. External links and `mailto:` should open through the system browser or mail app; handle the Android hardware back button with the App plugin.
+7. **Security headers.** The CSP in `vercel.json` protects the website only. A native build ships its assets locally and needs its own CSP.
 
 ## Known remaining risks
 
