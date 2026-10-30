@@ -17,7 +17,7 @@ export const NATIONAL_CONFERENCE = {
             type: 'dropdown',
             children: [
                 { id: 'conference-2026', title: '2026 National Conference', route: '/resources/national-conference/2026' },
-                { id: 'conference-2027', title: '2027 National Conference', status: 'Upcoming', route: '/resources/national-conference/2027' },
+                { id: 'conference-2027', title: '2027 National Conference', route: '/resources/national-conference/2027' },
             ],
         },
         {
