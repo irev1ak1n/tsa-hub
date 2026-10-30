@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { fetchEvents } from '../services/eventsService.js';
+import { restoreEventPlan } from '../data/workspacePlan.js';
 import { setEvents } from '../data/events.js';
 
 const KEY = 'tsa-hub-state-v1';
@@ -163,29 +164,22 @@ export function AppProvider({ children }) {
       }));
     },
 
-    // Restore a single event's preparation plan from a user-chosen backup.
-    // Never overwrite tasks/checklists belonging to other saved events.
+    addChecklistItems(eventId, labels) {
+      const rows = (labels || []).map((label) => String(label).trim().slice(0, 180)).filter(Boolean);
+      if (!rows.length) return;
+      setState((s) => ({
+        ...s,
+        checklists: {
+          ...s.checklists,
+          [eventId]: [...(s.checklists[eventId] || []), ...rows.map((label) => ({ id: uid(), label, done: false }))],
+        },
+      }));
+    },
+
+    // Restore one event's checklist and milestones from a user-chosen backup.
+    // Other events' plans and all other saved data are left untouched.
     replaceEventPlan(eventId, incomingChecklist, incomingMilestones) {
-      setState((s) => {
-        const clean = (value) => typeof value === 'string' ? value.trim().slice(0, 180) : '';
-        const nextChecklist = Array.isArray(incomingChecklist)
-          ? incomingChecklist.slice(0, 300).filter(row => clean(row?.label)).map(row => ({
-              id: uid(), label: clean(row.label), done: Boolean(row.done),
-            }))
-          : (s.checklists[eventId] || []);
-        const nextTasks = Array.isArray(incomingMilestones)
-          ? [
-              ...s.tasks.filter(task => task.eventId !== eventId),
-              ...incomingMilestones.slice(0, 300).filter(row => clean(row?.title)).map(row => ({
-                id: uid(), eventId, title: clean(row.title),
-                due: /^\d{4}-\d{2}-\d{2}$/.test(row.due) ? row.due : '',
-                status: row.status === 'done' ? 'done' : 'todo',
-                assignee: clean(row.assignee),
-              })),
-            ]
-          : s.tasks;
-        return { ...s, checklists: { ...s.checklists, [eventId]: nextChecklist }, tasks: nextTasks };
-      });
+      setState((s) => restoreEventPlan(s, eventId, incomingChecklist, incomingMilestones, uid));
     },
 
     // ---- tasks ----
@@ -193,6 +187,13 @@ export function AppProvider({ children }) {
       setState((s) => ({
         ...s,
         tasks: [...s.tasks, { id: uid(), title, assignee, eventId: eventId || '', status: 'todo', due: due || '' }],
+      }));
+    },
+
+    updateTask(taskId, patch) {
+      setState((s) => ({
+        ...s,
+        tasks: s.tasks.map((t) => (t.id === taskId ? { ...t, ...patch } : t)),
       }));
     },
 
