@@ -5,6 +5,7 @@ import Dashboard from './screens/Dashboard.jsx';
 import Events from './screens/events/Events.jsx';
 import EventSearchPage from './screens/events/EventSearchPage.jsx';
 import EventDetail from './screens/events/EventDetail.jsx';
+import MyEventWorkspace from './screens/events/MyEventWorkspace.jsx';
 import Recommender from './screens/events/Recommender.jsx';
 import Resources from './screens/resources/Resources.jsx';
 import ResourcesEventThemes from './screens/resources/ResourcesEventThemes.jsx';
@@ -52,6 +53,7 @@ export default function App() {
                         <Route path="/events" element={<Events />} />
                         <Route path="/events/search" element={<EventSearchPage />} />
                         <Route path="/events/:id" element={<EventDetail />} />
+                        <Route path="/my-events/:id" element={<MyEventWorkspace />} />
                         <Route path="/recommend" element={<Recommender />} />
 
                         <Route path="/resources" element={<Resources />} />
