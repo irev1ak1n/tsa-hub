@@ -4,8 +4,7 @@
 
 - Browser: `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` only. The anon key is public by design; RLS limits it to reading published events.
 - `POST /api/submit-feedback` (Vercel): the only write path for Feedback, Report Incorrect Information and Get Involved. It holds `SUPABASE_SERVICE_ROLE_KEY` and `RESEND_API_KEY` and sends the single notification email.
-- `supabase/functions/ai-feedback`: never called by the app (no reference in `src/` or `api/`, and none in any commit). Retire it.
-- `supabase/functions/feedback-email`: only ever called by the `on_feedback_insert` trigger, which Phase A drops. Retire it.
+- Retired Supabase functions `ai-feedback` and `feedback-email` are disabled in production (JWT required, inert 410 handlers). Their obsolete entrypoint source files have been deleted from the current Git branch to prevent accidental redeployment. Historical code remains in Git history. Permanent undeployment via Supabase Dashboard/CLI is still pending.
 
 ## What the API enforces
 
@@ -25,7 +24,7 @@ Only development, tests and non-production deployments use the anon key and per-
 - `SUPABASE_SERVICE_ROLE_KEY` is configured on Vercel Production only. Live Feedback, Report Incorrect Information, and Get Involved submissions all succeeded, creating one database row per form and one notification email each.
 - The `service_role` role needed an additional explicit `GRANT INSERT ON public.feedback`. After applying that grant, `02_phase_b.sql` was applied. `anon` and `authenticated` cannot insert directly; `service_role` can. A live Phase B feedback submission was saved successfully. Last verification: 83 events (79 active), 18 feedback rows, 4 profiles.
 - The *deployed* Supabase functions `feedback-email` and `ai-feedback` were older than their hardened GitHub source and had `verify_jwt=false`. Both were replaced in production with inert handlers returning HTTP 410 and `verify_jwt=true` (`feedback-email` v7, `ai-feedback` v10). They remain listed as ACTIVE until permanently deleted by Supabase CLI/dashboard; **do not redeploy the source-tree functions inadvertently**.
-- Final cleanup: delete the retired Edge Functions using `supabase functions delete feedback-email --project-ref zpjdybbvtolwwxsfjcny` and `supabase functions delete ai-feedback --project-ref zpjdybbvtolwwxsfjcny`; then list functions to confirm. Keep their historical source in Git history for recovery. Review whether stale Gemini credentials should be revoked separately. Keep the verified backup private.
+- Cleanup update (2026-10-30): deleted exactly five testing-only feedback submissions (the four original form tests and the Phase B verification submission), leaving the 13 prior feedback records untouched. Removed both obsolete Edge Function entrypoint files from `main`. Deployed endpoints remain inert but not yet permanently deleted. To finish, use `supabase functions delete feedback-email --project-ref zpjdybbvtolwwxsfjcny` and `supabase functions delete ai-feedback --project-ref zpjdybbvtolwwxsfjcny`, then list functions; evaluate revoking unused Gemini credentials separately. Keep the verified backup private.
 
 ## Environment variables
 
@@ -121,9 +120,9 @@ curl -s -o /dev/null -w "%{http_code}\n" -X POST "$SUPABASE_URL/rest/v1/feedback
 
 Do not run this probe before Phase B: it would insert a row. Rollback: `rollback_phase_b.sql` (re-opens public inserts; emergency only).
 
-**7. Retire `feedback-email`** (after step 3 the trigger no longer calls it, and it requires a secret header it will never receive): `supabase functions delete feedback-email --project-ref zpjdybbvtolwwxsfjcny`. Verify with `supabase functions list --project-ref zpjdybbvtolwwxsfjcny`, and by submitting one form: still exactly one email. Rollback: redeploy the previous version from git history with `supabase functions deploy feedback-email --no-verify-jwt` (and re-create the trigger only if you want the duplicate email back).
+**7. Permanently undeploy `feedback-email`** (the trigger is gone and its deployed handler was replaced with an inert JWT-protected response): `supabase functions delete feedback-email --project-ref zpjdybbvtolwwxsfjcny`. Verify with `supabase functions list --project-ref zpjdybbvtolwwxsfjcny`, and by submitting one form: still exactly one email. Do not restore the vulnerable historic function without redesigning its authentication and notification pathway.
 
-**8. Retire `ai-feedback`.** First check Dashboard > Edge Functions > ai-feedback > Invocations/Logs for traffic, and your Gemini usage page for unexplained spend; the function has been open to anyone, so any traffic there is not from this app. Then `supabase functions delete ai-feedback --project-ref zpjdybbvtolwwxsfjcny`. If you later add an AI feature, redeploy the hardened version from this repo with JWT verification on, `supabase secrets set ALLOWED_ORIGINS=... GEMINI_API_KEY=... GEMINI_MODEL=<current model>` and use the shared limiter. Delete the `GEMINI_API_KEY` secret if you stop using it.
+**8. Permanently undeploy `ai-feedback`.** Check Dashboard > Edge Functions > ai-feedback > Invocations/Logs for prior usage, and your Gemini usage page for unexplained spend. The previous version was public; the current deployed handler is inert and JWT-protected. Then `supabase functions delete ai-feedback --project-ref zpjdybbvtolwwxsfjcny`. If you later add an AI feature, first build and review a new implementation with JWT verification on, `supabase secrets set ALLOWED_ORIGINS=... GEMINI_API_KEY=... GEMINI_MODEL=<current model>` and use the shared limiter. Delete the `GEMINI_API_KEY` secret if you stop using it.
 
 **9. Dashboard:** Authentication > Settings > enable leaked-password protection.
 
