@@ -27,11 +27,13 @@ export default function NationalOfficers() {
             <div className="no-list">
                 {NATIONAL_OFFICERS.map((o) => (
                     <div key={o.id} className="no-card">
-                        {officerImg[o.img] ? (
-                            <img className="no-photo" src={officerImg[o.img]} alt={o.name} />
-                        ) : (
-                            <div className="no-photo" aria-hidden="true" />
-                        )}
+                        <div className="no-photo-wrap">
+                            {officerImg[o.img] ? (
+                                <img className="no-photo" src={officerImg[o.img]} alt={o.name} />
+                            ) : (
+                                <div className="no-photo" aria-hidden="true" />
+                            )}
+                        </div>
                         <div className="no-body">
                             <p className="rs-eyebrow" style={{ marginBottom: 2 }}>{o.role}</p>
                             <h2 className="no-name">{o.name}</h2>

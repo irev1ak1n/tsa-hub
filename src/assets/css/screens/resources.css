@@ -1579,30 +1579,52 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
 }
 
 .no-card {
+    --no-card-bg: var(--set-card-bg, #151515);
+    position: relative;
     display: flex;
     flex-direction: column;
-    background: #0a0a0a;
-    border: 1px solid #333333;
+    background: var(--no-card-bg);
+    border: 1px solid var(--line);
     border-radius: var(--radius);
     overflow: hidden;
 }
 
-/* Whole portrait visible, never cropped — object-fit: contain letterboxes
-   into a neutral, theme-matching background instead of zooming/cutting off
-   the head, shoulders, or sides. Container is a mild portrait ratio (not
-   square/landscape) so most photos fill it with little to no letterboxing,
-   while staying balanced (not extremely tall) on mobile. */
+/* Edge-to-edge portrait: no wrapper padding or letterbox bars. The photos
+   are ~5:6, so this frame shows the whole head and shoulders; the slight
+   scale only trims the thin colored border baked into the source files.
+   The bottom fades into the card background so the photo and the text
+   below read as one surface. */
+.no-photo-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 5 / 6;
+    overflow: hidden;
+    background: var(--no-card-bg);
+}
+.no-photo-wrap::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 42%;
+    pointer-events: none;
+    background: linear-gradient(to bottom, transparent 0%, color-mix(in srgb, var(--no-card-bg) 14%, transparent) 30%, color-mix(in srgb, var(--no-card-bg) 60%, transparent) 62%, color-mix(in srgb, var(--no-card-bg) 92%, transparent) 88%, var(--no-card-bg) 100%);
+}
+
 .no-photo {
     display: block;
     width: 100%;
-    aspect-ratio: 3 / 4;
-    object-fit: contain;
-    object-position: center center;
-    background: var(--surface-2);
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    transform: scale(1.035);
+    transform-origin: 50% 35%;
 }
+div.no-photo { background: var(--surface-2); transform: none; }
 
 .no-body {
-    padding: 14px 16px 16px;
+    position: relative;
+    margin-top: -22px;
+    padding: 0 16px 18px;
 }
 
 .no-name {
@@ -1656,7 +1678,8 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
 
 /* Two columns once there's room, still one clean column on phones. */
 @media (min-width: 640px) {
-    .no-card { flex-direction: row; }
-    .no-photo { width: 200px; flex: 0 0 200px; aspect-ratio: 3 / 4; }
-    .no-body { flex: 1; padding: 16px 20px; }
+    .no-card { flex-direction: row; align-items: flex-start; }
+    .no-photo-wrap { width: 220px; flex: 0 0 220px; }
+    .no-photo-wrap::after { inset: 0 0 0 auto; width: 38%; height: auto; background: linear-gradient(to right, transparent 0%, color-mix(in srgb, var(--no-card-bg) 14%, transparent) 30%, color-mix(in srgb, var(--no-card-bg) 60%, transparent) 62%, color-mix(in srgb, var(--no-card-bg) 92%, transparent) 88%, var(--no-card-bg) 100%); }
+    .no-body { flex: 1; margin-top: 0; margin-left: -18px; padding: 18px 22px 20px 0; }
 }

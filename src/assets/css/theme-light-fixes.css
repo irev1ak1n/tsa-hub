@@ -146,7 +146,7 @@ html[data-theme="light"] .myev-modal-badge {
 /* National TSA Officers page cards — same light inversion as the rest of
    the app's dark-first cards (Home tiles, calendar widget, etc). */
 html[data-theme="light"] .no-card {
-    background: #ffffff;
+    --no-card-bg: #ffffff;
     border-color: #d0d0da;
 }
 html[data-theme="light"] .no-name { color: #111111; }
