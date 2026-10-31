@@ -1656,7 +1656,7 @@ div.no-photo { background: var(--surface-2); transform: none; }
     font-family: var(--font-system);
     font-size: 13.5px;
     line-height: 20px;
-    color: var(--muted);
+    color: #ffffff;
 }
 .no-bio-first {
     margin-top: 10px;

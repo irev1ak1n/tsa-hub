@@ -150,6 +150,7 @@ html[data-theme="light"] .no-card {
 }
 html[data-theme="light"] .no-name { color: #111111; }
 html[data-theme="light"] .no-meta { color: #1a1a1f; }
+html[data-theme="light"] .no-bio { color: var(--muted); }
 
 html[data-theme="light"] .home-cal-day { color: #111111; }
 html[data-theme="light"] .home-cal-day.is-outside { color: #8a8a95; }
