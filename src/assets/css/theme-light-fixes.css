@@ -147,7 +147,6 @@ html[data-theme="light"] .myev-modal-badge {
    the app's dark-first cards (Home tiles, calendar widget, etc). */
 html[data-theme="light"] .no-card {
     --no-card-bg: #ffffff;
-    border-color: #d0d0da;
 }
 html[data-theme="light"] .no-name { color: #111111; }
 html[data-theme="light"] .no-meta { color: #1a1a1f; }

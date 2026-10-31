@@ -1584,30 +1584,21 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
     display: flex;
     flex-direction: column;
     background: var(--no-card-bg);
-    border: 1px solid var(--line);
     border-radius: var(--radius);
     overflow: hidden;
 }
 
-/* Edge-to-edge portrait: no wrapper padding or letterbox bars. The photos
-   are ~5:6, so this frame shows the whole head and shoulders; the slight
-   scale only trims the thin colored border baked into the source files.
-   The bottom fades into the card background so the photo and the text
-   below read as one surface. */
+/* The portrait sits flush in the card with only a thin black border: no
+   wrapper padding, background or overlay. The photos are ~5:6, so this frame
+   shows the whole head and shoulders; the slight scale trims the colored
+   border baked into the source files (clipped inside the black border). */
 .no-photo-wrap {
-    position: relative;
     width: 100%;
     aspect-ratio: 5 / 6;
     overflow: hidden;
-    background: var(--no-card-bg);
-}
-.no-photo-wrap::after {
-    content: '';
-    position: absolute;
-    inset: auto 0 0 0;
-    height: 42%;
-    pointer-events: none;
-    background: linear-gradient(to bottom, transparent 0%, color-mix(in srgb, var(--no-card-bg) 14%, transparent) 30%, color-mix(in srgb, var(--no-card-bg) 60%, transparent) 62%, color-mix(in srgb, var(--no-card-bg) 92%, transparent) 88%, var(--no-card-bg) 100%);
+    box-sizing: border-box;
+    border: 1.5px solid #000;
+    border-radius: var(--radius) var(--radius) 0 0;
 }
 
 .no-photo {
@@ -1622,9 +1613,7 @@ a.rs-contact-line:hover { color: var(--ig-blue); }
 div.no-photo { background: var(--surface-2); transform: none; }
 
 .no-body {
-    position: relative;
-    margin-top: -22px;
-    padding: 0 16px 18px;
+    padding: 16px 16px 18px;
 }
 
 .no-name {
@@ -1679,7 +1668,6 @@ div.no-photo { background: var(--surface-2); transform: none; }
 /* Two columns once there's room, still one clean column on phones. */
 @media (min-width: 640px) {
     .no-card { flex-direction: row; align-items: flex-start; }
-    .no-photo-wrap { width: 220px; flex: 0 0 220px; }
-    .no-photo-wrap::after { inset: 0 0 0 auto; width: 38%; height: auto; background: linear-gradient(to right, transparent 0%, color-mix(in srgb, var(--no-card-bg) 14%, transparent) 30%, color-mix(in srgb, var(--no-card-bg) 60%, transparent) 62%, color-mix(in srgb, var(--no-card-bg) 92%, transparent) 88%, var(--no-card-bg) 100%); }
-    .no-body { flex: 1; margin-top: 0; margin-left: -18px; padding: 18px 22px 20px 0; }
+    .no-photo-wrap { width: 220px; flex: 0 0 220px; border-radius: var(--radius); }
+    .no-body { flex: 1; padding: 18px 22px 20px; }
 }
