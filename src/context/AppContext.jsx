@@ -1,6 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { fetchEvents } from '../services/eventsService.js';
-import { restoreEventPlan } from '../data/workspacePlan.js';
 import { setEvents } from '../data/events.js';
 
 const KEY = 'tsa-hub-state-v1';
@@ -164,36 +163,11 @@ export function AppProvider({ children }) {
       }));
     },
 
-    addChecklistItems(eventId, labels) {
-      const rows = (labels || []).map((label) => String(label).trim().slice(0, 180)).filter(Boolean);
-      if (!rows.length) return;
-      setState((s) => ({
-        ...s,
-        checklists: {
-          ...s.checklists,
-          [eventId]: [...(s.checklists[eventId] || []), ...rows.map((label) => ({ id: uid(), label, done: false }))],
-        },
-      }));
-    },
-
-    // Restore one event's checklist and milestones from a user-chosen backup.
-    // Other events' plans and all other saved data are left untouched.
-    replaceEventPlan(eventId, incomingChecklist, incomingMilestones) {
-      setState((s) => restoreEventPlan(s, eventId, incomingChecklist, incomingMilestones, uid));
-    },
-
     // ---- tasks ----
     addTask({ title, assignee, eventId, due }) {
       setState((s) => ({
         ...s,
         tasks: [...s.tasks, { id: uid(), title, assignee, eventId: eventId || '', status: 'todo', due: due || '' }],
-      }));
-    },
-
-    updateTask(taskId, patch) {
-      setState((s) => ({
-        ...s,
-        tasks: s.tasks.map((t) => (t.id === taskId ? { ...t, ...patch } : t)),
       }));
     },
 
