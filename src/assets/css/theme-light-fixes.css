@@ -629,3 +629,30 @@ html[data-theme="light"] .home-cal-month-label,
 html[data-theme="light"] .home-cal-weekdays span { color: #15181e; }
 html[data-theme="light"] .home-cal-day.is-outside,
 html[data-theme="light"] .cal-cell.is-outside .cal-cell-num { color: #6a6f7a; }
+
+/* Resources content pages: slightly larger, darker body text (light theme) */
+html[data-theme="light"] .aw-intro,
+html[data-theme="light"] .aw-sub,
+html[data-theme="light"] .aw-note,
+html[data-theme="light"] .aw-page .rk-scholar-text,
+html[data-theme="light"] .aw-page .rk-list-item,
+html[data-theme="light"] .rk-scholar-text,
+html[data-theme="light"] .rk-list-item,
+html[data-theme="light"] .rk-point-text,
+html[data-theme="light"] .rk-group-item,
+html[data-theme="light"] .rk-intro,
+html[data-theme="light"] .doc-p {
+    color: #050507;
+    font-size: 15.5px;
+    line-height: 1.6;
+}
+html[data-theme="light"] .rk-block-body,
+html[data-theme="light"] .rk-group-intro,
+html[data-theme="light"] .rk-callout-text,
+html[data-theme="light"] .rk-source-sub,
+html[data-theme="light"] .rk-footer {
+    color: #0d0d12;
+    font-size: 14.5px;
+}
+html[data-theme="light"] .rk-source-label,
+html[data-theme="light"] .rk-sub-num { color: #1a1a1f; }
