@@ -146,9 +146,7 @@ describe('validation', () => {
         [{ type: 'nope', message: 'x' }],
         [{ type: 'feedback' }],
         [{ type: 'feedback', message: '   ' }],
-        [{ type: 'get-involved', fullName: 'A', email: 'bad', helpWith: ['Beta Testing'] }],
-        [{ type: 'get-involved', fullName: 'Pat Doe', email: 'pat@example.com', helpWith: ['Hack the planet'] }],
-        [{ type: 'get-involved', fullName: 'Pat Doe', email: 'pat@example.com', state: 'Atlantis', helpWith: ['Beta Testing'] }],
+        [{ type: 'get-involved', fullName: 'Pat Doe', email: 'pat@example.com', helpWith: ['Beta Testing'] }],
     ])('returns 400 for %j', async (body) => {
         const res = await call({ body });
         expect(res.statusCode).toBe(400);
@@ -162,18 +160,13 @@ describe('validation', () => {
         expect(stored.startsWith('ab')).toBe(true);
     });
 
-    it('treats a filled honeypot as success without storing or emailing', async () => {
-        const res = await call({ body: { type: 'get-involved', company: 'bot', fullName: 'Pat Doe', email: 'pat@example.com', helpWith: ['Beta Testing'] } });
-        expect(res.statusCode).toBe(200);
+    it('no longer accepts the retired Get Involved type and never stores it', async () => {
+        const res = await call({ body: { type: 'get-involved', fullName: 'Pat Doe', email: 'pat@example.com' } });
+        expect(res.statusCode).toBe(400);
         expect(insert).not.toHaveBeenCalled();
         expect(emailFetch).not.toHaveBeenCalled();
     });
 
-    it('treats an instant submission as success without storing', async () => {
-        const res = await call({ body: { type: 'get-involved', loadedAt: Date.now(), fullName: 'Pat Doe', email: 'pat@example.com', helpWith: ['Beta Testing'] } });
-        expect(res.statusCode).toBe(200);
-        expect(insert).not.toHaveBeenCalled();
-    });
 });
 
 describe('successful submissions', () => {
@@ -191,19 +184,6 @@ describe('successful submissions', () => {
         const res = await call({ body: { type: 'report', message: 'Wrong date on the calendar', suggestedCorrection: 'June 23' } });
         expect(res.statusCode).toBe(200);
         expect(insert.mock.calls[0][0].type).toBe('report');
-    });
-
-    it('handles a Get Involved submission', async () => {
-        const res = await call({
-            body: {
-                type: 'get-involved', loadedAt: Date.now() - 60000, fullName: 'Pat Doe', email: 'pat@example.com',
-                role: 'Student Member', state: 'North Carolina', helpWith: ['Beta Testing'], message: 'Happy to help',
-            },
-        });
-        expect(res.statusCode).toBe(200);
-        expect(insert.mock.calls[0][0].type).toBe('get-involved');
-        expect(insert.mock.calls[0][0].message).toContain('Email: pat@example.com');
-        expect(emailFetch).toHaveBeenCalledTimes(1);
     });
 
     it('still succeeds when the notification email fails, without leaking details', async () => {
@@ -243,15 +223,6 @@ describe('rate limiting', () => {
         }
         expect(statuses.slice(0, 8).every((s) => s === 200)).toBe(true);
         expect(statuses.slice(8)).toEqual([429, 429]);
-    });
-
-    it('limits one email address to 3 Get Involved submissions per hour', async () => {
-        const base = { type: 'get-involved', loadedAt: Date.now() - 60000, fullName: 'Pat Doe', email: 'limit@example.com', helpWith: ['Beta Testing'] };
-        const statuses = [];
-        for (let i = 0; i < 5; i += 1) {
-            statuses.push((await call({ body: { ...base, message: `note ${i}` } })).statusCode);
-        }
-        expect(statuses).toEqual([200, 200, 200, 429, 429]);
     });
 
     it('uses the shared Supabase limiter and service-role insert when the service key is set', async () => {

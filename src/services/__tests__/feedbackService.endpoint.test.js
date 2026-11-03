@@ -24,9 +24,9 @@ describe('feedback endpoint', () => {
 
     it('prefixes the configured base URL for native builds, ignoring trailing slashes', async () => {
         vi.stubEnv('VITE_API_BASE_URL', 'https://tsa-hub.vercel.app/');
-        const { submitReport, submitGetInvolved } = await loadService();
+        const { submitReport, submitFeedback } = await loadService();
         await submitReport('wrong date');
-        await submitGetInvolved({ fullName: 'Pat Doe' });
+        await submitFeedback('great app');
         expect(fetch.mock.calls.map((c) => c[0])).toEqual([
             'https://tsa-hub.vercel.app/api/submit-feedback',
             'https://tsa-hub.vercel.app/api/submit-feedback',

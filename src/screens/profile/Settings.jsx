@@ -4,7 +4,6 @@ import { useApp } from '../../context/AppContext.jsx';
 import { Icon } from '../../components/UI.jsx';
 import { submitFeedback, submitReport } from '../../services/feedbackService.js';
 import SubmitModal from '../../components/SubmitModal.jsx';
-import GetInvolvedModal from '../../components/GetInvolvedModal.jsx';
 
 // One settings row. If `onClick` is passed the WHOLE row is clickable
 // (button), not just the chevron. `onEdit`/plain rows are unchanged.
@@ -46,7 +45,7 @@ function Row({ icon, label, value, onEdit, soon, onClick }) {
 export default function Settings() {
     const navigate = useNavigate();
     const { theme, toggleTheme } = useApp();
-    const [modal, setModal] = useState(null); // 'feedback' | 'report' | 'get-involved' | null
+    const [modal, setModal] = useState(null); // 'feedback' | 'report' | null
 
     const dark = theme !== 'light';
 
@@ -83,7 +82,6 @@ export default function Settings() {
                 <div className="set-card-title">Support</div>
                 <Row icon="help" label="Help Center" onClick={() => navigate('/help')} />
                 <Row icon="chat" label="Send Feedback" onClick={() => setModal('feedback')} />
-                <Row icon="users" label="Get Involved" onClick={() => setModal('get-involved')} />
                 <Row icon="info" label="Report Incorrect Information" onClick={() => setModal('report')} />
             </div>
 
@@ -99,7 +97,7 @@ export default function Settings() {
             {modal === 'feedback' && (
                 <SubmitModal
                     title="Send Feedback"
-                    hint="Found an issue or have a suggestion? We&rsquo;d love to hear it."
+                    hint="Found an issue or have a suggestion? We&rsquo;d love to hear it. Please leave out personal information. If you&rsquo;re under 13, ask a parent or teacher first."
                     placeholder="Type your feedback…"
                     doneText="Thanks! Your feedback was sent."
                     onSubmit={submitFeedback}
@@ -110,16 +108,12 @@ export default function Settings() {
             {modal === 'report' && (
                 <SubmitModal
                     title="Report Incorrect Information"
-                    hint="See something wrong or out of date? Tell us what needs fixing and where."
+                    hint="See something wrong or out of date? Tell us what needs fixing and where. Please leave out personal information. If you&rsquo;re under 13, ask a parent or teacher first."
                     placeholder="Describe the incorrect information…"
                     doneText="Thanks! Your report was sent."
                     onSubmit={submitReport}
                     onClose={() => setModal(null)}
                 />
-            )}
-
-            {modal === 'get-involved' && (
-                <GetInvolvedModal onClose={() => setModal(null)} />
             )}
         </>
     );
