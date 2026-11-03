@@ -563,3 +563,69 @@ html[data-theme="light"] .qae-modal,
 html[data-theme="light"] .qae-modal .rs-modal-head {
     background: #ffffff;
 }
+
+/* ---- Stronger light-theme contrast (second pass) ---- */
+html[data-theme="light"] { --muted: #23272f; }
+
+html[data-theme="light"] .rs-desc,
+html[data-theme="light"] .rs-note,
+html[data-theme="light"] .doc-note,
+html[data-theme="light"] .rs-sub,
+html[data-theme="light"] .rs-subhead,
+html[data-theme="light"] .rs-group-label { color: #15181e; }
+html[data-theme="light"] .rs-desc { font-size: 14px; line-height: 19px; }
+
+/* Filter chips, search bars and buttons */
+html[data-theme="light"] .ev-chip,
+html[data-theme="light"] .ev-chip-add,
+html[data-theme="light"] .ev-pill,
+html[data-theme="light"] .ev-filter-btn,
+html[data-theme="light"] .ev-search,
+html[data-theme="light"] .rs-search,
+html[data-theme="light"] .rs-state-search,
+html[data-theme="light"] .qae-search {
+    border: 1.5px solid #1a1a1f;
+}
+html[data-theme="light"] .ev-chip.on { border-color: #111111; }
+html[data-theme="light"] .ev-chip-sep { background: #1a1a1f; }
+
+/* Home: calendar widget, quick actions, links, leadership tiles */
+html[data-theme="light"] .home-cal-widget,
+html[data-theme="light"] .home-cal-add-btn,
+html[data-theme="light"] .home-cal-right,
+html[data-theme="light"] .quick3-tile,
+html[data-theme="light"] .qae-tile,
+html[data-theme="light"] .home-link-item,
+html[data-theme="light"] .leadership-tile,
+html[data-theme="light"] .home-officers-card,
+html[data-theme="light"] .home-get-involved-card,
+html[data-theme="light"] .home-recommender-card {
+    border-color: #1a1a1f;
+}
+html[data-theme="light"] .home-cal-widget,
+html[data-theme="light"] .quick3-tile,
+html[data-theme="light"] .home-link-item,
+html[data-theme="light"] .leadership-tile { border-width: 1.5px; }
+
+/* Calendar page: view switcher, Today and arrow buttons */
+html[data-theme="light"] .cal-view-switcher,
+html[data-theme="light"] .cal-nav-btn,
+html[data-theme="light"] .cal-today-btn,
+html[data-theme="light"] .cal-today-link {
+    border: 1.5px solid #1a1a1f;
+}
+html[data-theme="light"] .cal-view-switcher button { color: #111111; font-weight: 700; }
+html[data-theme="light"] .cal-view-switcher button.is-active { color: #ffffff; }
+html[data-theme="light"] .cal-nav-btn,
+html[data-theme="light"] .cal-today-btn,
+html[data-theme="light"] .cal-today-link { color: #0d0d12; }
+html[data-theme="light"] .cal-weekday,
+html[data-theme="light"] .cal-empty,
+html[data-theme="light"] .cal-helper-text,
+html[data-theme="light"] .cal-week-day-name,
+html[data-theme="light"] .cal-item-row-time,
+html[data-theme="light"] .home-cal-empty,
+html[data-theme="light"] .home-cal-month-label,
+html[data-theme="light"] .home-cal-weekdays span { color: #15181e; }
+html[data-theme="light"] .home-cal-day.is-outside,
+html[data-theme="light"] .cal-cell.is-outside .cal-cell-num { color: #6a6f7a; }
