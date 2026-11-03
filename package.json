@@ -2,7 +2,7 @@
   "name": "tsa-hub",
   "private": true,
   "version": "0.1.0",
-  "description": "TSA Hub — student platform for Technology Student Association competition prep (v1 demo)",
+  "description": "TSA Hub \u00e2\u20ac\u201d student platform for Technology Student Association competition prep (v1 demo)",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,16 +11,35 @@
     "sync:tsa-calendar": "node scripts/syncTsaCalendar.mjs",
     "test:coach": "vitest run src/services/chatbot/__tests__",
     "test:resources-search": "vitest run src/screens/resources/__tests__",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build:native": "node scripts/buildNative.mjs",
+    "ios:sync": "node scripts/buildNative.mjs",
+    "ios:open": "npx cap open ios",
+    "native:assets": "node scripts/makeNativeAssets.mjs && npx capacitor-assets generate --ios"
   },
   "dependencies": {
+    "@capacitor/app": "^7.1.2",
+    "@capacitor/browser": "^7.0.5",
+    "@capacitor/core": "^7.6.10",
+    "@capacitor/filesystem": "^7.1.9",
+    "@capacitor/keyboard": "^7.0.6",
+    "@capacitor/share": "^7.0.4",
+    "@capacitor/splash-screen": "^7.0.5",
+    "@capacitor/status-bar": "^7.0.6",
+    "@fontsource/chakra-petch": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/public-sans": "^5.3.0",
     "@supabase/supabase-js": "^2.110.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.18.5"
   },
   "devDependencies": {
+    "@capacitor/assets": "^4.0.0",
+    "@capacitor/cli": "^7.6.10",
+    "@capacitor/ios": "^7.6.10",
     "@vitejs/plugin-react": "^5.2.0",
+    "sharp": "^0.35.5",
     "vite": "^7.3.7",
     "vitest": "^4.1.11"
   }

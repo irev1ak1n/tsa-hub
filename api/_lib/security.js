@@ -36,12 +36,34 @@ function allowedHosts(req) {
     return hosts;
 }
 
+// The iOS app's WebView loads the bundled site from this exact origin, so its
+// calls to the API are cross-origin. It is allow-listed by full origin string
+// (never a wildcard) and gets CORS headers; the rate limits stay the real
+// abuse control because an origin header is not authentication.
+const NATIVE_APP_ORIGINS = new Set(['capacitor://localhost']);
+
+export function isNativeAppOrigin(req) {
+    const origin = req.headers?.origin;
+    return typeof origin === 'string' && NATIVE_APP_ORIGINS.has(origin);
+}
+
+export function applyNativeCors(req, res) {
+    if (!isNativeAppOrigin(req)) return false;
+    res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Max-Age', '600');
+    return true;
+}
+
 // Browsers always send Origin on cross-origin and same-origin POSTs; a
 // request with neither a matching Origin nor Sec-Fetch-Site: same-origin
 // did not come from this site's own pages.
 export function isTrustedOrigin(req) {
     const origin = req.headers?.origin;
     if (origin) {
+        if (NATIVE_APP_ORIGINS.has(origin)) return true;
         try { return allowedHosts(req).has(new URL(origin).host.toLowerCase()); } catch { return false; }
     }
     return req.headers?.['sec-fetch-site'] === 'same-origin';

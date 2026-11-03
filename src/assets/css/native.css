@@ -1,0 +1,26 @@
+/* Rules that only apply inside the native (Capacitor) app shell. The class is
+   added by src/native/init.js, so none of this affects the website. */
+html.native-app {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior-y: none;
+}
+
+html.native-app a,
+html.native-app button,
+html.native-app img {
+    -webkit-touch-callout: none;
+}
+
+/* iOS zooms the page when a focused field is under 16px. */
+html.native-app input,
+html.native-app textarea,
+html.native-app select {
+    font-size: 16px;
+}
+
+/* The status bar overlays the web view; keep the first screenful clear of it. */
+html.native-app body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+}

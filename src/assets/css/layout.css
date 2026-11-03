@@ -33,7 +33,7 @@
   width: 100%;
   max-width: 1060px;
   margin: 0 auto;
-  padding: calc(18px + env(safe-area-inset-top)) 16px calc(var(--nav-h) + 28px);
+  padding: calc(18px + env(safe-area-inset-top)) 16px calc(var(--nav-h) + 28px + env(safe-area-inset-bottom));
 }
 
 /* Bottom tab bar on phones */
@@ -42,7 +42,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: var(--nav-h);
+  height: calc(var(--nav-h) + env(safe-area-inset-bottom));
   background: #000000;
   border-top: 1px solid var(--line);
   display: flex;

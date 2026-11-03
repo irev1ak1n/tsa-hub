@@ -28,6 +28,7 @@ function makeReq({ method = 'POST', body, headers = {}, ip = nextIp() } = {}) {
 
 function makeRes() {
     const res = { statusCode: 200, headers: {}, body: undefined };
+    res.end = () => res;
     res.setHeader = (k, v) => { res.headers[k.toLowerCase()] = v; };
     res.status = (code) => { res.statusCode = code; return res; };
     res.json = (payload) => { res.body = payload; return res; };
@@ -110,6 +111,32 @@ describe('request gating', () => {
         const res = await call({ body: { type: 'feedback', message: 'headers check' } });
         expect(res.headers['cache-control']).toBe('no-store');
         expect(res.headers['x-content-type-options']).toBe('nosniff');
+        expect(res.headers['access-control-allow-origin']).toBeUndefined();
+    });
+});
+
+describe('iOS app origin', () => {
+    const native = { origin: 'capacitor://localhost' };
+
+    it('answers the preflight for the app origin only', async () => {
+        const ok = await call({ method: 'OPTIONS', headers: native });
+        expect(ok.statusCode).toBe(204);
+        expect(ok.headers['access-control-allow-origin']).toBe('capacitor://localhost');
+        expect(ok.headers['access-control-allow-headers']).toBe('Content-Type');
+        const other = await call({ method: 'OPTIONS', headers: { origin: 'https://evil.example' } });
+        expect(other.statusCode).toBe(405);
+        expect(other.headers['access-control-allow-origin']).toBeUndefined();
+    });
+
+    it('accepts a submission from the app and echoes only its origin', async () => {
+        const res = await call({ headers: native, body: { type: 'feedback', message: 'from the iOS app' } });
+        expect(res.statusCode).toBe(200);
+        expect(res.headers['access-control-allow-origin']).toBe('capacitor://localhost');
+    });
+
+    it('never sends CORS headers to other origins', async () => {
+        const res = await call({ headers: { origin: 'https://evil.example' }, body: { type: 'feedback', message: 'hi' } });
+        expect(res.statusCode).toBe(403);
         expect(res.headers['access-control-allow-origin']).toBeUndefined();
     });
 });

@@ -27,6 +27,7 @@
 // ============================================================================
 
 import { parseYmd } from '../utils/date.js';
+import { isNativeApp } from '../native/platform.js';
 
 export function isSupported() {
     return typeof document !== 'undefined';
@@ -129,9 +130,24 @@ function slugify(title) {
     return (title || 'event').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'event';
 }
 
-// Triggers the browser's normal file-download flow for the generated .ics —
-// the same UX as any other "export/download" feature, no dialogs of our own.
-function downloadIcs(filename, content) {
+// Browser: the normal file-download flow for the generated .ics. Native app:
+// WKWebView ignores blob downloads, so the file is written to the cache and
+// handed to the iOS share sheet (Add to Calendar, Save to Files, ...).
+async function downloadIcs(filename, content) {
+    if (isNativeApp()) {
+        const [{ Filesystem, Directory, Encoding }, { Share }] = await Promise.all([
+            import('@capacitor/filesystem'),
+            import('@capacitor/share'),
+        ]);
+        const written = await Filesystem.writeFile({
+            path: filename,
+            data: content,
+            directory: Directory.Cache,
+            encoding: Encoding.UTF8,
+        });
+        await Share.share({ title: filename, url: written.uri, dialogTitle: 'Add to calendar' });
+        return;
+    }
     const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -149,9 +165,11 @@ export async function addEvent(item) {
     if (!isSupported()) return { ok: false, reason: 'unsupported' };
     try {
         const ics = buildIcs(item);
-        downloadIcs(`${slugify(item.title)}.ics`, ics);
+        await downloadIcs(`${slugify(item.title)}.ics`, ics);
         return { ok: true, method: 'ics-download' };
     } catch (err) {
+        // Dismissing the iOS share sheet is not a failure.
+        if (/cancel/i.test(err?.message || '')) return { ok: true, method: 'share-cancelled' };
         return { ok: false, reason: err?.message || 'Could not generate a calendar file.' };
     }
 }

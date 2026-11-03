@@ -12,7 +12,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import {
-    sha256, getClientIp, setApiHeaders, isTrustedOrigin, isJsonRequest, parseBody, getServiceClient, allowRequest, releaseRequest, isProduction, LimiterUnavailableError,
+    sha256, getClientIp, setApiHeaders, isTrustedOrigin, applyNativeCors, isJsonRequest, parseBody, getServiceClient, allowRequest, releaseRequest, isProduction, LimiterUnavailableError,
 } from './_lib/security.js';
 
 export const config = { api: { bodyParser: { sizeLimit: '32kb' } } };
@@ -213,7 +213,11 @@ async function sendNotificationEmail(payload) {
 
 async function handle(req, res) {
     setApiHeaders(res);
+    applyNativeCors(req, res);
 
+    if (req.method === 'OPTIONS' && req.headers?.origin && isTrustedOrigin(req) && applyNativeCors(req, res)) {
+        return res.status(204).end();
+    }
     if (req.method !== 'POST') {
         res.setHeader('Allow', 'POST');
         return res.status(405).json({ ok: false, error: 'method not allowed' });
