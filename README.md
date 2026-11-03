@@ -8,7 +8,7 @@ TSA Hub also helps students discover competitions that match their interests, or
 
 ## Short Introduction to Capabilities 
 
-TSA Hub allows students to explore competitive events, view eligibility requirements, themes, and competition details, and receive personalized event recommendations based on their interests and skills. The app also includes smart search, a calendar for conference dates and personal reminders, saved events for quick access, and resources for state TSA delegations. Students can submit feedback, report incorrect information, and get involved in improving the platform.
+TSA Hub allows students to explore competitive events, view eligibility requirements, themes, and competition details, and receive personalized event recommendations based on their interests and skills. The app also includes search, a calendar for conference dates and personal reminders, saved events for quick access, and resources for state TSA delegations. Students can also send feedback and report incorrect information.
 
 # What It Can Do
 
@@ -86,15 +86,11 @@ TSA Hub allows students to explore competitive events, view eligibility requirem
 - Switch between Dark and Light Theme
 - Explore National TSA leadership and important links
 
-## 8) Help improve TSA Hub by sharing feedback, reporting problems, or contributing to the project.
+## 8) Help improve TSA Hub by sharing feedback or reporting problems.
 
 - Submit feedback and feature suggestions
 - Report incorrect or outdated information
 - Contact TSA Hub support
-- Apply to participate in beta testing
-- Express interest in development or design
-- Help promote TSA Hub to other students
-- Explore collaboration and partnership opportunities
 
 ---
 
@@ -110,7 +106,7 @@ cp .env.example .env     # fill VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
 npm run dev              # http://localhost:5173 (also on your LAN for phone testing)
 ```
 
-Forms (Feedback, Report, Get Involved) call `/api/submit-feedback`, which only runs on Vercel (or `vercel dev` with the server-side variables from `.env.example`). Everything else works with the dev server alone.
+The Feedback and Report forms call `/api/submit-feedback`, which only runs on Vercel (or `vercel dev` with the server-side variables from `.env.example`). Everything else works with the dev server alone.
 
 ## Test and build the web version
 

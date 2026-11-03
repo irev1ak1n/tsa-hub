@@ -78,7 +78,7 @@ Because there is no Simulator on Windows, collect App Store screenshots from the
 - Calendar: add an event with a reminder, accept the notification prompt, background the app, confirm the reminder arrives.
 - "Add to calendar" opens the iOS share sheet with a `.ics` file.
 - Airplane mode after one online launch still shows events.
-- Feedback and Get Involved submit successfully and produce one email in the owner's inbox.
+- Feedback and Report submit successfully and produce one email in the owner's inbox.
 - Rotate on iPad; both orientations are enabled.
 
 ## What was verified on Windows, and what was not

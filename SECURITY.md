@@ -3,12 +3,12 @@
 ## Architecture
 
 - Browser: `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` only. The anon key is public by design; RLS limits it to reading published events.
-- `POST /api/submit-feedback` (Vercel): the only write path for Feedback, Report Incorrect Information and Get Involved. It holds `SUPABASE_SERVICE_ROLE_KEY` and `RESEND_API_KEY` and sends the single notification email.
+- `POST /api/submit-feedback` (Vercel): the only write path for Feedback and Report Incorrect Information. It holds `SUPABASE_SERVICE_ROLE_KEY` and `RESEND_API_KEY` and sends the single notification email.
 - Retired Supabase functions `ai-feedback` and `feedback-email` are disabled in production (JWT required, inert 410 handlers). Their obsolete entrypoint source files have been deleted from the current Git branch to prevent accidental redeployment. Historical code remains in Git history. Permanent undeployment via Supabase Dashboard/CLI is still pending.
 
 ## What the API enforces
 
-Same-origin check (own host plus `ALLOWED_ORIGINS`), JSON only, 32 KB body cap, field validation, control-character stripping, honeypot and minimum fill time for Get Involved, and de-duplication of identical resubmissions. Rate limits are shared across serverless instances through `public.check_rate_limit`: 8 per IP per 10 minutes, 3 per email per hour (Get Involved), 120 per hour overall.
+Same-origin check (own host plus `ALLOWED_ORIGINS`), JSON only, 32 KB body cap, field validation, control-character stripping, and de-duplication of identical resubmissions. Rate limits are shared across serverless instances through `public.check_rate_limit`: 8 per IP per 10 minutes and 120 per hour overall.
 
 Production fails closed. When `VERCEL_ENV=production` (or `NODE_ENV=production` outside Vercel):
 
@@ -21,7 +21,7 @@ Only development, tests and non-production deployments use the anon key and per-
 
 - Full logical backup of `public`, `auth`, and `storage` was independently restored and verified before rollout; archive stays outside Git.
 - `00_backup.sql` and `01_phase_a.sql` were applied; service-role-only rate limiting is active, and the old `on_feedback_insert` trigger is gone.
-- `SUPABASE_SERVICE_ROLE_KEY` is configured on Vercel Production only. Live Feedback, Report Incorrect Information, and Get Involved submissions all succeeded, creating one database row per form and one notification email each.
+- `SUPABASE_SERVICE_ROLE_KEY` is configured on Vercel Production only. Live Feedback and Report Incorrect Information submissions succeeded (Get Involved has since been removed), creating one database row per form and one notification email each.
 - The `service_role` role needed an additional explicit `GRANT INSERT ON public.feedback`. After applying that grant, `02_phase_b.sql` was applied. `anon` and `authenticated` cannot insert directly; `service_role` can. A live Phase B feedback submission was saved successfully. Last verification: 83 events (79 active), 18 feedback rows, 4 profiles.
 - The *deployed* Supabase functions `feedback-email` and `ai-feedback` were older than their hardened GitHub source and had `verify_jwt=false`. Both were replaced in production with inert handlers returning HTTP 410 and `verify_jwt=true` (`feedback-email` v7, `ai-feedback` v10). They remain listed as ACTIVE until permanently deleted by Supabase CLI/dashboard; **do not redeploy the source-tree functions inadvertently**.
 - Cleanup update (2026-10-30): deleted exactly five testing-only feedback submissions (the four original form tests and the Phase B verification submission), leaving the 13 prior feedback records untouched. Removed both obsolete Edge Function entrypoint files from `main`. Deployed endpoints remain inert but not yet permanently deleted. To finish, use `supabase functions delete feedback-email --project-ref zpjdybbvtolwwxsfjcny` and `supabase functions delete ai-feedback --project-ref zpjdybbvtolwwxsfjcny`, then list functions; evaluate revoking unused Gemini credentials separately. Keep the verified backup private.
@@ -110,7 +110,7 @@ curl -s -o /dev/null -w "%{http_code}\n" https://tsa-hub.vercel.app/api/submit-f
 
 Rollback: remove the variable and redeploy. Forms then return `503` (safe, not insecure); to restore the old anon behavior instead, redeploy commit `c05ac7d` and run `rollback_phase_b.sql` if Phase B was applied.
 
-**5. Test each form on the live site**, one submission each, using obviously fake text (start it with `TEST`): Feedback, Report Incorrect Information, Get Involved. Expect for each: success message, exactly one email, one new `feedback` row, and a row per key in `select key, hits from public.rate_limits order by window_start desc limit 10;`. Submit one a second time unchanged: no second row, no second email. Optionally remove the test rows afterwards: `delete from public.feedback where message like 'TEST%';`.
+**5. Test each form on the live site**, one submission each, using obviously fake text (start it with `TEST`): Feedback and Report Incorrect Information. Expect for each: success message, exactly one email, one new `feedback` row, and a row per key in `select key, hits from public.rate_limits order by window_start desc limit 10;`. Submit one a second time unchanged: no second row, no second email. Optionally remove the test rows afterwards: `delete from public.feedback where message like 'TEST%';`.
 
 **6. Phase B SQL** - `02_phase_b.sql`, only after step 5 passes. Verify direct anonymous writes are now refused (expect HTTP 401 or 403 with code 42501) and a form still works:
 
@@ -158,3 +158,5 @@ The iOS app is a Capacitor shell around the same React build (`ios/`, see `docs/
 - `pg_net` is installed in `public`; it can be dropped once nothing else uses it.
 - The two Edge Functions remain publicly reachable until steps 7 and 8.
 - Preview deployments cannot load data or submit forms (they have no variables); that is intentional.
+- Legacy account data (4 `auth.users` and 4 `public.profiles` rows from an earlier version) is still in Supabase, and signed-in users can read non-private profiles. Review `docs/PRIVACY_AUDIT.md` section 4 and turn off new sign-ups.
+- `feedback` rows are kept indefinitely until you delete them. The IP hash in `rate_limits` is plain SHA-256 (pseudonymous, not anonymous).

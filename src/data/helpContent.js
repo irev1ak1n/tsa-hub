@@ -223,7 +223,7 @@ export const HELP_ARTICLES = [
             {
                 heading: 'What actually gets sent to us',
                 paragraphs: [
-                    'Support messages and incorrect information reports are the only things that get sent, and only after you’ve reviewed and confirmed them yourself. Nothing is submitted quietly in the background.',
+                    'Feedback and incorrect information reports are the only things you choose to send us, and they are only sent when you tap Send. Like any online app, TSA Hub also loads event information from its database, so basic technical details such as your IP address reach our hosting and database providers. We don’t use analytics or ads.',
                 ],
             },
             {

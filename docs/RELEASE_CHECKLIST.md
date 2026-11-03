@@ -47,10 +47,14 @@ Last updated 2026-11-03.
 
 | Item | Status |
 | --- | --- |
-| Privacy policy and terms rewritten to match the app; public URL available | Done, legal review **Blocked** on you |
+| Privacy policy and terms rewritten to match the app and the audit (no Get Involved, no accounts); public URL available | Done, legal review **Blocked** on you |
 | Metadata, keywords, review notes, privacy labels drafted (`docs/APP_STORE.md`) | Done |
 | Permission from TSA for name, content and officer photos | **Blocked** (highest rejection risk) |
-| Age gate or consent decision for the Get Involved form (under-13 users) | **Blocked** (needs legal or school input) |
+| Get Involved feature removed (code, API, copy, docs). No stored submissions existed | Done |
+| Privacy audit (`docs/PRIVACY_AUDIT.md`) | Done |
+| Review the 4 legacy Supabase accounts and `profiles` table, turn off new sign-ups, decide retention for `feedback` | **Blocked** on you (live data, not changed) |
+| Legal review of COPPA exposure (messages and provider logs, audience under 13) | **Blocked** (needs legal input) |
+| Decide whether to declare diagnostics for provider IP logs in App Privacy | **Blocked** on you |
 | Enroll in the Apple Developer Program | **Blocked** (your account and payment) |
 | Register the real Bundle ID, create the App Store Connect app record and API key, add the Codemagic integration | **Manual** (needs enrollment) |
 | Run the **iOS TestFlight** Codemagic workflow | **Manual** (needs enrollment) |
