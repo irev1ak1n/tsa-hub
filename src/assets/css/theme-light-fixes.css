@@ -656,3 +656,15 @@ html[data-theme="light"] .rk-footer {
 }
 html[data-theme="light"] .rk-source-label,
 html[data-theme="light"] .rk-sub-num { color: #1a1a1f; }
+
+/* Events: filter button has no border; category chip text is darker */
+html[data-theme="light"] .ev-filter-btn {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+html[data-theme="light"] .ev-chip {
+    color: #000000;
+    font-weight: 600;
+}
+html[data-theme="light"] .ev-chip.on { color: #ffffff; }
