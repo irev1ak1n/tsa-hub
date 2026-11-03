@@ -1,4 +1,5 @@
 import { isNativeApp, isExternalUrl, routeFromAppUrl } from './platform.js';
+import { refreshNativePermission } from '../services/notificationService.js';
 
 // Native shell setup. Imported once from main.jsx; a no-op in the browser, so
 // the web build never loads the Capacitor plugins.
@@ -49,6 +50,8 @@ export async function initNative() {
         window.history.pushState({}, '', route);
         window.dispatchEvent(new PopStateEvent('popstate'));
     });
+
+    refreshNativePermission();
 
     // Hide the splash once the first frame has painted.
     requestAnimationFrame(() => {

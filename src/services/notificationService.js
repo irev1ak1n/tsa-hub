@@ -50,19 +50,71 @@
 // src/screens/calendar/CalendarPanels.jsx.
 // ============================================================================
 
-// itemId -> { timeoutId, fireAt }
+import { isNativeApp } from '../native/platform.js';
+
+// itemId -> { timeoutId, fireAt } (timeoutId is null for native reminders,
+// which the OS owns).
 const scheduled = new Map();
 
+// In the native app the OS owns the trigger (Capacitor Local Notifications),
+// so reminders fire with the app closed. Permission is asynchronous there, so
+// the last known status is cached for the synchronous getters below.
+let nativeStatus = 'default';
+
+// Capacitor plugin proxies must never be returned from a promise (the proxy
+// looks thenable and throws "not implemented"), so callers pass a function
+// and only the call's own result comes back.
+let pluginModule = null;
+function withPlugin(fn) {
+    pluginModule ||= import('@capacitor/local-notifications');
+    return pluginModule.then((m) => fn(m.LocalNotifications));
+}
+
+function toNativeStatus(display) {
+    if (display === 'granted') return 'granted';
+    if (display === 'denied') return 'denied';
+    return 'default';
+}
+
+// Stable positive 31-bit id derived from the item id (native ids are numeric).
+export function nativeReminderId(id) {
+    let h = 0;
+    for (const ch of String(id)) h = (Math.imul(31, h) + ch.charCodeAt(0)) | 0;
+    return (h & 0x7fffffff) || 1;
+}
+
+export async function refreshNativePermission() {
+    if (!isNativeApp()) return getPermissionStatus();
+    try {
+        const res = await withPlugin((plugin) => plugin.checkPermissions());
+        nativeStatus = toNativeStatus(res.display);
+    } catch {
+        // keep the cached value
+    }
+    return nativeStatus;
+}
+
 export function isSupported() {
+    if (isNativeApp()) return true;
     return typeof window !== 'undefined' && typeof Notification !== 'undefined';
 }
 
 export function getPermissionStatus() {
+    if (isNativeApp()) return nativeStatus;
     if (!isSupported()) return 'unsupported';
     return Notification.permission; // 'granted' | 'denied' | 'default'
 }
 
 export async function requestPermission() {
+    if (isNativeApp()) {
+        try {
+            const res = await withPlugin((plugin) => plugin.requestPermissions());
+            nativeStatus = toNativeStatus(res.display);
+        } catch {
+            // keep the cached value
+        }
+        return nativeStatus;
+    }
     if (!isSupported()) return 'unsupported';
     try {
         return await Notification.requestPermission();
@@ -83,13 +135,30 @@ function fire(id, title, body) {
     }
 }
 
+function scheduleNative(entry) {
+    withPlugin((plugin) => plugin.schedule({
+        notifications: [{
+            id: nativeReminderId(entry.id),
+            title: entry.title,
+            body: entry.body,
+            schedule: { at: entry.fireAt, allowWhileIdle: true },
+        }],
+    })).catch(() => {});
+}
+
 // entry: { id, title, body, fireAt: Date }. Replaces any existing timer for
 // the same id, so callers never need to check "is one already scheduled".
 export function scheduleEventReminder(entry) {
     cancelEventReminder(entry.id);
-    if (!isSupported() || Notification.permission !== 'granted') return false;
     const delay = entry.fireAt.getTime() - Date.now();
     if (delay <= 0) return false; // already past — nothing to arm
+    if (isNativeApp()) {
+        if (nativeStatus !== 'granted') return false;
+        scheduled.set(entry.id, { timeoutId: null, fireAt: entry.fireAt });
+        scheduleNative(entry);
+        return true;
+    }
+    if (!isSupported() || Notification.permission !== 'granted') return false;
     const timeoutId = setTimeout(() => fire(entry.id, entry.title, entry.body), delay);
     scheduled.set(entry.id, { timeoutId, fireAt: entry.fireAt });
     return true;
@@ -98,8 +167,11 @@ export function scheduleEventReminder(entry) {
 export function cancelEventReminder(id) {
     const existing = scheduled.get(id);
     if (existing) {
-        clearTimeout(existing.timeoutId);
+        if (existing.timeoutId != null) clearTimeout(existing.timeoutId);
         scheduled.delete(id);
+    }
+    if (isNativeApp()) {
+        withPlugin((plugin) => plugin.cancel({ notifications: [{ id: nativeReminderId(id) }] })).catch(() => {});
     }
 }
 

@@ -2,7 +2,7 @@
   "name": "tsa-hub",
   "private": true,
   "version": "0.1.0",
-  "description": "TSA Hub \u00e2\u20ac\u201d student platform for Technology Student Association competition prep (v1 demo)",
+  "description": "TSA Hub â€” student platform for Technology Student Association competition prep (v1 demo)",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -23,6 +23,7 @@
     "@capacitor/core": "^7.6.10",
     "@capacitor/filesystem": "^7.1.9",
     "@capacitor/keyboard": "^7.0.6",
+    "@capacitor/local-notifications": "^7.0.7",
     "@capacitor/share": "^7.0.4",
     "@capacitor/splash-screen": "^7.0.5",
     "@capacitor/status-bar": "^7.0.6",

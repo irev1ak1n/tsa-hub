@@ -5,6 +5,7 @@ import { KIND_LABEL } from '../../utils/calendarItems.js';
 import { DEFAULT_PERSONAL_COLOR, PRESET_EVENT_COLORS, resolveItemColor } from '../../utils/color.js';
 import { REMINDER_OPTIONS, defaultReminder, normalizeReminder, reminderLabel } from '../../utils/reminders.js';
 import { getPermissionStatus, isSupported as notificationsSupported, requestPermission } from '../../services/notificationService.js';
+import { isNativeApp } from '../../native/platform.js';
 import { addEvent as addToDeviceCalendar } from '../../services/deviceCalendarService.js';
 
 const WEEKDAYS_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -260,7 +261,11 @@ function OfficialReminderControl({ existing, onSet, onRemove }) {
                     <button type="button" className="btn ghost" onClick={handleSet}>Remind me</button>
                 </div>
             )}
-            {status === 'denied' && <p className="cal-inline-note">Notifications are blocked for this site, so this reminder is saved but won't be able to alert you here. Allow notifications in your browser's site settings to change that.</p>}
+            {status === 'denied' && <p className="cal-inline-note">
+                    {isNativeApp()
+                        ? "Notifications are turned off for TSA Hub, so this reminder is saved but won't alert you. Turn them on in Settings > Notifications > TSA Hub."
+                        : "Notifications are blocked for this site, so this reminder is saved but won't be able to alert you here. Allow notifications in your browser's site settings to change that."}
+                </p>}
         </div>
     );
 }
@@ -363,13 +368,21 @@ function ReminderField({ reminder, onChange }) {
                 <p className="cal-inline-note">Allow notifications so TSA Hub can remind you before your events.</p>
             )}
             {reminder.enabled && status === 'denied' && (
-                <p className="cal-inline-note">Notifications are blocked for this site, so this reminder is saved but won't be able to alert you here. Allow notifications in your browser's site settings to change that.</p>
+                <p className="cal-inline-note">
+                    {isNativeApp()
+                        ? "Notifications are turned off for TSA Hub, so this reminder is saved but won't alert you. Turn them on in Settings > Notifications > TSA Hub."
+                        : "Notifications are blocked for this site, so this reminder is saved but won't be able to alert you here. Allow notifications in your browser's site settings to change that."}
+                </p>
             )}
             {reminder.enabled && !notificationsSupported() && (
                 <p className="cal-inline-note">This browser doesn't support notifications, so this reminder is saved but won't alert you here.</p>
             )}
             {reminder.enabled && status === 'granted' && (
-                <p className="cal-inline-note">While TSA Hub is open in this tab, you'll get a notification at that time. This will work more reliably once TSA Hub is a mobile app.</p>
+                <p className="cal-inline-note">
+                    {isNativeApp()
+                        ? "You'll get a notification at that time, even if TSA Hub is closed."
+                        : "While TSA Hub is open in this tab, you'll get a notification at that time. The TSA Hub iOS app can remind you even when it's closed."}
+                </p>
             )}
         </div>
     );
