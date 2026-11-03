@@ -11,11 +11,6 @@ const EMPTY = {
   prefs: { name: '', state: '' },
   theme: 'dark',
   myEvents: [],
-  tasks: [],
-  checklists: {},
-  notes: '',
-  meetings: [],
-  teamMembers: [],
   coachCount: 0,
   // Home "Quick Actions" customization: null means "use the default 9"
   // (src/data/quickActions.js); once set, an ordered array of registry ids.
@@ -27,6 +22,8 @@ function load() {
     const raw = localStorage.getItem(KEY);
     if (!raw) return EMPTY;
     const saved = JSON.parse(raw);
+    // Drop data from the removed project-management features.
+    for (const key of ['tasks', 'checklists', 'notes', 'meetings', 'teamMembers']) delete saved[key];
     // Merge, and make sure prefs always has its default shape.
     return {
       ...EMPTY,
@@ -66,8 +63,6 @@ export function AppProvider({ children }) {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', state.theme || 'dark');
   }, [state.theme]);
-
-  const uid = () => Math.random().toString(36).slice(2, 9);
 
   // Events are read anonymously (no login required).
   useEffect(() => {
@@ -126,33 +121,12 @@ export function AppProvider({ children }) {
       setState((s) => ({ ...s, theme: s.theme === 'light' ? 'dark' : 'light' }));
     },
 
-    // ---- my events / checklists ----
+    // ---- my events ----
     addEvent(eventId) {
       setState((s) => {
         if (s.myEvents.includes(eventId)) return s;
-        return {
-          ...s,
-          myEvents: [...s.myEvents, eventId],
-          checklists: { ...s.checklists, [eventId]: s.checklists[eventId] || [] },
-        };
+        return { ...s, myEvents: [...s.myEvents, eventId] };
       });
-    },
-
-    addChecklistItem(eventId, label) {
-      setState((s) => ({
-        ...s,
-        checklists: {
-          ...s.checklists,
-          [eventId]: [...(s.checklists[eventId] || []), { id: uid(), label, done: false }],
-        },
-      }));
-    },
-
-    removeChecklistItem(eventId, itemId) {
-      setState((s) => ({
-        ...s,
-        checklists: { ...s.checklists, [eventId]: (s.checklists[eventId] || []).filter((i) => i.id !== itemId) },
-      }));
     },
 
     removeEvent(eventId) {
@@ -160,68 +134,6 @@ export function AppProvider({ children }) {
         ...s,
         myEvents: s.myEvents.filter((id) => id !== eventId),
       }));
-    },
-
-    toggleChecklist(eventId, itemId) {
-      setState((s) => ({
-        ...s,
-        checklists: {
-          ...s.checklists,
-          [eventId]: (s.checklists[eventId] || []).map((it) =>
-              it.id === itemId ? { ...it, done: !it.done } : it
-          ),
-        },
-      }));
-    },
-
-    // ---- tasks ----
-    addTask({ title, assignee, eventId, due }) {
-      setState((s) => ({
-        ...s,
-        tasks: [...s.tasks, { id: uid(), title, assignee, eventId: eventId || '', status: 'todo', due: due || '' }],
-      }));
-    },
-
-    moveTask(taskId, status) {
-      setState((s) => ({
-        ...s,
-        tasks: s.tasks.map((t) => (t.id === taskId ? { ...t, status } : t)),
-      }));
-    },
-
-    deleteTask(taskId) {
-      setState((s) => ({ ...s, tasks: s.tasks.filter((t) => t.id !== taskId) }));
-    },
-
-    // ---- notes ----
-    setNotes(notes) {
-      setState((s) => ({ ...s, notes }));
-    },
-
-    // ---- meetings ----
-    addMeeting({ date, title }) {
-      setState((s) => ({
-        ...s,
-        meetings: [...s.meetings, { id: uid(), date, title }].sort((a, b) =>
-            a.date.localeCompare(b.date)
-        ),
-      }));
-    },
-
-    removeMeeting(id) {
-      setState((s) => ({ ...s, meetings: s.meetings.filter((m) => m.id !== id) }));
-    },
-
-    // ---- team ----
-    addMember({ name, role }) {
-      setState((s) => ({
-        ...s,
-        teamMembers: [...s.teamMembers, { id: uid(), name, role }],
-      }));
-    },
-
-    removeMember(id) {
-      setState((s) => ({ ...s, teamMembers: s.teamMembers.filter((m) => m.id !== id) }));
     },
 
     // ---- home quick actions ----
@@ -240,15 +152,6 @@ export function AppProvider({ children }) {
     },
   };
 
-  function progressFor(eventId) {
-    const list = state.checklists[eventId] || [];
-    const tasks = state.tasks.filter((t) => t.eventId === eventId);
-    const total = list.length + tasks.length;
-    if (total === 0) return 0;
-    const done = list.filter((i) => i.done).length + tasks.filter((t) => t.status === 'done').length;
-    return Math.round((done / total) * 100);
-  }
-
   return (
       <Ctx.Provider
           value={{
@@ -257,7 +160,6 @@ export function AppProvider({ children }) {
             eventsLoading,
             eventsError,
             reloadEvents,
-            progressFor,
             // back-compat shims (there is no account/profile or chats anymore)
             profile: null,
             unreadTotal: 0,

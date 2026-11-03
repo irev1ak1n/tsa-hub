@@ -53,15 +53,13 @@ TSA Hub allows students to explore competitive events, view eligibility requirem
 - Add notes and details to calendar entries
 - View upcoming activities from the homepage
 - Export calendar events to compatible device calendars
-- Set reminders with supported browser notifications
+- Set reminders (local notifications in the iOS app, browser notifications on the web)
 
 ## 5) Save your competitive events and organize your preparation.
 
 - Save competitions for quick access
 - View saved events directly from the homepage
 - Open event details without searching again
-- Organize event-related tasks and checklists
-- Track preparation progress
 - Remove events when they are no longer needed
 - Keep saved information locally on your device
 
@@ -97,3 +95,48 @@ TSA Hub allows students to explore competitive events, view eligibility requirem
 - Express interest in development or design
 - Help promote TSA Hub to other students
 - Explore collaboration and partnership opportunities
+
+---
+
+# Development
+
+TSA Hub is a Vite + React single-page app with a Supabase backend, one Vercel serverless endpoint (`api/submit-feedback.js`) and a Capacitor iOS shell. The web app and the iOS app share one codebase.
+
+## Run locally
+
+```bash
+npm install
+cp .env.example .env     # fill VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
+npm run dev              # http://localhost:5173 (also on your LAN for phone testing)
+```
+
+Forms (Feedback, Report, Get Involved) call `/api/submit-feedback`, which only runs on Vercel (or `vercel dev` with the server-side variables from `.env.example`). Everything else works with the dev server alone.
+
+## Test and build the web version
+
+```bash
+npm test             # unit and integration tests (Vitest)
+npm run build        # production bundle in dist/
+npm run preview      # serve dist/ locally
+```
+
+The website deploys from `main` to Vercel automatically. There is no ESLint or TypeScript configuration in this project.
+
+## Build the iOS version
+
+Needs a Mac with Xcode and CocoaPods.
+
+```bash
+npm run ios:sync     # production web build for the app, then `cap sync ios`
+npm run ios:open     # opens the Xcode workspace
+```
+
+Full instructions for Xcode signing, running on a device, TestFlight and App Store submission are in [`docs/IOS_BUILD.md`](docs/IOS_BUILD.md). App Store guideline review, metadata and privacy answers are in [`docs/APP_STORE.md`](docs/APP_STORE.md).
+
+## Release status
+
+[`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md) lists what is done, what was verified, what is blocked and what only the owner can do (Apple Developer account, permission to use the TSA name and content, signing, screenshots, review). Security notes and the operations runbook are in [`SECURITY.md`](SECURITY.md).
+
+## Disclaimer
+
+TSA Hub is an independent, student-built project. It is not made, sponsored, approved or endorsed by the Technology Student Association. Always confirm rules, deadlines and eligibility with the official TSA sources linked in the app.
