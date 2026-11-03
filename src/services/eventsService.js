@@ -90,3 +90,26 @@ export async function fetchEvents() {
     if (error) throw error;
     return (data || []).map(fromRow);
 }
+
+// Last-good copy of the event list, so the app still opens with events when
+// the network is down (airplane mode, spotty conference Wi-Fi).
+const CACHE_KEY = 'tsa-hub-events-cache-v1';
+
+export function readCachedEvents() {
+    try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        if (!raw) return null;
+        const rows = JSON.parse(raw);
+        return Array.isArray(rows) && rows.length > 0 ? rows : null;
+    } catch {
+        return null;
+    }
+}
+
+export function writeCachedEvents(rows) {
+    try {
+        if (Array.isArray(rows) && rows.length > 0) localStorage.setItem(CACHE_KEY, JSON.stringify(rows));
+    } catch {
+        // Storage full or unavailable: the live fetch still worked.
+    }
+}

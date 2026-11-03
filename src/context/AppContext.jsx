@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { fetchEvents } from '../services/eventsService.js';
+import { fetchEvents, readCachedEvents, writeCachedEvents } from '../services/eventsService.js';
 import { setEvents } from '../data/events.js';
 
 const KEY = 'tsa-hub-state-v1';
@@ -72,9 +72,20 @@ export function AppProvider({ children }) {
   // Events are read anonymously (no login required).
   useEffect(() => {
     let alive = true;
+    // Offline or slow: fall back to the last good copy, if there is one.
+    const useCachedOrFail = () => {
+      const cached = readCachedEvents();
+      if (cached) {
+        setEvents(cached);
+        setEventsError(false);
+      } else {
+        setEvents([]);
+        setEventsError(true);
+      }
+    };
     const timer = setTimeout(() => {
       if (!alive) return;
-      setEventsError(true);
+      useCachedOrFail();
       setEventsLoading(false);
     }, EVENTS_TIMEOUT_MS);
     fetchEvents()
@@ -82,11 +93,11 @@ export function AppProvider({ children }) {
           if (!alive) return;
           setEvents(rows);
           setEventsError(false);
+          writeCachedEvents(rows);
         })
         .catch(() => {
           if (!alive) return;
-          setEvents([]);
-          setEventsError(true);
+          useCachedOrFail();
         })
         .finally(() => {
           clearTimeout(timer);
