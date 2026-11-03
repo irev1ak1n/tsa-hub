@@ -510,3 +510,56 @@ html[data-theme="light"] .doc-sub {
 .doc-p {
     margin-bottom: 16px;
 }
+/* ============================================================================
+   Light theme readability pass: darker secondary text, slightly larger
+   Resources text, darker search bar / button borders.
+   ============================================================================ */
+html[data-theme="light"] { --muted: #3a404c; }
+
+html[data-theme="light"] .rs-title { color: #0d0d12; font-size: 16px; line-height: 21px; }
+html[data-theme="light"] .rs-desc { color: #2b303b; font-size: 13.5px; line-height: 18px; }
+html[data-theme="light"] .rs-note,
+html[data-theme="light"] .doc-note { color: #2b303b; font-size: 14px; line-height: 21px; }
+html[data-theme="light"] .doc-lead { color: #111111; font-size: 17px; line-height: 26px; }
+html[data-theme="light"] .doc-h2 { color: #0d0d12; font-size: 17px; }
+html[data-theme="light"] .doc-p { color: #111111; font-size: 15px; line-height: 23px; }
+html[data-theme="light"] .home-link-label { color: #0d0d12; font-size: 0.85rem; }
+
+/* Calendar text */
+html[data-theme="light"] .cal-weekday,
+html[data-theme="light"] .cal-week-day-name,
+html[data-theme="light"] .cal-item-row-time,
+html[data-theme="light"] .cal-helper-text,
+html[data-theme="light"] .cal-empty,
+html[data-theme="light"] .home-cal-empty,
+html[data-theme="light"] .home-cal-month-label,
+html[data-theme="light"] .home-cal-weekday { color: #2b303b; }
+html[data-theme="light"] .home-cal-day.is-outside { color: #5f6572; }
+html[data-theme="light"] .cal-today-link { color: #2b303b; }
+
+/* Search bars and buttons: darker outlines and placeholders */
+html[data-theme="light"] .rs-search,
+html[data-theme="light"] .ev-search,
+html[data-theme="light"] .rs-state-search,
+html[data-theme="light"] .qae-search,
+html[data-theme="light"] .ev-filter-btn,
+html[data-theme="light"] .ev-pill,
+html[data-theme="light"] .cal-nav-btn,
+html[data-theme="light"] .cal-today-btn,
+html[data-theme="light"] .cal-today-link,
+html[data-theme="light"] .cal-view-switcher,
+html[data-theme="light"] .home-link-item {
+    border-color: #5a5a66;
+}
+html[data-theme="light"] .rs-search-input::placeholder,
+html[data-theme="light"] .ev-search-input::placeholder,
+html[data-theme="light"] .ev-search-placeholder,
+html[data-theme="light"] .rs-search-placeholder { color: #3a404c; }
+html[data-theme="light"] .rs-search svg,
+html[data-theme="light"] .ev-search svg { color: #2b303b; }
+
+/* Customize Quick Actions popup: fully white */
+html[data-theme="light"] .qae-modal,
+html[data-theme="light"] .qae-modal .rs-modal-head {
+    background: #ffffff;
+}
