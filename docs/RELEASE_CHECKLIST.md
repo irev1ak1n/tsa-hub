@@ -9,7 +9,7 @@ Last updated 2026-11-03.
 | Item | Status |
 | --- | --- |
 | Production build (`npm run build`) | Done |
-| Unit and integration tests (6,336, `npm test`) | Done |
+| Unit and integration tests (6,349, `npm test`) | Done |
 | Crawl of every in-app route (84 pages) for console errors, 404s and broken images | Done, none found |
 | Layout overflow check at 375 px and 768 px across 16 routes | Done, none found |
 | Accessibility scan (names on buttons, links, inputs, image alt text) across 11 routes | Done; three list pages have no `h1` (Events, Event Search, Resource Search), cosmetic |
@@ -38,8 +38,10 @@ Last updated 2026-11-03.
 | App can reach its API: absolute API base URL in native builds, CORS for `capacitor://localhost` with tests | Done, unit-tested; unverified from a real device |
 | Privacy manifest, export-compliance flag, no unused permission strings | Done |
 | `ios/` committed with LF line endings, generated folders ignored | Done |
-| Compile in Xcode, run in Simulator, run on iPhone and iPad | **Manual** (needs a Mac) |
-| `pod install` (runs automatically on `npm run ios:sync` on a Mac) | **Manual** |
+| Codemagic cloud-build config (`codemagic.yaml`): unsigned compile check and signed TestFlight workflows, no secrets in git, shared Xcode scheme | Done on Windows (config parsed and tested); **unverified until the first Codemagic run** |
+| Create the Codemagic account, add the app, add the `tsa_hub_web_env` variables, run **iOS compile check** | **Manual** (no Apple account needed) |
+| `pod install`, Xcode compile for Simulator and device | **Manual**: happens in the compile check workflow |
+| Run on a real iPhone and iPad (via TestFlight) | **Manual** |
 
 ## App Store
 
@@ -50,8 +52,9 @@ Last updated 2026-11-03.
 | Permission from TSA for name, content and officer photos | **Blocked** (highest rejection risk) |
 | Age gate or consent decision for the Get Involved form (under-13 users) | **Blocked** (needs legal or school input) |
 | Enroll in the Apple Developer Program | **Blocked** (your account and payment) |
-| Register the real Bundle ID, create the App Store Connect app record | **Manual** |
-| Screenshots (6.9-inch iPhone and 13-inch iPad) | **Manual** (take from the Simulator) |
+| Register the real Bundle ID, create the App Store Connect app record and API key, add the Codemagic integration | **Manual** (needs enrollment) |
+| Run the **iOS TestFlight** Codemagic workflow | **Manual** (needs enrollment) |
+| Screenshots (6.9-inch iPhone and 13-inch iPad) | **Manual** (no Simulator on Windows: capture from the TestFlight build on a real iPhone and iPad) |
 | TestFlight upload, internal testing, external beta review | **Manual** |
 | Delete the 7 production `feedback` rows that begin with "TEST" | **Manual** (production data; deliberately not touched) |
 | Submit for App Review | **Manual** |

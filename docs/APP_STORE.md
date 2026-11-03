@@ -36,7 +36,7 @@ Technical requirements already handled: privacy manifest (`ios/App/App/PrivacyIn
 - **Privacy Policy URL** (required): `https://tsa-hub.vercel.app/privacy`
 - **Copyright**: `2026 <your legal name>`.
 - **Review notes**: "No sign-in is required. TSA Hub is an independent reference and planning app for students in the Technology Student Association (TSA). It is not operated by TSA. Core features: event browser, event recommender, in-app search, calendar with local reminders, resources. Reminders use local notifications. The Feedback and Get Involved forms send optional messages to the developer. Contact: <your email and phone>."
-- **Screenshots**: PNG or JPEG, RGB, no transparency. Apple currently asks for the 6.9-inch iPhone size (1320 x 2868 portrait) and, because iPad is enabled, a 13-inch iPad size (2064 x 2752 portrait); other sizes scale from these. Confirm on Apple's page. Capture from the Simulator (Cmd+S) with the iPhone 16 Pro Max (or newer) and iPad Pro 13-inch simulators. Suggested shots: Home, Events list, an Event detail, Recommender result, Calendar with a reminder, Resources, Light theme.
+- **Screenshots**: PNG or JPEG, RGB, no transparency. Apple currently asks for the 6.9-inch iPhone size (1320 x 2868 portrait) and, because iPad is enabled, a 13-inch iPad size (2064 x 2752 portrait); other sizes scale from these. Confirm on Apple's page. From Windows there is no Simulator, so capture them from the TestFlight build on a real iPhone Pro Max and an iPad Pro 13-inch (or borrow one), then check the pixel sizes against Apple's page. Suggested shots: Home, Events list, an Event detail, Recommender result, Calendar with a reminder, Resources, Light theme.
 
 ## 3. Items that need you (legal or account decisions)
 
@@ -64,7 +64,7 @@ If a future version adds analytics, crash reporting, accounts or a push provider
 
 ## 5. What cannot be verified without a Mac and Apple account
 
-- Compiling and archiving the Xcode project, code signing, and upload validation.
+- Compiling and archiving the Xcode project, code signing, and upload validation (first checked by the Codemagic builds described in `docs/IOS_BUILD.md`).
 - Real-device behavior: safe areas, status bar contrast, keyboard, notification delivery with the app closed, share sheet.
 - TestFlight processing and App Review itself.
 

@@ -1,0 +1,133 @@
+# Codemagic CI/CD for the TSA Hub iOS app (Capacitor).
+#
+# No secret lives in this file. Signing credentials and the App Store Connect
+# API key are configured in the Codemagic web UI (Team settings, Integrations)
+# and referenced here by name only. See docs/IOS_BUILD.md for the setup steps.
+#
+# Neither workflow has a `triggering` block, so nothing builds automatically
+# and no build minutes are used until you start a build from the Codemagic UI
+# (pick the repository, branch `main`, then the workflow).
+#
+# Variable group `tsa_hub_web_env` (create it under the app's Environment
+# variables in Codemagic):
+#   VITE_SUPABASE_URL        Supabase project URL (same as the website)
+#   VITE_SUPABASE_ANON_KEY   Supabase anon/publishable key (public by design;
+#                            still stored as a secure variable)
+#   APP_STORE_APPLE_ID       numeric Apple ID of the App Store Connect app
+#                            record (only the TestFlight workflow needs it)
+
+definitions:
+  env_vars: &native_env
+    node: 22.12.0
+    xcode: latest
+    cocoapods: default
+    groups:
+      - tsa_hub_web_env
+    vars:
+      # Absolute API origin baked into native builds (a relative /api path
+      # would resolve inside the app). Not a secret.
+      VITE_API_BASE_URL: https://tsa-hub.vercel.app
+      XCODE_WORKSPACE: ios/App/App.xcworkspace
+      XCODE_SCHEME: App
+
+  scripts:
+    - &check_inputs
+      name: Check required variables
+      script: |
+        set -e
+        test -n "$VITE_SUPABASE_URL" || { echo "VITE_SUPABASE_URL is not set in the tsa_hub_web_env group"; exit 1; }
+        test -n "$VITE_SUPABASE_ANON_KEY" || { echo "VITE_SUPABASE_ANON_KEY is not set in the tsa_hub_web_env group"; exit 1; }
+    - &install_and_sync
+      name: Install dependencies, build the web app, sync into the iOS project
+      script: |
+        set -e
+        npm ci
+        npm test
+        # Production web build for the app, then `cap sync ios` (runs pod install).
+        node scripts/buildNative.mjs
+
+workflows:
+  # Proves the project compiles in the cloud without any Apple account,
+  # certificate or provisioning profile. Run this first.
+  ios-compile-check:
+    name: iOS compile check (no signing)
+    instance_type: mac_mini_m2
+    max_build_duration: 45
+    environment: *native_env
+    scripts:
+      - *check_inputs
+      - *install_and_sync
+      - name: Build for the iOS Simulator (Debug)
+        script: |
+          set -e
+          xcodebuild \
+            -workspace "$XCODE_WORKSPACE" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+      - name: Build for devices (Release, unsigned)
+        script: |
+          set -e
+          xcodebuild \
+            -workspace "$XCODE_WORKSPACE" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+    artifacts:
+      - /tmp/xcodebuild_logs/*.log
+
+  # Signed App Store build uploaded to TestFlight. Needs a paid Apple
+  # Developer Program membership, an App Store Connect API key added as a
+  # Codemagic integration named "TSA Hub App Store Connect", and an app record
+  # in App Store Connect with the same bundle identifier.
+  ios-testflight:
+    name: iOS TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    integrations:
+      app_store_connect: TSA Hub App Store Connect
+    environment:
+      <<: *native_env
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.tsahub.app
+    scripts:
+      - *check_inputs
+      - *install_and_sync
+      - name: Set the build number from the latest TestFlight build
+        script: |
+          set -e
+          LATEST=0
+          if [ -n "$APP_STORE_APPLE_ID" ]; then
+            LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo 0)
+          fi
+          case "$LATEST" in ''|*[!0-9]*) LATEST=0 ;; esac
+          BUILD_NUMBER=$((LATEST + 1))
+          echo "Using build number $BUILD_NUMBER"
+          sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]*;/CURRENT_PROJECT_VERSION = $BUILD_NUMBER;/" ios/App/App.xcodeproj/project.pbxproj
+      - name: Apply the signing profiles to the Xcode project
+        script: xcode-project use-profiles
+      - name: Archive and export the .ipa
+        script: |
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        # Add tester group names here once they exist in App Store Connect.
+        # beta_groups:
+        #   - Internal testers
+        submit_to_app_store: false

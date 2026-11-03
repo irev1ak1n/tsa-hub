@@ -33,3 +33,18 @@ coverage/
 .claude/
 
 !.env.example
+
+# Apple signing material and API keys: never commit (Codemagic holds these)
+*.p12
+*.p8
+*.cer
+*.pem
+*.key
+*.mobileprovision
+*.provisionprofile
+*.certSigningRequest
+AuthKey_*.p8
+ExportOptions.plist
+ios/App/Pods/
+ios/App/build/
+ios/App/output/

@@ -124,14 +124,9 @@ The website deploys from `main` to Vercel automatically. There is no ESLint or T
 
 ## Build the iOS version
 
-Needs a Mac with Xcode and CocoaPods.
+Apple only allows iOS builds on macOS. From Windows, use Codemagic (cloud macOS builds) with the committed [`codemagic.yaml`](codemagic.yaml): a no-account **compile check** first, then a signed **TestFlight** build once you have an Apple Developer account. With a Mac you can also run `npm run ios:sync` and `npm run ios:open`.
 
-```bash
-npm run ios:sync     # production web build for the app, then `cap sync ios`
-npm run ios:open     # opens the Xcode workspace
-```
-
-Full instructions for Xcode signing, running on a device, TestFlight and App Store submission are in [`docs/IOS_BUILD.md`](docs/IOS_BUILD.md). App Store guideline review, metadata and privacy answers are in [`docs/APP_STORE.md`](docs/APP_STORE.md).
+Step-by-step instructions, which steps need Apple Developer enrollment, and what is still unverified until the first cloud build are in [`docs/IOS_BUILD.md`](docs/IOS_BUILD.md). App Store guideline review, metadata and privacy answers are in [`docs/APP_STORE.md`](docs/APP_STORE.md).
 
 ## Release status
 
