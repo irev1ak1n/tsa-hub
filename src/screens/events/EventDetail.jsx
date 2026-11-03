@@ -99,8 +99,7 @@ export default function EventDetail() {
             <div className="section card">
                 <h3>Track this event</h3>
                 <p className="small muted" style={{ marginBottom: 0 }}>
-                    Add it to your events, then build your own checklist and tasks in the Team workspace from the official
-                    requirements. Your progress shows up on the dashboard.
+                    Add it to your events to keep it handy on the home screen.
                 </p>
             </div>
         </>
