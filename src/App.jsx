@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { AppProvider } from './context/AppContext.jsx';
 import Layout from './components/Layout.jsx';
 import Dashboard from './screens/Dashboard.jsx';
@@ -43,6 +44,7 @@ import HelpArticle from './screens/help/HelpArticle.jsx';
 
 export default function App() {
     return (
+        <ErrorBoundary>
         <AppProvider>
             <BrowserRouter>
                 <Routes>
@@ -96,5 +98,6 @@ export default function App() {
                 </Routes>
             </BrowserRouter>
         </AppProvider>
+        </ErrorBoundary>
     );
 }

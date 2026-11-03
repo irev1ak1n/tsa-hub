@@ -15,7 +15,7 @@ export default function Terms() {
             <div className="section">
                 <div className="rs-eyebrow">TSA HUB</div>
                 <h1 className="doc-h1">Terms and Policies</h1>
-                <p className="doc-updated">Last updated August 2026</p>
+                <p className="doc-updated">Last updated November 2026</p>
             </div>
 
             <div className="doc-body">
@@ -95,17 +95,14 @@ export default function Terms() {
                     reporting tools in TSA Hub to let us know.
                 </p>
 
-                <h2 className="doc-h2">Smart search answers</h2>
+                <h2 className="doc-h2">Search and the TSA Coach</h2>
                 <p className="doc-p">
-                    TSA Hub's search may include an automatically generated answer designed to
-                    help students understand TSA events, rules, resources, preparation, and other
-                    TSA-related information. This is intended to make it easier to find and
-                    understand information, but the generated answers can sometimes be
-                    incomplete, outdated, or incorrect. They should be treated as a helpful guide,
-                    not as an official TSA source. Always confirm important information such as
-                    eligibility, deadlines, competition requirements, rules, and conference
-                    details using official TSA sources. Do not enter sensitive or private personal
-                    information into search.
+                    TSA Hub's search and TSA Coach help students find TSA events, rules,
+                    resources, and preparation information. They answer from content built into
+                    the app, so answers can be incomplete or out of date. Treat them as a helpful
+                    guide, not an official TSA source. Always confirm eligibility, deadlines,
+                    competition requirements, rules, and conference details using official TSA
+                    sources.
                 </p>
 
                 <h2 className="doc-h2">Event recommendations</h2>
@@ -136,7 +133,7 @@ export default function Terms() {
                     owners. TSA Hub does not control their content, availability, security,
                     accuracy, or privacy practices. Opening an external link may take you outside
                     TSA Hub. TSA Hub may also use third-party services for features such as
-                    hosting, databases, analytics, feedback, or AI functionality.
+                    hosting, databases, and feedback delivery.
                 </p>
 
                 <h2 className="doc-h2">Availability and updates</h2>
@@ -180,8 +177,7 @@ export default function Terms() {
                 <p className="doc-p">
                     If you have a question, find incorrect information, experience a problem, or
                     have a concern about TSA Hub, you can use the feedback options inside the app
-                    or contact the project maintainer using the contact information provided by
-                    TSA Hub.
+                    or email tsastudentshub@gmail.com.
                 </p>
 
                 <p className="doc-note">

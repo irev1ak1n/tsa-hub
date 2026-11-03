@@ -16,7 +16,7 @@ export default function PrivacyPolicy() {
             <div className="section">
                 <div className="rs-eyebrow">TSA HUB</div>
                 <h1 className="doc-h1">Privacy Policy</h1>
-                <p className="doc-updated">Last updated August 2026</p>
+                <p className="doc-updated">Last updated November 2026</p>
             </div>
 
             <div className="doc-body">
@@ -37,7 +37,7 @@ export default function PrivacyPolicy() {
 
                 <h2 className="doc-h2">Information saved on your device</h2>
                 <p className="doc-p">
-                    Some features may save information directly on your device, such as saved events, personal calendar items, and notes you create. This information is stored in your browser or on your device and is not automatically shared with us.
+                    Some features may save information directly on your device, such as saved events, personal calendar items, and notes you create. This information is stored in the app or browser on your device and is not automatically shared with us.
 
                     If you clear your browser data, uninstall TSA Hub, or switch to another device, this locally saved information may be lost.
                 </p>
@@ -55,8 +55,11 @@ export default function PrivacyPolicy() {
                 <h2 className="doc-h2">Feedback and reports</h2>
                 <p className="doc-p">
                     If you choose to send feedback or report incorrect information through TSA
-                    Hub, the message you submit may be stored so that it can be reviewed. Please
-                    do not include sensitive personal information in feedback messages.
+                    Hub, the message you submit is stored so that it can be reviewed, and an email
+                    notification is sent to the project maintainer. To limit spam, we keep a
+                    one-way scrambled (hashed) form of your network address for a short time to
+                    rate-limit submissions; we do not store the address itself. Please do not
+                    include sensitive personal information in feedback messages.
                 </p>
 
                 <h2 className="doc-h2">Get Involved submissions</h2>
@@ -68,16 +71,13 @@ export default function PrivacyPolicy() {
                     organization, and this form does not enroll you in TSA membership.
                 </p>
 
-                <h2 className="doc-h2">Smart search answers</h2>
+                <h2 className="doc-h2">Search and the TSA Coach</h2>
                 <p className="doc-p">
-                    TSA Hub's search may include an automatically generated answer that helps
-                    respond to questions about TSA competitions, rules, resources, and related
-                    information. Search queries may need to be processed by the services that
-                    power this feature. You should avoid entering private or sensitive personal
-                    information into search. These answers may sometimes be incomplete or
-                    incorrect, so important competition rules, deadlines, eligibility
-                    requirements, and other official information should always be confirmed
-                    using the official TSA sources provided in the app.
+                    Searching TSA Hub and asking the in-app TSA Coach runs on your device. What
+                    you type is not sent to us or to any third-party service. Answers can still
+                    be incomplete or out of date, so confirm important competition rules,
+                    deadlines, eligibility requirements, and other official information using
+                    the official TSA sources provided in the app.
                 </p>
 
                 <h2 className="doc-h2">Advertising and selling data</h2>
@@ -91,8 +91,7 @@ export default function PrivacyPolicy() {
                     TSA Hub is designed for students, including middle and high school students.
                     Because no account is required, students can use most of the app without
                     providing personal information. Users should avoid entering private or
-                    sensitive information into feedback forms, notes intended for sharing, or AI
-                    features.
+                    sensitive information into feedback forms.
                 </p>
 
                 <h2 className="doc-h2">Official TSA information</h2>
@@ -116,7 +115,7 @@ export default function PrivacyPolicy() {
                 <h2 className="doc-h2">Contact</h2>
                 <p className="doc-p">
                     If you have questions about TSA Hub or this Privacy Policy, you can contact
-                    the project maintainer using the contact information provided in the app.
+                    the project maintainer at tsastudentshub@gmail.com.
                 </p>
 
                 <p className="doc-note">
