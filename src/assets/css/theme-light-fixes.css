@@ -533,7 +533,7 @@ html[data-theme="light"] .cal-helper-text,
 html[data-theme="light"] .cal-empty,
 html[data-theme="light"] .home-cal-empty,
 html[data-theme="light"] .home-cal-month-label,
-html[data-theme="light"] .home-cal-weekday { color: #2b303b; }
+html[data-theme="light"] .home-cal-weekdays span { color: #2b303b; }
 html[data-theme="light"] .home-cal-day.is-outside { color: #5f6572; }
 html[data-theme="light"] .cal-today-link { color: #2b303b; }
 
