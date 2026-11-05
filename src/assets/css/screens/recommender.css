@@ -242,10 +242,10 @@
     user-select: none;
     -webkit-user-select: none;
     touch-action: none;
-    transition: transform .18s cubic-bezier(.2, .7, .2, 1),
-    border-color .12s ease,
-    background .12s ease,
-    box-shadow .18s ease;
+    transition: transform .26s cubic-bezier(.33, .1, .25, 1),
+    border-color .2s ease,
+    background .2s ease,
+    box-shadow .26s ease;
     will-change: transform;
 }
 
@@ -254,7 +254,7 @@
 .drag-item.grabbed {
     border-color: color-mix(in srgb, var(--ig-blue) 55%, var(--card-line));
     background: color-mix(in srgb, var(--ig-blue) 12%, var(--set-card-bg));
-    box-shadow: 0 10px 26px rgba(0, 0, 0, .45), 0 2px 6px rgba(0, 0, 0, .3);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, .42), 0 3px 8px rgba(0, 0, 0, .28);
 }
 
 .drag-num {
@@ -281,41 +281,87 @@
     min-width: 0;
 }
 
-/* Edit mode for the interest ranking: the list is locked until the pencil is tapped */
-.rank-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 4px;
-}
-.rank-sub { margin: 0; flex: 1 1 auto; min-width: 0; }
-.rank-tools { flex: 0 0 auto; display: flex; gap: 8px; }
+/* Edit mode for the interest ranking: the list is locked until the pencil is tapped.
+   All motion on this screen uses the same easing and 250 to 350ms timing. */
+.rank-sub { margin-bottom: 10px; }
 
-.rank-btn {
+.rank-tools {
+    position: relative;
+    height: 44px;
+    margin: 0 0 12px;
+}
+
+.rank-pencil,
+.rank-actions {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: opacity .3s cubic-bezier(.4, 0, .2, 1),
+                transform .3s cubic-bezier(.4, 0, .2, 1),
+                visibility 0s linear 0s;
+}
+
+/* Pencil: no outline, just a quiet icon with a soft tap target */
+.rank-pencil {
     display: inline-flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2px;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
+    margin-left: -10px;
     padding: 0;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+}
+.rank-pencil:hover { background: rgba(255, 255, 255, .08); }
+.rank-pencil:active { transform: scale(.94); }
+.rank-pencil:focus-visible { outline: 2px solid var(--ig-blue); outline-offset: 2px; }
+
+.rank-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.rank-btn {
+    min-width: 92px;
+    height: 44px;
+    padding: 0 20px;
     border-radius: 10px;
     border: 1px solid #ffffff;
-    background: rgba(10, 10, 12, .55);
+    background: transparent;
     color: #ffffff;
     font-family: var(--font-system);
-    font-size: 11px;
+    font-size: 14px;
     font-weight: 600;
-    line-height: 1;
     cursor: pointer;
-    transition: background .12s ease, transform .12s ease;
+    transition: background .2s cubic-bezier(.4, 0, .2, 1), transform .2s cubic-bezier(.4, 0, .2, 1);
 }
 .rank-btn:hover { background: rgba(255, 255, 255, .1); }
-.rank-btn:active { transform: scale(.96); }
+.rank-btn:active { transform: scale(.97); }
 .rank-btn:focus-visible { outline: 2px solid var(--ig-blue); outline-offset: 2px; }
-.rank-btn-labeled { width: 52px; height: 52px; }
+
+/* View state: pencil visible, actions tucked away. Edit state swaps them. */
+.rank-tools:not(.is-editing) .rank-actions {
+    opacity: 0;
+    transform: translateX(8px) scale(.96);
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .3s cubic-bezier(.4, 0, .2, 1),
+                transform .3s cubic-bezier(.4, 0, .2, 1),
+                visibility 0s linear .3s;
+}
+.rank-tools.is-editing .rank-pencil {
+    opacity: 0;
+    transform: translateX(-8px) scale(.9);
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .3s cubic-bezier(.4, 0, .2, 1),
+                transform .3s cubic-bezier(.4, 0, .2, 1),
+                visibility 0s linear .3s;
+}
 
 .drag-list.is-locked .drag-item { cursor: default; touch-action: auto; }
 .drag-list.is-locked .drag-grip { visibility: hidden; }
@@ -338,12 +384,12 @@
     color: #ffffff;
     box-shadow: 0 10px 28px rgba(0, 0, 0, .35);
     pointer-events: none;
-    animation: rec-toast-in .22s cubic-bezier(.2, .7, .2, 1), rec-toast-out .25s ease 2.15s forwards;
+    animation: rec-toast-in .3s cubic-bezier(.4, 0, .2, 1) both, rec-toast-out .3s cubic-bezier(.4, 0, .2, 1) 3s forwards;
 }
 .rec-toast-success { background: #1f7a46; border: 1px solid #2f9d5d; }
 .rec-toast-info { background: #1c1c20; border: 1px solid #4a4a52; }
-@keyframes rec-toast-in { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translate(-50%, 0); } }
-@keyframes rec-toast-out { to { opacity: 0; transform: translate(-50%, -6px); } }
+@keyframes rec-toast-in { from { opacity: 0; transform: translate(-50%, -14px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes rec-toast-out { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(-50%, -10px); } }
 
 /* Emoji tile grid for the work step */
 .tile-grid {
@@ -469,10 +515,13 @@
 
 html[data-theme="light"] .rank-btn {
     border-color: #000000;
-    background: rgba(255, 255, 255, .7);
+    background: transparent;
     color: #000000;
 }
 html[data-theme="light"] .rank-btn:hover { background: rgba(0, 0, 0, .06); }
+html[data-theme="light"] .rank-pencil { color: #000000; }
+html[data-theme="light"] .rank-pencil:hover { background: rgba(0, 0, 0, .06); }
+html[data-theme="light"] .drag-item.grabbed { box-shadow: 0 14px 30px rgba(0, 0, 0, .2), 0 3px 8px rgba(0, 0, 0, .12); }
 html[data-theme="light"] .rec-toast-success { background: #2f8f57; border-color: #3aa766; }
 html[data-theme="light"] .rec-toast-info { background: #ffffff; border-color: #000000; color: #000000; }
 
@@ -997,3 +1046,22 @@ html[data-theme="light"] .rec-breakdown-bar {
     background: rgba(0, 0, 0, 0.06);
     border-color: #d0d0da;
 }
+
+/* Respect the reduced-motion preference: no sliding or scaling, only quick fades */
+@media (prefers-reduced-motion: reduce) {
+    .drag-item,
+    .rank-btn { transition: none !important; }
+    .rank-pencil,
+    .rank-actions,
+    .rank-tools:not(.is-editing) .rank-actions,
+    .rank-tools.is-editing .rank-pencil {
+        transform: none !important;
+        transition: opacity .15s linear, visibility 0s linear .15s !important;
+    }
+    .rec-toast {
+        animation: rec-toast-fade .15s linear both, rec-toast-fade-out .15s linear 3.1s forwards !important;
+    }
+    .drag-item.grabbed { transform: none; }
+}
+@keyframes rec-toast-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rec-toast-fade-out { from { opacity: 1; } to { opacity: 0; } }
