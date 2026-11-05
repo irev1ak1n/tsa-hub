@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '../../components/UI.jsx';
-import { QUICK_HELP, POPULAR_TOPICS, MORE_RESOURCES, searchHelp } from '../../data/helpContent.js';
+import { QUICK_HELP, POPULAR_TOPICS, listedArticles, searchHelp } from '../../data/helpContent.js';
 import { ReportIncorrectInfoModal, ContactSupportModal } from './HelpModals.jsx';
 import { BackLink } from '../resources/resourcesShared.jsx';
 
 function HelpRow({ icon, title, subtitle, onClick }) {
     return (
-        <button type="button" className="rs-row" onClick={onClick}>
+        <button type="button" className="rs-row help-row" onClick={onClick}>
             <span className="rs-ico"><Icon name={icon} size={20} /></span>
             <span className="rs-text">
                 <span className="rs-title">{title}</span>
@@ -33,6 +33,7 @@ export default function Help() {
 
     const q = query.trim();
     const results = q ? searchHelp(q) : [];
+    const articles = listedArticles();
 
     return (
         <>
@@ -99,10 +100,16 @@ export default function Help() {
                         ))}
                     </div>
 
-                    <div className="rs-group-label">More Resources</div>
+                    <div className="rs-group-label">Help Articles</div>
                     <div className="rs-card">
-                        {MORE_RESOURCES.map((item) => (
-                            <HelpRow key={item.id} icon={item.icon} title={item.title} subtitle={item.subtitle} onClick={() => openItem(item)} />
+                        {articles.map((a) => (
+                            <HelpRow
+                                key={a.id}
+                                icon="help"
+                                title={a.title}
+                                subtitle={a.subtitle}
+                                onClick={() => navigate(`/help/article/${a.id}`)}
+                            />
                         ))}
                     </div>
                 </>

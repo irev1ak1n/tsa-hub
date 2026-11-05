@@ -132,3 +132,17 @@ html[data-theme="light"] .help-contact-block + .help-contact-block {
 }
 
 html[data-theme="light"] .help-contact-line { color: #111111; }
+
+/* Help Center rows: one-line subtitles, even row height ---------------- */
+
+.help-row { min-height: 56px; }
+
+.help-row .rs-title,
+.help-row .rs-desc {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.help-row .rs-desc { margin-top: 1px; }

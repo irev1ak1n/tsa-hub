@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { AppProvider } from './context/AppContext.jsx';
 import Layout from './components/Layout.jsx';
@@ -39,7 +39,6 @@ import Calendar from './screens/Calendar.jsx';
 import NotFound from './screens/NotFound.jsx';
 
 import Help from './screens/help/Help.jsx';
-import HelpArticlesIndex from './screens/help/HelpArticlesIndex.jsx';
 import HelpArticle from './screens/help/HelpArticle.jsx';
 
 export default function App() {
@@ -68,7 +67,7 @@ export default function App() {
                         <Route path="/calendar" element={<Calendar />} />
 
                         <Route path="/help" element={<Help />} />
-                        <Route path="/help/articles" element={<HelpArticlesIndex />} />
+                        <Route path="/help/articles" element={<Navigate to="/help" replace />} />
                         <Route path="/help/article/:id" element={<HelpArticle />} />
 
                         <Route path="/settings" element={<Settings />} />

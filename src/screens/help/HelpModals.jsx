@@ -27,19 +27,19 @@ function ModalShell({ title, onClose, children }) {
     );
 }
 
-// Report Incorrect Information — category + page/section + description,
-// preview the exact email, then the user sends it themselves.
+// Report Incorrect Information — category + description. The page the report
+// was sent from is recorded automatically. Preview the exact email, then the
+// user sends it themselves.
 export function ReportIncorrectInfoModal({ onClose }) {
     const location = useLocation();
     const [category, setCategory] = useState(REPORT_CATEGORIES[0]);
-    const [page, setPage] = useState(location.pathname || '');
     const [description, setDescription] = useState('');
     const [step, setStep] = useState('form'); // form | preview | sent
 
     const subject = `TSA Hub Report - ${category}`;
     const bodyLines = [
         `Category: ${category}`,
-        page.trim() && `Page/section: ${page.trim()}`,
+        location.pathname && `Page: ${location.pathname}`,
         '',
         description.trim() || '(no description provided)',
     ];
@@ -59,21 +59,12 @@ export function ReportIncorrectInfoModal({ onClose }) {
                 </p>
             ) : (
                 <>
-                    <p className="fb-hint">See something wrong or out of date? Tell us what needs fixing and where.</p>
+                    <p className="fb-hint">See something wrong or out of date? Tell us what needs fixing.</p>
 
                     <label className="fb-label" htmlFor="rep-cat">Category</label>
                     <select id="rep-cat" className="fb-select" value={category} onChange={(e) => setCategory(e.target.value)}>
                         {REPORT_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                     </select>
-
-                    <label className="fb-label" htmlFor="rep-page">Page/section (optional)</label>
-                    <input
-                        id="rep-page"
-                        className="fb-input"
-                        value={page}
-                        onChange={(e) => setPage(e.target.value)}
-                        placeholder="e.g. Robotics event page"
-                    />
 
                     <label className="fb-label" htmlFor="rep-desc">Description</label>
                     <textarea

@@ -18,7 +18,7 @@ const STATIC_ROUTES = new Set([
     '/', '/events', '/events/search', '/recommend',
     '/resources', '/resources/search', '/resources/events/themes',
     '/resources/student-leadership', '/resources/leadership-support',
-    '/coach', '/calendar', '/help', '/help/articles',
+    '/coach', '/calendar', '/help',
     '/settings', '/privacy', '/terms',
 ]);
 const DYNAMIC_ROUTE_RES = [

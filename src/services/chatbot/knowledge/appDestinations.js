@@ -107,10 +107,10 @@ export const APP_DESTINATIONS = [
         description: 'Search Help Center topics, contact support, or report incorrect information.',
     },
     {
-        id: 'helpArticles', title: 'Help Articles', route: '/help/articles',
+        id: 'helpArticles', title: 'Help Articles', route: '/help',
         aliases: ['help articles', 'all help articles', 'frequently asked questions'],
         keywords: ['articles', 'faq', 'guides'],
-        description: 'Every Help Center article in one list.',
+        description: 'Help articles are listed on the Help Center page.',
     },
 ];
 

@@ -6,6 +6,7 @@ export const HELP_ARTICLES = [
     {
         id: 'finding-events',
         title: 'Finding competition events',
+        subtitle: 'Discover and explore TSA competitions.',
         intro: 'TSA runs dozens of competitive events spread across categories like technology, leadership, and STEM, and figuring out which ones are worth a look can feel overwhelming when you’re just getting started. TSA Hub gives you a few different ways to explore the full list depending on how you like to search.',
         sections: [
             {
@@ -30,6 +31,7 @@ export const HELP_ARTICLES = [
     {
         id: 'themes-and-problems',
         title: 'Understanding themes and problems',
+        subtitle: 'Learn how annual event themes work.',
         intro: 'Most build and design events get a new theme or problem statement every year, and your project is expected to respond to it directly. It’s worth understanding early, since your whole season tends to get built around it.',
         sections: [
             {
@@ -53,6 +55,7 @@ export const HELP_ARTICLES = [
     {
         id: 'official-documents',
         title: 'Finding official event documents',
+        subtitle: 'Locate official rules and documents.',
         intro: 'Rule books, prep guides, and other official TSA paperwork all live in one place inside TSA Hub, so you’re not stuck hunting across different websites for the right file.',
         sections: [
             {
@@ -76,6 +79,7 @@ export const HELP_ARTICLES = [
     {
         id: 'using-resources',
         title: 'Using Resources',
+        subtitle: 'Explore TSA guides, links, and materials.',
         intro: 'Resources is basically TSA Hub’s front door to everything official. Rules, programs, your state TSA, and how to reach National TSA leadership are all organized in one place, so you don’t have to remember which website has which piece of information.',
         sections: [
             {
@@ -100,6 +104,7 @@ export const HELP_ARTICLES = [
     {
         id: 'state-advisor',
         title: 'Finding your state advisor',
+        subtitle: 'Find your state TSA contacts.',
         intro: 'Every state runs its own TSA chapter with its own advisor and officer team, and TSA Hub can show you exactly who yours is once you tell it which state you’re in.',
         sections: [
             {
@@ -122,31 +127,63 @@ export const HELP_ARTICLES = [
     {
         id: 'using-calendar',
         title: 'Using the Calendar',
-        intro: 'The Calendar brings together official TSA dates and anything personal you want to track, all in one place instead of juggling a separate planner on top of it.',
+        subtitle: 'Track TSA dates and set reminders.',
+        intro: 'The Calendar shows official TSA dates alongside your own events and reminders, so everything you need to plan around is in one place.',
         sections: [
             {
-                heading: 'Four ways to look at it',
+                heading: 'Choose a view',
                 list: [
-                    'Year, for a wide view of the whole season',
-                    'Month, for planning around a specific stretch of weeks',
-                    'Week, when you need to see what’s coming up day by day',
-                    'Schedule, a simple running list of what’s next',
+                    'Year shows all twelve months at a glance. Tap a month to open it.',
+                    'Month shows a full month. Tap a day to see what is on it.',
+                    'Week lays out each day by the hour. Tap a time slot to add an event.',
+                    'Schedule lists what is coming up next.',
+                ],
+                paragraphs: [
+                    'Switch between four views at the top. Use the arrows to move between periods, and tap Today to jump back to the current date.',
                 ],
             },
             {
-                heading: 'Where the dates actually come from',
+                heading: 'Official TSA dates',
                 paragraphs: [
-                    'Official dates you see on the Calendar come directly from TSA Hub’s own calendar data, so there’s no need to cross check them against a separate source. Anything personal you add on top of that, practice sessions, meetings, your own reminders, is stored only on your device.',
-                    'One thing worth knowing is that TSA Hub doesn’t currently send push notifications or reminders for anything on the Calendar. It’s a place to see your schedule, not an alarm system, so if a date really matters to you, it’s still worth setting your own reminder somewhere too.',
+                    'Conference dates, important dates, and other events from the National TSA calendar appear automatically. They are read-only. Tap one to see its details and a link to the official source when there is one.',
+                    'TSA can change dates after they are published, so always confirm important dates on the official TSA website or with your advisor.',
+                ],
+            },
+            {
+                heading: 'Add your own events and reminders',
+                list: [
+                    'Tap any day, or the plus button, to create an event or a reminder.',
+                    'Enter a title and a date. Add a time, location, notes, or a color if you like.',
+                    'Tap an item to edit or delete it. Reminders can also be marked complete.',
+                ],
+            },
+            {
+                heading: 'Get notified',
+                paragraphs: [
+                    'When you create or edit your own event, choose when you want to be reminded. For an official TSA date, open it and tap Remind me to choose 30 minutes, 1 hour, 1 day, or 1 week before.',
+                    'The first time you set a reminder, TSA Hub asks for permission to send notifications. In the iPhone app, reminders arrive even when TSA Hub is closed. On the website, they appear only while TSA Hub is open in your browser. If you turned notifications off, you can turn them back on in your device or browser settings.',
+                ],
+            },
+            {
+                heading: 'Use your device calendar',
+                paragraphs: [
+                    'Open any event and tap Add to device calendar. On the website this downloads a calendar file. In the iPhone app it opens the share sheet so you can add it to Calendar or save it.',
+                ],
+            },
+            {
+                heading: 'Where your events are saved',
+                paragraphs: [
+                    'Events and reminders you create are saved only on the device you are using. They will not appear on another device, and they are removed if you delete the app or clear your browser data.',
                 ],
             },
         ],
         action: { label: 'Open Calendar', to: '/calendar' },
-        keywords: ['calendar', 'dates', 'schedule', 'year view', 'month view', 'week view'],
+        keywords: ['calendar', 'dates', 'schedule', 'year view', 'month view', 'week view', 'reminders'],
     },
     {
         id: 'personal-calendar-entries',
         title: 'Creating personal calendar entries',
+        subtitle: 'Add your own events and reminders.',
         intro: 'Alongside the official TSA dates, you can add your own events and reminders directly into the Calendar, which is handy for things like tracking team practices or your own personal deadlines.',
         sections: [
             {
@@ -171,6 +208,7 @@ export const HELP_ARTICLES = [
     {
         id: 'contacting-support',
         title: 'Contacting TSA Hub Support',
+        subtitle: 'Reach the TSA Hub support team.',
         intro: 'If something about TSA Hub itself isn’t working right, whether that’s a bug, information that looks wrong, or just feedback you want to share, Contact Support is the direct way to reach the people who maintain it.',
         sections: [
             {
@@ -192,6 +230,7 @@ export const HELP_ARTICLES = [
     {
         id: 'reporting-incorrect-info',
         title: 'Reporting incorrect information',
+        subtitle: 'Tell us what needs fixing.',
         intro: 'TSA Hub only stays useful if the information in it is accurate, so if you notice something wrong, an event detail, a date, a contact, or a link that leads nowhere, reporting it helps keep things correct for every student using the app, not just you.',
         sections: [
             {
@@ -210,31 +249,79 @@ export const HELP_ARTICLES = [
         keywords: ['wrong', 'incorrect', 'bad info', 'report error', 'this is wrong', 'wrong information'],
     },
     {
-        id: 'privacy',
-        title: 'Privacy and transparency',
-        intro: 'Here’s a plain explanation of what TSA Hub actually does with your information, without the usual legal language getting in the way.',
+        id: 'finding-event-rules',
+        title: 'Finding event rules',
+        subtitle: 'Find official rules and requirements.',
+        intro: 'Rules, requirements, and eligibility details live in a few places in TSA Hub. This guide shows where to look.',
         sections: [
             {
-                heading: 'What never leaves your device',
-                paragraphs: [
-                    'Personal Calendar events and reminders you create are stored locally on whatever device you’re using. TSA Hub doesn’t upload them anywhere, and there’s no separate server copy sitting somewhere else. If you clear your browser data or switch devices, those entries go with it.',
+                heading: 'Start with your event',
+                list: [
+                    'Open Events and tap an event to see its team size, how many entries are allowed, and its requirements.',
+                    'In Resources, open Event Guide and choose an event for its full page, including the current theme and problem when one has been published and its team and submission requirements.',
                 ],
             },
             {
-                heading: 'What actually gets sent to us',
+                heading: 'Rules that apply to every event',
                 paragraphs: [
-                    'Feedback and incorrect information reports are the only things you choose to send us, and they are only sent when you tap Send. Like any online app, TSA Hub also loads event information from its database, so basic technical details such as your IP address reach our hosting and database providers. We don’t use analytics or ads.',
+                    'In Resources, the Competition Rules and Preparation section covers eligibility, entry requirements, work and content rules, schedule conflicts and emergencies, how judging works, and violations and advancement.',
                 ],
             },
             {
-                heading: 'Where the official information comes from',
+                heading: 'Requirements and updates',
                 paragraphs: [
-                    'Event details, rules, and conference dates come from TSA and National TSA’s own published resources. When something you’re reading is TSA Hub’s own guidance rather than an official rule, a study tip rather than a requirement, for example, we try to make that distinction clear instead of blurring the line.',
+                    'The Competition Requirements and Updates section in Resources includes Eligibility Charts, Preconference Submissions, National Competition Requirements, and State Advisor Approval Events.',
+                ],
+            },
+            {
+                heading: 'Search for a rule',
+                paragraphs: [
+                    'Use the Search bar at the top of Resources to look up a rule, event, or topic by name.',
+                ],
+            },
+            {
+                heading: 'Confirm with official sources',
+                paragraphs: [
+                    'TSA Hub organizes information published by TSA, and rules can change. Before you rely on a rule or deadline, check the official TSA document linked on the page or ask your advisor.',
                 ],
             },
         ],
-        action: { label: 'Read the full Privacy Policy', to: '/privacy' },
-        keywords: ['privacy', 'data', 'local storage', 'saved locally', 'transparency'],
+        action: { label: 'Explore Events', to: '/events' },
+        keywords: ['rules', 'event rules', 'competition rules', 'requirements', 'eligibility', 'find rules'],
+    },
+    {
+        id: 'browsing-official-resources',
+        title: 'Browsing official resources',
+        subtitle: 'Find official TSA information in one place.',
+        intro: 'Resources gathers TSA information, competition materials, programs, and contacts so you do not have to search several websites.',
+        sections: [
+            {
+                heading: 'What you will find',
+                list: [
+                    'About TSA, including what TSA is, its history, competitions, and divisions',
+                    'Event Guide, with a full page for each competitive event',
+                    'National Conference information',
+                    'Competition Rules and Preparation, and Competition Requirements and Updates',
+                    'Programs and Initiatives, such as Forward to Fifty, Awards and Scholarships, the Leadership Program, the National Service Project, and the TSA Achievement Program',
+                    'Your State, where you can choose your state to see its TSA contacts and links',
+                    'National TSA website and social media links, the official TSA Store, and leadership contacts',
+                ],
+            },
+            {
+                heading: 'Find what you need',
+                paragraphs: [
+                    'Scroll through the sections on the Resources page, or use the Search bar at the top to look something up by name. Tap any row to open its page.',
+                ],
+            },
+            {
+                heading: 'Official sources',
+                paragraphs: [
+                    'Many pages include links to the official TSA website, which open in your browser. Resources summarizes what TSA publishes, so check the official source for the latest version of any document or date.',
+                ],
+            },
+        ],
+        action: { label: 'Open Resources', to: '/resources' },
+        keywords: ['resources', 'official resources', 'guides', 'documents', 'official links', 'tsa information'],
     },
 ];
 
@@ -248,74 +335,58 @@ export function getHelpArticle(id) {
 
 export const QUICK_HELP = [
     {
-        id: 'rules',
+        id: 'contact-support',
+        icon: 'headset',
+        title: 'Contact Support',
+        subtitle: 'Get help from the TSA Hub team.',
+        modal: 'support',
+        keywords: ['support', 'contact support', 'contact us', 'help'],
+    },
+    {
+        id: 'report',
+        icon: 'flag',
+        title: 'Report Incorrect Information',
+        subtitle: 'Help keep TSA Hub accurate.',
+        modal: 'report',
+        keywords: ['wrong', 'incorrect', 'bad info', 'report error', 'this is wrong', 'wrong information'],
+    },
+];
+
+// Popular topics open a help article.
+export const POPULAR_TOPICS = [
+    {
+        id: 'calendar',
+        icon: 'cal',
+        title: 'Calendar and Reminders',
+        subtitle: 'Track TSA dates and set reminders.',
+        article: 'using-calendar',
+        keywords: ['calendar', 'reminders', 'dates', 'schedule'],
+    },
+    {
+        id: 'event-rules',
         icon: 'shield',
-        title: 'Find event rules',
-        subtitle: 'View official rules and requirements',
-        to: '/resources',
+        title: 'Finding Event Rules',
+        subtitle: 'Find official rules and requirements.',
+        article: 'finding-event-rules',
         keywords: ['rules', 'competition rules', 'requirements', 'eligibility'],
     },
     {
         id: 'official-resources',
         icon: 'file-text',
-        title: 'Browse official resources',
-        subtitle: 'Access TSA guides, documents, and official links',
-        to: '/resources',
+        title: 'Browsing Official Resources',
+        subtitle: 'Find official TSA information in one place.',
+        article: 'browsing-official-resources',
         keywords: ['official resources', 'resources', 'guides', 'documents'],
     },
 ];
 
-export const POPULAR_TOPICS = [
-    {
-        id: 'calendar',
-        icon: 'cal',
-        title: 'Calendar and reminders',
-        subtitle: 'Manage TSA dates and your personal schedule',
-        article: 'using-calendar',
-        keywords: ['calendar', 'reminders', 'dates', 'schedule'],
-    },
-    {
-        id: 'report',
-        icon: 'flag',
-        title: 'Report incorrect information',
-        subtitle: 'Help us keep TSA Hub information accurate',
-        modal: 'report',
-        // Also covers the 'reporting-incorrect-info' article's content —
-        // set so search dedup doesn't surface both as separate results.
-        article: 'reporting-incorrect-info',
-        keywords: ['wrong', 'incorrect', 'bad info', 'report error', 'this is wrong', 'wrong information'],
-    },
-    {
-        id: 'privacy',
-        icon: 'shield',
-        title: 'Privacy & transparency',
-        subtitle: 'Learn how TSA Hub handles your data',
-        article: 'privacy',
-        keywords: ['privacy', 'data', 'local storage', 'saved locally'],
-    },
-];
-
-export const MORE_RESOURCES = [
-    {
-        id: 'contact-support',
-        icon: 'headset',
-        title: 'Contact support',
-        subtitle: 'Get in touch with the TSA Hub support team',
-        modal: 'support',
-        // Also covers the 'contacting-support' article's content — set so
-        // search dedup doesn't surface both as separate results.
-        article: 'contacting-support',
-        keywords: ['support', 'contact support', 'contact us'],
-    },
-    {
-        id: 'help-articles',
-        icon: 'help',
-        title: 'Help articles',
-        subtitle: 'Find detailed answers to common questions',
-        to: '/help/articles',
-        keywords: ['help article', 'articles', 'faq'],
-    },
-];
+// Articles listed under Help Articles on the Help Center page. Articles that
+// already appear as a Popular Topic are left out so nothing shows twice. Every
+// article stays reachable at /help/article/:id and through search.
+export function listedArticles() {
+    const featured = new Set(POPULAR_TOPICS.map((t) => t.article));
+    return HELP_ARTICLES.filter((a) => !featured.has(a.id));
+}
 
 // ---------------------------------------------------------------------------
 // Search index: title + subtitle + keywords/aliases across every section,
@@ -328,7 +399,7 @@ function normalize(s) {
 
 function buildIndex() {
     const rows = [];
-    for (const item of [...QUICK_HELP, ...POPULAR_TOPICS, ...MORE_RESOURCES]) {
+    for (const item of [...QUICK_HELP, ...POPULAR_TOPICS]) {
         rows.push({
             id: item.id,
             title: item.title,
@@ -341,16 +412,19 @@ function buildIndex() {
         });
     }
     const coveredTitles = new Set(rows.map((r) => normalize(r.title)));
+    // Quick Help opens the form directly, so its article is not a second result.
+    const quickHelpArticles = new Set(['contacting-support', 'reporting-incorrect-info']);
     for (const article of HELP_ARTICLES) {
         // Skip ones already represented above as a section row (matched by
         // article id OR title) to avoid duplicate-looking search results
         // for the same destination.
         if (rows.some((r) => r.article === article.id)) continue;
+        if (quickHelpArticles.has(article.id)) continue;
         if (coveredTitles.has(normalize(article.title))) continue;
         rows.push({
             id: `article-${article.id}`,
             title: article.title,
-            subtitle: article.intro,
+            subtitle: article.subtitle,
             icon: 'help',
             article: article.id,
             haystack: normalize([article.title, article.intro, ...(article.keywords || [])].join(' ')),

@@ -211,7 +211,7 @@ export const FLOW_STEPS = {
         block('guide', 'Event Guide', navigate('Open Event Guide', '/resources/events/themes')),
         block('state', 'State information', go('State information', 'state')),
         block('officers', 'National officers', navigate('National Officers', '/resources/student-leadership')),
-        block('help-articles', 'Help articles', navigate('Help Articles', '/help/articles')),
+        block('help-articles', 'Help articles', navigate('Help Articles', '/help')),
         block('search', 'Search Resources', navigate('Search Resources', '/resources/search')),
     ]),
 
