@@ -600,23 +600,30 @@ export default function Recommender() {
             {/* STEP 1 — drag to rank interests */}
             {step === 1 && (
                 <>
-                    <p className="muted small rec-stepsub rank-sub">
-                        Put what interests you most at the top, and we’ll use your choices to find the best matches for you.
-                    </p>
-                    <div className={`rank-tools ${editing ? 'is-editing' : ''}`}>
-                        <button
-                            type="button"
-                            className="rank-pencil"
-                            onClick={startEdit}
-                            aria-label="Edit order"
-                            tabIndex={editing ? -1 : 0}
-                            aria-hidden={editing}
-                        >
-                            <Icon name="edit" size={18} />
-                        </button>
-                        <div className="rank-actions" aria-hidden={!editing}>
-                            <button type="button" className="rank-btn" onClick={saveEdit} tabIndex={editing ? 0 : -1}>Save</button>
-                            <button type="button" className="rank-btn" onClick={cancelEdit} tabIndex={editing ? 0 : -1}>Cancel</button>
+                    <div className={`rank-subhead ${editing ? 'is-editing' : ''}`}>
+                        <p className="muted small rec-stepsub rank-sub">
+                            Put what interests you most at the top, and we’ll use{' '}
+                            <span className="rank-sub-tail">your choices to find the best matches for you.</span>
+                        </p>
+                        <div className="rank-controls">
+                            <button
+                                type="button"
+                                className="rank-icon-btn rank-pencil"
+                                onClick={startEdit}
+                                aria-label="Edit order"
+                                tabIndex={editing ? -1 : 0}
+                                aria-hidden={editing}
+                            >
+                                <Icon name="edit" size={19} />
+                            </button>
+                            <div className="rank-actions" aria-hidden={!editing}>
+                                <button type="button" className="rank-icon-btn" onClick={saveEdit} aria-label="Save changes" tabIndex={editing ? 0 : -1}>
+                                    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12.5 10 17.5 19 7" /></svg>
+                                </button>
+                                <button type="button" className="rank-icon-btn" onClick={cancelEdit} aria-label="Cancel changes" tabIndex={editing ? 0 : -1}>
+                                    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div

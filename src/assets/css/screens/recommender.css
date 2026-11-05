@@ -283,77 +283,80 @@
 
 /* Edit mode for the interest ranking: the list is locked until the pencil is tapped.
    All motion on this screen uses the same easing and 250 to 350ms timing. */
-.rank-sub { margin-bottom: 10px; }
-
-.rank-tools {
+/* The controls sit at the right edge, beside the last line of the subtitle. They are
+   absolutely positioned, so switching modes never moves the text or the list. The
+   subtitle's final phrase reserves the control width, so text can never run under them. */
+.rank-subhead {
     position: relative;
-    height: 44px;
-    margin: 0 0 12px;
+    margin-bottom: 16px;
+}
+
+.rank-sub {
+    margin: 0;
+    font-size: 12px;
+    line-height: 20px;
+}
+
+/* Keeps the last phrase together and leaves room for the two 40px icon hit areas */
+.rank-sub-tail {
+    display: inline-block;
+    padding-right: 84px;
+    vertical-align: top;
+}
+
+.rank-controls {
+    position: absolute;
+    right: 0;
+    bottom: -16px;
+    width: 80px;
+    height: 36px;
 }
 
 .rank-pencil,
 .rank-actions {
     position: absolute;
-    left: 0;
+    right: 0;
     top: 0;
     transition: opacity .3s cubic-bezier(.4, 0, .2, 1),
                 transform .3s cubic-bezier(.4, 0, .2, 1),
                 visibility 0s linear 0s;
 }
 
-/* Pencil: no outline, just a quiet icon with a soft tap target */
-.rank-pencil {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    margin-left: -10px;
-    padding: 0;
-    border: 0;
-    border-radius: 12px;
-    background: transparent;
-    color: var(--ink);
-    cursor: pointer;
-}
-.rank-pencil:hover { background: rgba(255, 255, 255, .08); }
-.rank-pencil:active { transform: scale(.94); }
-.rank-pencil:focus-visible { outline: 2px solid var(--ig-blue); outline-offset: 2px; }
-
 .rank-actions {
     display: flex;
-    gap: 10px;
+    height: 36px;
 }
 
-.rank-btn {
-    min-width: 92px;
-    height: 44px;
-    padding: 0 20px;
-    border-radius: 10px;
-    border: 1px solid #ffffff;
+/* Icon only: no border, background, or label. The hit area is larger than the icon. */
+.rank-icon-btn {
+    display: inline-flex;
+    align-items: flex-start;
+    justify-content: center;
+    width: 40px;
+    height: 36px;
+    padding: 0;
+    border: 0;
     background: transparent;
     color: #ffffff;
-    font-family: var(--font-system);
-    font-size: 14px;
-    font-weight: 600;
     cursor: pointer;
-    transition: background .2s cubic-bezier(.4, 0, .2, 1), transform .2s cubic-bezier(.4, 0, .2, 1);
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity .2s cubic-bezier(.4, 0, .2, 1), transform .2s cubic-bezier(.4, 0, .2, 1);
 }
-.rank-btn:hover { background: rgba(255, 255, 255, .1); }
-.rank-btn:active { transform: scale(.97); }
-.rank-btn:focus-visible { outline: 2px solid var(--ig-blue); outline-offset: 2px; }
+.rank-icon-btn:hover { opacity: .7; }
+.rank-icon-btn:active { transform: scale(.9); }
+.rank-icon-btn:focus-visible { outline: 2px solid var(--ig-blue); outline-offset: -4px; border-radius: 10px; }
 
 /* View state: pencil visible, actions tucked away. Edit state swaps them. */
-.rank-tools:not(.is-editing) .rank-actions {
+.rank-subhead:not(.is-editing) .rank-actions {
     opacity: 0;
-    transform: translateX(8px) scale(.96);
+    transform: translateX(8px) scale(.94);
     visibility: hidden;
     pointer-events: none;
     transition: opacity .3s cubic-bezier(.4, 0, .2, 1),
                 transform .3s cubic-bezier(.4, 0, .2, 1),
                 visibility 0s linear .3s;
 }
-.rank-tools.is-editing .rank-pencil {
+.rank-subhead.is-editing .rank-pencil {
     opacity: 0;
     transform: translateX(-8px) scale(.9);
     visibility: hidden;
@@ -513,14 +516,7 @@
     transform: translateX(-50%) translateY(0);
 }
 
-html[data-theme="light"] .rank-btn {
-    border-color: #000000;
-    background: transparent;
-    color: #000000;
-}
-html[data-theme="light"] .rank-btn:hover { background: rgba(0, 0, 0, .06); }
-html[data-theme="light"] .rank-pencil { color: #000000; }
-html[data-theme="light"] .rank-pencil:hover { background: rgba(0, 0, 0, .06); }
+html[data-theme="light"] .rank-icon-btn { color: #000000; }
 html[data-theme="light"] .drag-item.grabbed { box-shadow: 0 14px 30px rgba(0, 0, 0, .2), 0 3px 8px rgba(0, 0, 0, .12); }
 html[data-theme="light"] .rec-toast-success { background: #2f8f57; border-color: #3aa766; }
 html[data-theme="light"] .rec-toast-info { background: #ffffff; border-color: #000000; color: #000000; }
@@ -1050,11 +1046,11 @@ html[data-theme="light"] .rec-breakdown-bar {
 /* Respect the reduced-motion preference: no sliding or scaling, only quick fades */
 @media (prefers-reduced-motion: reduce) {
     .drag-item,
-    .rank-btn { transition: none !important; }
+    .rank-icon-btn { transition: none !important; }
     .rank-pencil,
     .rank-actions,
-    .rank-tools:not(.is-editing) .rank-actions,
-    .rank-tools.is-editing .rank-pencil {
+    .rank-subhead:not(.is-editing) .rank-actions,
+    .rank-subhead.is-editing .rank-pencil {
         transform: none !important;
         transition: opacity .15s linear, visibility 0s linear .15s !important;
     }
