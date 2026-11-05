@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { flushSync } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext.jsx';
@@ -102,6 +102,7 @@ const STEP_TITLES = [
 const STEP_COUNT = STEP_TITLES.length;
 
 const DRAG_THRESHOLD = 6;
+const TOAST_MS = 2400;
 
 // Human label for an event team requirement, read straight from eligibility.
 function teamSizeText(el) {
@@ -242,6 +243,60 @@ export default function Recommender() {
 
     const GAP = 8;
 
+    // Reordering only works in edit mode. Save keeps the new order, Cancel
+    // restores the order captured when editing started.
+    const [editing, setEditing] = useState(false);
+    const snapshotRef = useRef(null);
+    const [toast, setToast] = useState(null);
+    const toastTimer = useRef(null);
+    // Bumped whenever a drag is abandoned, so a settle animation that is still
+    // pending can never commit a stale move after Save or Cancel.
+    const dragEpoch = useRef(0);
+
+    useEffect(() => () => {
+        if (toastTimer.current) clearTimeout(toastTimer.current);
+        if (settleTimer.current) clearTimeout(settleTimer.current);
+    }, []);
+
+    function showToast(text, tone) {
+        if (toastTimer.current) clearTimeout(toastTimer.current);
+        setToast({ text, tone, key: Date.now() });
+        toastTimer.current = setTimeout(() => setToast(null), TOAST_MS);
+    }
+
+    function resetDrag() {
+        dragEpoch.current += 1;
+        if (settleTimer.current) clearTimeout(settleTimer.current);
+        pressRef.current = null;
+        setDraggingId(null);
+        setDragOffset(0);
+        setTargetIndex(null);
+        setDragFrom(null);
+        setSettling(false);
+        setCommitting(false);
+    }
+
+    function startEdit() {
+        snapshotRef.current = [...intOrder];
+        setEditing(true);
+        showToast('Editing enabled. Drag to reorder your interests.', 'success');
+    }
+
+    function saveEdit() {
+        resetDrag();
+        snapshotRef.current = null;
+        setEditing(false);
+        showToast('Changes saved.', 'success');
+    }
+
+    function cancelEdit() {
+        resetDrag();
+        if (snapshotRef.current) setIntOrder(snapshotRef.current);
+        snapshotRef.current = null;
+        setEditing(false);
+        showToast('Changes discarded.', 'info');
+    }
+
     function rowMetrics() {
         const list = listRef.current;
         if (!list) return null;
@@ -252,6 +307,7 @@ export default function Recommender() {
     }
 
     function onPointerDown(e, id, index) {
+        if (!editing) return;
         if (e.button != null && e.button !== 0) return;
         pressRef.current = { id, index, startY: e.clientY, dragging: false };
         try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* ignore */ }
@@ -305,14 +361,17 @@ export default function Recommender() {
         const m = rowMetrics();
 
         pressRef.current = null;
+        const epoch = dragEpoch.current;
         if (m) {
             const targetOffset = (to - from) * m.step;
             setSettling(true);
             setDragOffset(targetOffset);
             if (settleTimer.current) clearTimeout(settleTimer.current);
             settleTimer.current = setTimeout(() => {
+                if (dragEpoch.current !== epoch) return;
                 setCommitting(true);
                 requestAnimationFrame(() => {
+                    if (dragEpoch.current !== epoch) return;
                     flushSync(() => {
                         if (to !== from) {
                             setIntOrder((cur) => {
@@ -493,6 +552,11 @@ export default function Recommender() {
     // ----------------------------------------------------------- QUESTIONNAIRE
     return (
         <>
+            {toast && (
+                <div key={toast.key} className={`rec-toast rec-toast-${toast.tone}`} role="status" aria-live="polite">
+                    {toast.text}
+                </div>
+            )}
             <div className="section">
                 <div className="rec-progress">
                     {STEP_TITLES.map((_, i) => <span key={i} className={`rec-dot ${i <= step ? 'on' : ''}`} />)}
@@ -528,11 +592,31 @@ export default function Recommender() {
             {/* STEP 1 — drag to rank interests */}
             {step === 1 && (
                 <>
-                    <p className="muted small rec-stepsub">
-                        Put what interests you most at the top, and we’ll use your choices to find the best matches for you.
-                    </p>
+                    <div className="rank-head">
+                        <p className="muted small rank-sub">
+                            Put what interests you most at the top, and we’ll use your choices to find the best matches for you.
+                        </p>
+                        <div className="rank-tools">
+                            {editing ? (
+                                <>
+                                    <button type="button" className="rank-btn rank-btn-labeled" onClick={saveEdit} aria-label="Save changes">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12.5 10 17.5 19 7" /></svg>
+                                        <span>Save</span>
+                                    </button>
+                                    <button type="button" className="rank-btn rank-btn-labeled" onClick={cancelEdit} aria-label="Cancel changes">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+                                        <span>Cancel</span>
+                                    </button>
+                                </>
+                            ) : (
+                                <button type="button" className="rank-btn" onClick={startEdit} aria-label="Edit order">
+                                    <Icon name="edit" size={18} />
+                                </button>
+                            )}
+                        </div>
+                    </div>
                     <div
-                        className={`drag-list ${draggingId ? 'is-dragging' : ''} ${committing ? 'is-committing' : ''}`}
+                        className={`drag-list ${editing ? 'is-editing' : 'is-locked'} ${draggingId ? 'is-dragging' : ''} ${committing ? 'is-committing' : ''}`}
                         ref={listRef}
                     >
                         {intOrder.map((id, i) => {
@@ -544,12 +628,12 @@ export default function Recommender() {
                                     key={id}
                                     data-drag-id={id}
                                     className={`drag-item ${isDragged ? 'grabbed' : ''}`}
-                                    onPointerDown={(e) => onPointerDown(e, id, i)}
-                                    onPointerMove={onPointerMove}
-                                    onPointerUp={endPress}
-                                    onPointerCancel={endPress}
+                                    onPointerDown={editing ? (e) => onPointerDown(e, id, i) : undefined}
+                                    onPointerMove={editing ? onPointerMove : undefined}
+                                    onPointerUp={editing ? endPress : undefined}
+                                    onPointerCancel={editing ? endPress : undefined}
                                     style={{
-                                        touchAction: 'none',
+                                        touchAction: editing ? 'none' : undefined,
                                         transform: translate ? `translateY(${translate}px)` : undefined,
                                         transition: committing
                                             ? 'none'
@@ -733,9 +817,9 @@ export default function Recommender() {
                 {step === 0 ? (
                     <button className="btn ghost rec-back" onClick={() => navigate(-1)}>Cancel</button>
                 ) : (
-                    <button className="btn ghost rec-back" onClick={back}>Back</button>
+                    <button className="btn ghost rec-back" onClick={back} disabled={editing}>Back</button>
                 )}
-                <button className="btn primary" onClick={next} disabled={!canNext}>
+                <button className="btn primary" onClick={next} disabled={!canNext || editing}>
                     {step === 0 ? 'Continue' : step === STEP_COUNT - 1 ? 'See my matches' : 'Next'}
                 </button>
             </div>
