@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext.jsx';
 import { Icon } from '../components/UI.jsx';
-import SubmitModal from '../components/SubmitModal.jsx';
 import QuickActionsEditor from '../components/QuickActionsEditor.jsx';
 import { RowIcon } from './resources/resourcesShared.jsx';
 import { NATIONAL_TSA } from './resources/resourceSearch.jsx';
@@ -10,7 +9,6 @@ import { resolveQuickActions } from '../data/quickActions.js';
 import HomeCalendarWidget from '../components/HomeCalendarWidget.jsx';
 import HomeMyEvents from '../components/HomeMyEvents.jsx';
 import HomeLeadershipLinks from '../components/HomeLeadershipLinks.jsx';
-import { submitFeedback } from '../services/feedbackService.js';
 import nationalOfficersImg from '../assets/img/national-officers.png';
 import recommenderImg from '../assets/img/event-recommender-home.webp';
 
@@ -18,9 +16,8 @@ import recommenderImg from '../assets/img/event-recommender-home.webp';
 //   route    -> <Link>, optionally carrying router state (e.g. Calendar's
 //               "open the add-event editor" signal)
 //   external -> plain external link
-//   modal    -> opens an existing modal (Send Feedback / Report) via callback
 //   theme    -> toggles the app theme directly, no navigation
-function QuickActionTile({ action, onOpenModal, onToggleTheme }) {
+function QuickActionTile({ action, onToggleTheme }) {
     const inner = (
         <>
             <RowIcon node={action.node} icon={action.icon} img={action.img} svg={action.svg} color={action.iconColor} mono={action.mono} />
@@ -30,13 +27,6 @@ function QuickActionTile({ action, onOpenModal, onToggleTheme }) {
 
     if (action.kind === 'external') {
         return <a href={action.href} target="_blank" rel="noreferrer" className="quick3-tile">{inner}</a>;
-    }
-    if (action.kind === 'modal') {
-        return (
-            <button type="button" className="quick3-tile" onClick={() => onOpenModal(action.modal)}>
-                {inner}
-            </button>
-        );
     }
     if (action.kind === 'theme') {
         return (
@@ -52,7 +42,6 @@ function QuickActionTile({ action, onOpenModal, onToggleTheme }) {
 export default function Dashboard() {
     const { quickActions, setQuickActions, toggleTheme } = useApp();
     const [showEditor, setShowEditor] = useState(false);
-    const [modal, setModal] = useState(null); // 'feedback' | null
 
     const actions = resolveQuickActions(quickActions);
 
@@ -104,7 +93,6 @@ export default function Dashboard() {
                         <QuickActionTile
                             key={action.id}
                             action={action}
-                            onOpenModal={setModal}
                             onToggleTheme={toggleTheme}
                         />
                     ))}
@@ -158,17 +146,6 @@ export default function Dashboard() {
                     selectedIds={quickActions}
                     onSave={setQuickActions}
                     onClose={() => setShowEditor(false)}
-                />
-            )}
-
-            {modal === 'feedback' && (
-                <SubmitModal
-                    title="Send Feedback"
-                    hint="Found an issue or have a suggestion? We&rsquo;d love to hear it. Please leave out personal information. If you&rsquo;re under 13, ask a parent or teacher first."
-                    placeholder="Type your feedback…"
-                    doneText="Thanks! Your feedback was sent."
-                    onSubmit={submitFeedback}
-                    onClose={() => setModal(null)}
                 />
             )}
         </>

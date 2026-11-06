@@ -1,7 +1,6 @@
-/* Help Center — reuses rs-* (cards/rows/search/modal) and fb-* (textarea/
-   actions) primitives from resources.css. This file
-   only adds what's genuinely new: search-results empty state, and the small
-   form fields used in the report/contact modals. */
+/* Help Center — reuses rs-* (cards/rows/search) primitives from resources.css.
+   This file only adds what's genuinely new: the search-results empty state and
+   the Help Center row sizing. */
 
 /* Search results ----------------------------------------------------- */
 

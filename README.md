@@ -86,17 +86,18 @@ TSA Hub allows students to explore competitive events, view eligibility requirem
 - Switch between Dark and Light Theme
 - Explore National TSA leadership and important links
 
-## 8) Help improve TSA Hub by sharing feedback.
+## 8) No forms or messages
+
+TSA Hub has no feedback, support or report forms.
 
 - Submit feedback and feature suggestions
-- (Contact Support and Report Incorrect Information were removed)
 - Contact TSA Hub support
 
 ---
 
 # Development
 
-TSA Hub is a Vite + React single-page app with a Supabase backend, one Vercel serverless endpoint (`api/submit-feedback.js`) and a Capacitor iOS shell. The web app and the iOS app share one codebase.
+TSA Hub is a Vite + React single-page app with a Supabase backend, a Capacitor iOS shell. The web app and the iOS app share one codebase.
 
 ## Run locally
 
@@ -106,7 +107,6 @@ cp .env.example .env     # fill VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
 npm run dev              # http://localhost:5173 (also on your LAN for phone testing)
 ```
 
-The Feedback form calls `/api/submit-feedback`, which only runs on Vercel (or `vercel dev` with the server-side variables from `.env.example`). Everything else works with the dev server alone.
 
 ## Test and build the web version
 

@@ -53,8 +53,8 @@ Technical requirements already handled: privacy manifest (`ios/App/App/PrivacyIn
 
 Based on what the app does after the privacy audit (`docs/PRIVACY_AUDIT.md`). The privacy manifest matches this.
 
-- **Do you or your third-party partners collect data from this app?** Yes. Only through the optional Feedback form, plus technical data seen by hosting providers (see the decision below).
-- **User Content, Other User Content**: the free-text message in Feedback. Purpose: App Functionality. Linked to the user: No (there is no account, name or email). Used for tracking: No.
+- **Do you or your third-party partners collect data from this app?** Yes. No. The app has no forms. Technical data seen by hosting providers (see the decision below).
+- **User Content**: none collected by the app any more. Earlier messages stay in Supabase until you delete them (see the privacy audit).
 - **Contact Info (name, email)**: not collected. Get Involved was removed.
 - **Identifiers, Usage Data, Location, Contacts, Health, Financial, Purchases, Browsing history, Search history**: not collected. Search and TSA Coach questions stay on the device.
 - **Tracking**: No. No ATT prompt is needed.

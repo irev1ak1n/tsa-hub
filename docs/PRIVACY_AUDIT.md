@@ -58,6 +58,10 @@ Left on purpose, for you to review:
 - **Database constraint.** The table still allows type `report`. Tighten it only after you decide what to do with the 2 rows.
 - **Environment.** `RESEND_API_KEY` and `FEEDBACK_TO_EMAIL` are still used by Send Feedback.
 
+## 3c. Send Feedback removal
+
+Send Feedback was also removed (Settings row, Home Quick Action, modal, client service, `api/submit-feedback.js`, tests). The app now has no form that sends anything to us. The Help Center is unchanged apart from losing the two removed rows and their articles. `RESEND_API_KEY`, `FEEDBACK_TO_EMAIL` and the `rate_limits` table are no longer used by the app, so you can remove the variables from Vercel and drop the table when convenient. The 13 existing `feedback` rows are untouched.
+
 ## 4. Legacy account data (needs your review)
 
 The production Supabase project still holds data from an earlier version of the app that had accounts:
