@@ -1,6 +1,7 @@
-/* Help Center — reuses rs-* (cards/rows/search) primitives from resources.css.
-   This file only adds what's genuinely new: the search-results empty state and
-   the Help Center row sizing. */
+/* Help Center — reuses rs-* (cards/rows/search/modal) and fb-* (textarea/
+   actions) primitives from resources.css / feedback-modal.css. This file
+   only adds what's genuinely new: search-results empty state, and the small
+   form fields used in the report modal. */
 
 /* Search results ----------------------------------------------------- */
 
@@ -22,6 +23,67 @@
     justify-content: center;
     flex-wrap: wrap;
 }
+
+/* Form fields shared by the report modal ---------- */
+
+.fb-label {
+    display: block;
+    font-family: var(--font-system);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 14px 0 6px;
+}
+
+.fb-label:first-child { margin-top: 0; }
+
+.fb-select,
+.fb-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 14px;
+    border-radius: var(--radius-sm);
+    background: #171717;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-family: var(--font-system);
+    font-size: 15px;
+    outline: none;
+}
+
+.fb-select:focus,
+.fb-input:focus {
+    border-color: color-mix(in srgb, var(--ig-blue) 45%, var(--line));
+}
+
+.fb-input::placeholder { color: var(--muted); }
+
+.fb-preview {
+    background: #171717;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-family: var(--font-system);
+    font-size: 13px;
+    line-height: 19px;
+    color: var(--muted);
+    white-space: pre-wrap;
+    margin-top: 12px;
+}
+
+.fb-preview strong { color: var(--ink); }
+
+html[data-theme="light"] .fb-select,
+html[data-theme="light"] .fb-input,
+html[data-theme="light"] .fb-preview {
+    background: #ffffff;
+    border-color: #d0d0da;
+    color: #111111;
+}
+
+html[data-theme="light"] .fb-input::placeholder { color: #8a8a95; }
 
 /* Help Center rows: one-line subtitles, even row height ---------------- */
 

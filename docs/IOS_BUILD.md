@@ -78,6 +78,7 @@ Because there is no Simulator on Windows, collect App Store screenshots from the
 - Calendar: add an event with a reminder, accept the notification prompt, background the app, confirm the reminder arrives.
 - "Add to calendar" opens the iOS share sheet with a `.ics` file.
 - Airplane mode after one online launch still shows events.
+- Feedback and Report submit successfully and produce one email in the owner's inbox.
 - Rotate on iPad; both orientations are enabled.
 
 ## What was verified on Windows, and what was not
@@ -125,6 +126,7 @@ Replace `src/assets/img/icon.png` (square, at least 1024 px) and run `npm run na
 | Native-only CSS (class `native-app` on `<html>`) | `src/assets/css/native.css` |
 | Reminders as OS local notifications | `src/services/notificationService.js` |
 | Calendar export via share sheet | `src/services/deviceCalendarService.js` |
+| API CORS for the app origin `capacitor://localhost` | `api/_lib/security.js`, `api/submit-feedback.js` |
 | Capacitor config | `capacitor.config.json` |
 | Privacy manifest | `ios/App/App/PrivacyInfo.xcprivacy` |
 | Cloud builds | `codemagic.yaml`, `scripts/buildNative.mjs` |

@@ -48,19 +48,11 @@ Left on purpose:
 - **Stored submissions.** None. No records to review or delete.
 - "Get involved" in the National Service Project content is TSA's own program text and is unrelated.
 
-## 3b. Contact Support and Report Incorrect Information removal
+## 3b. Contact Support removal (Feedback and Report restored)
 
-Removed: both Help Center rows (and the Quick Help section), their modals and mailto builder, the help articles about them, the Settings and Quick Actions "Report Incorrect Information" entries, `submitReport`, the `report` type in `api/submit-feedback.js`, the Coach's support draft flow (it now points to the Help Center and National TSA contacts), and related styles and tests. The Privacy Policy and Terms were updated. Send Feedback was not part of the request and still works.
+Contact Support was removed for good: the Help Center row, its modal and mailto builder, its article, and the Coach's support draft flow. Send Feedback and Report Incorrect Information stay, and neither asks for a name, email, phone number or other contact detail. Report uses one modal (category, description, preview, then sent) from Settings, the Home Quick Action and the Help Center. The route is captured automatically, and there is no page field.
 
-Left on purpose, for you to review:
-
-- **Existing records.** `public.feedback` holds 13 rows: 11 `feedback` (7 begin with "TEST") and 2 `report`, dated 2026-08-04 to 2026-09-17. Nothing was deleted.
-- **Database constraint.** The table still allows type `report`. Tighten it only after you decide what to do with the 2 rows.
-- **Environment.** `RESEND_API_KEY` and `FEEDBACK_TO_EMAIL` are still used by Send Feedback.
-
-## 3c. Send Feedback removal
-
-Send Feedback was also removed (Settings row, Home Quick Action, modal, client service, `api/submit-feedback.js`, tests). The app now has no form that sends anything to us. The Help Center is unchanged apart from losing the two removed rows and their articles. `RESEND_API_KEY`, `FEEDBACK_TO_EMAIL` and the `rate_limits` table are no longer used by the app, so you can remove the variables from Vercel and drop the table when convenient. The 13 existing `feedback` rows are untouched.
+Existing records: `public.feedback` holds 13 rows (11 feedback, 7 of them starting with "TEST", and 2 report), all untouched.
 
 ## 4. Legacy account data (needs your review)
 

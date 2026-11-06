@@ -206,6 +206,27 @@ export const HELP_ARTICLES = [
         keywords: ['reminder', 'personal event', 'add reminder', 'local storage', 'saved locally'],
     },
     {
+        id: 'reporting-incorrect-info',
+        title: 'Reporting incorrect information',
+        subtitle: 'Tell us what needs fixing.',
+        intro: 'TSA Hub only stays useful if the information in it is accurate, so if you notice something wrong, an event detail, a date, a contact, or a link that leads nowhere, reporting it helps keep things correct for every student using the app, not just you.',
+        sections: [
+            {
+                heading: 'How to send a report',
+                paragraphs: [
+                    'Choose what’s wrong and where you found it, then describe the issue in your own words. Before you submit anything, TSA Hub shows you a preview of exactly what will be sent, so there’s no guessing about what the report actually says once it’s out of your hands.',
+                ],
+            },
+            {
+                heading: 'Being specific helps a lot',
+                paragraphs: [
+                    'Try to include as much detail as you reasonably can. Naming the exact event and which field looks wrong is far more useful to us than a general “this seems off,” and it means whoever picks up the report can usually fix it much faster.',
+                ],
+            },
+        ],
+        keywords: ['wrong', 'incorrect', 'bad info', 'report error', 'this is wrong', 'wrong information'],
+    },
+    {
         id: 'finding-event-rules',
         title: 'Finding event rules',
         subtitle: 'Find official rules and requirements.',
@@ -290,6 +311,25 @@ export function getHelpArticle(id) {
 // Section content shown directly on the Help Center page.
 // ---------------------------------------------------------------------------
 
+export const QUICK_HELP = [
+    {
+        id: 'report',
+        icon: 'flag',
+        title: 'Report Incorrect Information',
+        subtitle: 'Help keep TSA Hub accurate.',
+        modal: 'report',
+        keywords: ['wrong', 'incorrect', 'bad info', 'report error', 'this is wrong', 'wrong information'],
+    },
+    {
+        id: 'feedback',
+        icon: 'chat',
+        title: 'Send Feedback',
+        subtitle: 'Share an idea or a problem.',
+        modal: 'feedback',
+        keywords: ['feedback', 'suggestion', 'idea', 'bug', 'problem', 'feature request'],
+    },
+];
+
 // Popular topics open a help article.
 export const POPULAR_TOPICS = [
     {
@@ -321,8 +361,11 @@ export const POPULAR_TOPICS = [
 // Articles listed under Help Articles on the Help Center page. Articles that
 // already appear as a Popular Topic are left out so nothing shows twice. Every
 // article stays reachable at /help/article/:id and through search.
+// Articles already covered by a Quick Help row, so they are not listed twice.
+const QUICK_HELP_ARTICLES = ['reporting-incorrect-info'];
+
 export function listedArticles() {
-    const featured = new Set(POPULAR_TOPICS.map((t) => t.article));
+    const featured = new Set([...POPULAR_TOPICS.map((t) => t.article), ...QUICK_HELP_ARTICLES]);
     return HELP_ARTICLES.filter((a) => !featured.has(a.id));
 }
 
@@ -337,7 +380,7 @@ function normalize(s) {
 
 function buildIndex() {
     const rows = [];
-    for (const item of POPULAR_TOPICS) {
+    for (const item of [...QUICK_HELP, ...POPULAR_TOPICS]) {
         rows.push({
             id: item.id,
             title: item.title,
@@ -345,15 +388,19 @@ function buildIndex() {
             icon: item.icon,
             to: item.to,
             article: item.article,
+            modal: item.modal,
             haystack: normalize([item.title, item.subtitle, ...(item.keywords || [])].join(' ')),
         });
     }
     const coveredTitles = new Set(rows.map((r) => normalize(r.title)));
+    // Quick Help opens the form directly, so its article is not a second result.
+    const quickHelpArticles = new Set(QUICK_HELP_ARTICLES);
     for (const article of HELP_ARTICLES) {
         // Skip ones already represented above as a section row (matched by
         // article id OR title) to avoid duplicate-looking search results
         // for the same destination.
         if (rows.some((r) => r.article === article.id)) continue;
+        if (quickHelpArticles.has(article.id)) continue;
         if (coveredTitles.has(normalize(article.title))) continue;
         rows.push({
             id: `article-${article.id}`,

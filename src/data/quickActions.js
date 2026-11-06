@@ -9,12 +9,13 @@
 // automatically becomes available here too, with no changes needed in this
 // file. A handful of entries genuinely don't come from Resources data
 // (Events/Recommender live outside Resources; Calendar, Appearance, Send
-// is a special-behavior action
+// Feedback, and Report Incorrect Information are special-behavior actions
 // with their own handling) and are listed explicitly below instead.
 //
 // Each entry is one of:
 //   kind: 'route'    -> navigate to `to` (optionally with router `state`)
 //   kind: 'external' -> plain external link, `href`
+//   kind: 'modal'     -> open an existing modal, `modal: 'feedback' | 'report'`
 //   kind: 'theme'     -> toggle the app theme directly (no navigation)
 // ============================================================================
 
@@ -42,6 +43,10 @@ const CORE_ACTIONS = [
     // in src/screens/Calendar.jsx that opens it on `location.state.openAdd`.
     { id: 'calendar-add-event', label: 'Add Calendar Event', icon: 'plus', kind: 'route', to: '/calendar', navState: { openAdd: true } },
     { id: 'help-center', label: 'Help Center', icon: 'help', kind: 'route', to: '/help' },
+    // Reuses the exact SubmitModal already used by Settings — opened
+    // directly from Home instead of navigating away.
+    { id: 'send-feedback', label: 'Send Feedback', icon: 'chat', kind: 'modal', modal: 'feedback' },
+    { id: 'report-info', label: 'Report Incorrect Information', icon: 'info', kind: 'modal', modal: 'report' },
     { id: 'privacy-policy', label: 'Privacy Policy', icon: 'shield', kind: 'route', to: '/privacy' },
     { id: 'terms-policies', label: 'Terms and Policies', icon: 'file-text', kind: 'route', to: '/terms' },
     // Reuses the app's existing theme state/action directly — no navigation.

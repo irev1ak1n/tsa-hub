@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext.jsx';
 import { Icon } from '../../components/UI.jsx';
+import { submitFeedback } from '../../services/feedbackService.js';
+import SubmitModal from '../../components/SubmitModal.jsx';
+import ReportModal from '../../components/ReportModal.jsx';
 
 // One settings row. If `onClick` is passed the WHOLE row is clickable
 // (button), not just the chevron. `onEdit`/plain rows are unchanged.
@@ -43,6 +46,7 @@ function Row({ icon, label, value, onEdit, soon, onClick }) {
 export default function Settings() {
     const navigate = useNavigate();
     const { theme, toggleTheme } = useApp();
+    const [modal, setModal] = useState(null); // 'feedback' | 'report' | null
 
     const dark = theme !== 'light';
 
@@ -78,6 +82,8 @@ export default function Settings() {
             <div className="set-card">
                 <div className="set-card-title">Support</div>
                 <Row icon="help" label="Help Center" onClick={() => navigate('/help')} />
+                <Row icon="chat" label="Send Feedback" onClick={() => setModal('feedback')} />
+                <Row icon="info" label="Report Incorrect Information" onClick={() => setModal('report')} />
             </div>
 
             {/* About */}
@@ -88,6 +94,19 @@ export default function Settings() {
             </div>
 
             <p className="small muted set-version">TSA Hub v0.1.0</p>
+
+            {modal === 'feedback' && (
+                <SubmitModal
+                    title="Send Feedback"
+                    hint="Found an issue or have a suggestion? We&rsquo;d love to hear it. Please leave out personal information. If you&rsquo;re under 13, ask a parent or teacher first."
+                    placeholder="Type your feedback…"
+                    doneText="Thanks! Your feedback was sent."
+                    onSubmit={submitFeedback}
+                    onClose={() => setModal(null)}
+                />
+            )}
+
+            {modal === 'report' && <ReportModal onClose={() => setModal(null)} />}
         </>
     );
 }

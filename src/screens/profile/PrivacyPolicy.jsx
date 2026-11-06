@@ -60,14 +60,26 @@ export default function PrivacyPolicy() {
                     analytics or advertising tools.
                 </p>
 
-                <h2 className="doc-h2">No forms or messages</h2>
+                <h2 className="doc-h2">Anonymous feedback and reports</h2>
                 <p className="doc-p">
-                    TSA Hub has no feedback form, support form, or way to send us a message or
-                    report from inside the app, so it does not collect anything you type, apart
-                    from what stays on your device as described above. Messages that were sent
-                    through earlier versions of the app are kept only as long as we need them,
-                    and we delete them when they are no longer useful. They have no name or
-                    email attached.
+                    You can choose to send feedback or report incorrect information from
+                    Settings or the Help Center. These forms have no name, email, phone, or other
+                    contact fields, so what you send is anonymous. We receive the message you
+                    type, which type it is, and for a report the category you picked, the time
+                    you sent it, and the page you were on. We cannot reply to you. Please do not
+                    include personal information about yourself or anyone else in a message.
+                </p>
+                <p className="doc-p">
+                    Messages are saved in our database and sent as an email notification to the
+                    project maintainer through an email service called Resend. We keep them only
+                    as long as we need them to fix problems and improve the app, and we delete
+                    them when they are no longer useful. TSA Hub no longer has a Contact Support
+                    option.
+                </p>
+                <p className="doc-p">
+                    To stop spam, our server briefly keeps a scrambled (hashed) form of your
+                    network address together with a count of recent submissions. These records
+                    are usually removed within a few days.
                 </p>
 
                 <h2 className="doc-h2">Notifications and permissions</h2>
@@ -91,8 +103,9 @@ export default function PrivacyPolicy() {
                 <h2 className="doc-h2">Who we share information with</h2>
                 <p className="doc-p">
                     We do not sell or rent information, and we do not show ads. The only
-                    companies that handle information for TSA Hub are Vercel for hosting and
-                    Supabase for the database. They process it only to run the service. We may also share information if the law
+                    companies that handle information for TSA Hub are Vercel for hosting,
+                    Supabase for the database, and Resend for email notifications. They process
+                    it only to run the service. We may also share information if the law
                     requires it or to keep someone safe.
                 </p>
 
@@ -100,16 +113,18 @@ export default function PrivacyPolicy() {
                 <p className="doc-p">
                     TSA Hub is made for middle and high school students. Because there are no
                     accounts and we do not ask for personal information, you can use almost
-                    everything in the app without sharing any. There are no boxes where you type
-                    personal information. We do not knowingly collect personal information from
-                    children under 13. If you think an earlier message contains some, contact us
-                    and we will delete it.
+                    everything in the app without sharing any. The only place a message could
+                    contain personal information is the feedback and report boxes. If you are
+                    under 13, please ask a parent, guardian, or teacher before you send
+                    anything, and leave out names, contact details, and other personal
+                    information. We do not knowingly collect personal information from children
+                    under 13. If a message contains some, contact us and we will delete it.
                 </p>
 
                 <h2 className="doc-h2">Access and deletion requests</h2>
                 <p className="doc-p">
-                    Earlier messages have no name or email attached, so we cannot tell who sent
-                    which one. To ask us to find or delete something you sent, email us the
+                    Messages have no name or email attached, so we cannot tell who sent which
+                    one. To ask us to find or delete something you sent, email us the
                     approximate date and the wording of your message, and we will look for it
                     and delete it. Parents and guardians can make the same request. We will
                     reply as soon as we can. Information saved on your device is yours to
@@ -120,7 +135,7 @@ export default function PrivacyPolicy() {
                 <p className="doc-p">
                     TSA Hub uses encrypted connections, limits who can read the database, and
                     keeps secret keys on the server instead of in the app. No system is
-                    perfectly secure, so please be careful with personal details online.
+                    perfectly secure, so please keep personal details out of messages.
                 </p>
 
                 <h2 className="doc-h2">Changes</h2>

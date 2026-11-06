@@ -42,7 +42,7 @@ describe.each(Object.entries(docs))('%s', (_name, text) => {
     });
 
     it('does not mention discontinued features', () => {
-        expect(text).not.toMatch(/get involved|send feedback|report incorrect|contact support|project management|workspace|smart search|generated answer|artificial intelligence|\bAI\b/i);
+        expect(text).not.toMatch(/get involved|project management|workspace|smart search|generated answer|artificial intelligence|\bAI\b/i);
     });
 });
 
@@ -54,10 +54,12 @@ describe('Privacy Policy content', () => {
         expect(text).toMatch(/What stays on your device/);
     });
 
-    it('names the service providers and says the app has no forms or messages', () => {
-        for (const provider of ['Supabase', 'Vercel']) expect(text).toContain(provider);
-        expect(text).not.toContain('Resend');
-        expect(text).toMatch(/no feedback form, support form/);
+    it('names the service providers and describes anonymous feedback and reports', () => {
+        for (const provider of ['Supabase', 'Vercel', 'Resend']) expect(text).toContain(provider);
+        expect(text).toMatch(/hashed/);
+        expect(text).toMatch(/Anonymous feedback and reports/);
+        expect(text).toMatch(/no name, email, phone, or other\s+contact fields/);
+        expect(text).not.toMatch(/Contact Support form|support form/i);
     });
 
     it('covers under-13 users and access or deletion requests', () => {

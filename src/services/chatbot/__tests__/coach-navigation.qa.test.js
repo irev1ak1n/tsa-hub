@@ -277,15 +277,22 @@ describe('Coach navigation: genuinely ambiguous single words offer real choices,
     });
 });
 
-describe('Coach navigation: support and report requests have no in-app form', () => {
+describe('Coach navigation: support requests have no in-app form', () => {
     it.each([
-        'how do i contact support', 'how do i report incorrect info', 'how can i report wrong info',
+        'how do i contact support',
         'the calendar is broken', 'coach isnt working', 'something is broken',
-    ])('"%s" never offers a support draft, report form, or email', (text) => {
+    ])('"%s" never offers a support draft or email', (text) => {
         const res = ask(text);
         expect(res.mailto).toBeUndefined();
-        expect(JSON.stringify(res)).not.toMatch(/contacting-support|reporting-incorrect|tsastudentshub|Category:/i);
+        expect(JSON.stringify(res)).not.toMatch(/contacting-support|tsastudentshub|Category:/i);
     });
+
+    it.each(['how do i report incorrect info', 'how can i report wrong info', 'how do i report something wrong'])(
+        '"%s" points to the report article', (text) => {
+            const res = ask(text);
+            expect(res.actions.length).toBeGreaterThan(0);
+            expect(res.mailto).toBeUndefined();
+        });
 
     it('explicit support requests point to the Help Center and leadership contacts', () => {
         const res = ask('contact support');

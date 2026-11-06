@@ -218,6 +218,7 @@ export const FLOW_STEPS = {
     help: () => step('help', 'What do you need help with?', [
         block('calendar', 'Calendar and reminders', navigate('Calendar and Reminders', '/help/article/using-calendar')),
         block('privacy', 'Privacy', navigate('Privacy Policy', '/privacy')),
+        block('report', 'Report incorrect information', navigate('Report Incorrect Information', '/help/article/reporting-incorrect-info')),
         block('center', 'Open Help Center', navigate('Open Help Center', '/help'), 'topic'),
     ]),
 

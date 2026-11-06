@@ -45,6 +45,11 @@ const HOWTO_TOPICS = [
         action: ['Open Calendar', 'calendar'],
     },
     {
+        match: /\bhow (do|can) i report (incorrect|wrong) info(rmation)?\b|\bwhere do i report (wrong|incorrect) info(rmation)?\b|\bhow do i report something wrong\b/,
+        text: 'You can report incorrect TSA Hub information through the Help Center. It helps keep things accurate for everyone.',
+        action: ['Report incorrect information', 'help:reporting-incorrect-info'],
+    },
+    {
         match: /\bhow do i change (my )?settings\b|\bwhere do i change settings\b/,
         text: 'Settings has your appearance (light/dark) and your state preference.',
         action: ['Open Settings', 'settings'],

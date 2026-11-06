@@ -8,8 +8,9 @@ globalThis.React = React;
 const content = await import('../../../data/helpContent.js');
 const { default: Help } = await import('../Help.jsx');
 const { default: HelpArticle } = await import('../HelpArticle.jsx');
+const { default: ReportModal } = await import('../../../components/ReportModal.jsx');
 
-const { HELP_ARTICLES, POPULAR_TOPICS, getHelpArticle, listedArticles, searchHelp } = content;
+const { HELP_ARTICLES, QUICK_HELP, POPULAR_TOPICS, getHelpArticle, listedArticles, searchHelp } = content;
 
 function render(element, path = '/help') {
     return renderToStaticMarkup(createElement(MemoryRouter, { initialEntries: [path] }, element))
@@ -17,10 +18,10 @@ function render(element, path = '/help') {
 }
 
 describe('Help Center content', () => {
-    it('has no Quick Help section, support option, or report option', () => {
-        expect(content.QUICK_HELP).toBeUndefined();
-        const all = JSON.stringify([HELP_ARTICLES, POPULAR_TOPICS]);
-        expect(all).not.toMatch(/contact support|contacting-support|report(ing)? incorrect|incorrect information|"modal"/i);
+    it('has Report Incorrect Information and Send Feedback in Quick Help, and no Contact Support', () => {
+        expect(QUICK_HELP.map((i) => i.title)).toEqual(['Report Incorrect Information', 'Send Feedback']);
+        expect(QUICK_HELP.map((i) => i.modal)).toEqual(['report', 'feedback']);
+        expect(JSON.stringify([HELP_ARTICLES, QUICK_HELP, POPULAR_TOPICS])).not.toMatch(/contact support|contacting-support/i);
     });
 
     it('lists the three popular topics, each opening a real article', () => {
@@ -31,7 +32,7 @@ describe('Help Center content', () => {
     it('drops the privacy article but keeps every other article reachable', () => {
         expect(getHelpArticle('privacy')).toBeNull();
         for (const id of ['finding-events', 'themes-and-problems', 'official-documents', 'using-resources', 'state-advisor',
-            'using-calendar', 'personal-calendar-entries',
+            'using-calendar', 'personal-calendar-entries', 'reporting-incorrect-info',
             'finding-event-rules', 'browsing-official-resources']) {
             expect(getHelpArticle(id), id).toBeTruthy();
         }
@@ -43,7 +44,7 @@ describe('Help Center content', () => {
             expect(a.subtitle.length, a.id).toBeLessThanOrEqual(52);
             expect(a.subtitle, a.id).not.toMatch(/\n/);
         }
-        for (const item of POPULAR_TOPICS) expect(item.subtitle.length, item.id).toBeLessThanOrEqual(52);
+        for (const item of [...QUICK_HELP, ...POPULAR_TOPICS]) expect(item.subtitle.length, item.id).toBeLessThanOrEqual(52);
     });
 
     it('points the new articles at the real Events and Resources pages', () => {
@@ -76,22 +77,16 @@ describe('Help Center content', () => {
 describe('Help Center page', () => {
     const html = render(createElement(Help));
 
-    it('shows Popular Topics and Help Articles on one page, with no Quick Help section', () => {
-        for (const label of ['Popular Topics', 'Help Articles']) expect(html).toContain(label);
-        for (const gone of ['Quick Help', 'More Resources']) expect(html).not.toContain(gone);
-    });
-
-    it('has no empty sections', () => {
-        const cards = html.split('rs-card').slice(1);
-        expect(cards.length).toBe(2);
-        for (const card of cards) expect(card).toContain('help-row');
+    it('shows Quick Help, Popular Topics and Help Articles on one page', () => {
+        for (const label of ['Quick Help', 'Popular Topics', 'Help Articles']) expect(html).toContain(label);
+        expect(html).not.toContain('More Resources');
     });
 
     it('shows the new rows and not the removed ones', () => {
-        for (const title of ['Calendar and Reminders', 'Finding Event Rules', 'Browsing Official Resources']) {
+        for (const title of ['Report Incorrect Information', 'Send Feedback', 'Calendar and Reminders', 'Finding Event Rules', 'Browsing Official Resources']) {
             expect(html).toContain(title);
         }
-        for (const gone of ['Contact Support', 'Contact support', 'Report Incorrect Information', 'report issues', 'Find event rules', 'Browse official resources', 'Privacy &amp; transparency', 'Privacy and transparency']) {
+        for (const gone of ['Contact Support', 'Contact support', 'Find event rules', 'Browse official resources', 'Privacy &amp; transparency', 'Privacy and transparency']) {
             expect(html).not.toContain(gone);
         }
     });
@@ -132,6 +127,31 @@ describe('Help article pages', () => {
     });
 
     it('still renders articles that are no longer listed as a topic', () => {
+        expect(renderArticle('reporting-incorrect-info')).toContain('Reporting incorrect information');
         expect(renderArticle('state-advisor')).toContain('Finding your state advisor');
+    });
+});
+
+describe('Report Incorrect Information modal', () => {
+    const html = render(createElement(ReportModal, { onClose: () => {} }), '/help');
+
+    it('has no page or section field', () => {
+        expect(html).not.toMatch(/Page\/section/i);
+        expect(html).not.toContain('rep-page');
+    });
+
+    it('keeps the category dropdown and description field', () => {
+        expect(html).toContain('Category');
+        expect(html).toContain('rep-cat');
+        expect(html).toContain('Description');
+        expect(html).toContain('rep-desc');
+    });
+});
+
+describe('Report modal collects no contact information', () => {
+    const html = render(createElement(ReportModal, { onClose: () => {} }), '/help');
+    it('has no name, email or phone fields', () => {
+        expect(html).not.toMatch(/type="email"|type="tel"|name="(name|email|phone)"|your (name|email|phone)/i);
+        expect((html.match(/<input/g) || []).length).toBe(0);
     });
 });
