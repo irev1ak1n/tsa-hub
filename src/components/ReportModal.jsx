@@ -55,7 +55,7 @@ export default function ReportModal({ onClose }) {
                     ) : (
                         <>
                             <p className="fb-hint">
-                                See something wrong or out of date? Tell us what needs fixing. Please leave out personal information. If you’re under 13, ask a parent or teacher first.
+                                See something wrong or out of date? Tell us what needs fixing.
                             </p>
 
                             <label className="fb-label" htmlFor="rep-cat">Category</label>

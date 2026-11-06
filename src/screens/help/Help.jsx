@@ -118,7 +118,7 @@ export default function Help() {
             {modal === 'feedback' && (
                 <SubmitModal
                     title="Send Feedback"
-                    hint="Found an issue or have a suggestion? We’d love to hear it. Please leave out personal information. If you’re under 13, ask a parent or teacher first."
+                    hint="Found an issue or have a suggestion? We’d love to hear it."
                     placeholder="Type your feedback…"
                     doneText="Thanks! Your feedback was sent."
                     onSubmit={submitFeedback}

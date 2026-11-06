@@ -165,7 +165,7 @@ export default function Dashboard() {
             {modal === 'feedback' && (
                 <SubmitModal
                     title="Send Feedback"
-                    hint="Found an issue or have a suggestion? We&rsquo;d love to hear it. Please leave out personal information. If you&rsquo;re under 13, ask a parent or teacher first."
+                    hint="Found an issue or have a suggestion? We&rsquo;d love to hear it."
                     placeholder="Type your feedback…"
                     doneText="Thanks! Your feedback was sent."
                     onSubmit={submitFeedback}
