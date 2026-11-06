@@ -147,14 +147,15 @@ describe('Coach guided flow: required end-to-end sequences', () => {
         expect(guide.action).toEqual({ type: 'NAVIGATE', label: 'Open Event Guide', route: '/resources/events/themes' });
     });
 
-    it('Home -> Help -> Contact Support', () => {
+    it('Home -> Help has no contact or report options', () => {
         const data = makeData();
         let gf = createGuidedFlow();
         let res = renderStep(gf.stepId, gf.context, data);
         gf = tap(gf, res, 'help', data);
         res = renderStep(gf.stepId, gf.context, data);
-        const contact = res.blocks.find((b) => b.id === 'contact');
-        expect(contact.action.route).toBe('/help/article/contacting-support');
+        expect(res.blocks.find((b) => b.id === 'contact')).toBeUndefined();
+        expect(res.blocks.find((b) => b.id === 'report')).toBeUndefined();
+        expect(res.blocks.find((b) => b.id === 'center').action.route).toBe('/help');
     });
 });
 

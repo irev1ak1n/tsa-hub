@@ -16,8 +16,6 @@ export default function Conference2027() {
                 <h1>2027 National TSA Conference</h1>
             </div>
 
-            <div className="cf26-theme" style={{ marginBottom: 14 }}>Upcoming</div>
-
             {conference ? (
                 <>
                     <p className="cf26-meta">{whenLabel(conference)} &middot; {conference.location || 'Orlando, FL'}</p>

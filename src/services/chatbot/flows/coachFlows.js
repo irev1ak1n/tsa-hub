@@ -218,14 +218,12 @@ export const FLOW_STEPS = {
     help: () => step('help', 'What do you need help with?', [
         block('calendar', 'Calendar and reminders', navigate('Calendar and Reminders', '/help/article/using-calendar')),
         block('privacy', 'Privacy', navigate('Privacy Policy', '/privacy')),
-        block('report', 'Report incorrect information', navigate('Report Incorrect Information', '/help/article/reporting-incorrect-info')),
-        block('contact', 'Contact support', navigate('Contact Support', '/help/article/contacting-support')),
         block('center', 'Open Help Center', navigate('Open Help Center', '/help'), 'topic'),
     ]),
 
     other: () => step('other', 'What are you trying to find or do in TSA Hub? Type it below, or try:', [
         block('search', 'Search TSA Hub', navigate('Search TSA Hub', '/resources/search'), 'chip'),
-        block('contact', 'Contact support', navigate('Contact Support', '/help/article/contacting-support'), 'chip'),
+        block('help', 'Open Help Center', navigate('Open Help Center', '/help'), 'chip'),
     ]),
 };
 

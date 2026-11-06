@@ -161,23 +161,23 @@ describe('batch4: no-data / out-of-scope / personal / capability never trip the 
             'how many total tsa members are there this year',
             'what will next years theme be',
         ]);
-        for (const t of turns) expect(t.supportOffer).toBeFalsy();
+        for (const t of turns) expect(t.helpOffer).toBeFalsy();
     });
     it('three consecutive out-of-scope questions never offer support', () => {
         const turns = askChain(['how is the weather', 'who won the super bowl', 'whats the capital of france']);
-        for (const t of turns) expect(t.supportOffer).toBeFalsy();
+        for (const t of turns) expect(t.helpOffer).toBeFalsy();
     });
     it('three consecutive personal questions never offer support', () => {
         const turns = askChain(['do you have a mom', 'how old are you', 'are you real']);
-        for (const t of turns) expect(t.supportOffer).toBeFalsy();
+        for (const t of turns) expect(t.helpOffer).toBeFalsy();
     });
     it('three consecutive capability-limit questions never offer support', () => {
         const turns = askChain(['can you call tsa', 'can you text my advisor', 'can you register me']);
-        for (const t of turns) expect(t.supportOffer).toBeFalsy();
+        for (const t of turns) expect(t.helpOffer).toBeFalsy();
     });
     it('three consecutive GENUINE unknowns DOES offer support (unchanged behavior)', () => {
         const turns = askChain(['asdfghjkl', 'purple banana toaster', 'qwe rty uio zzz']);
-        expect(turns.at(-1).supportOffer).toBe(true);
+        expect(turns.at(-1).helpOffer).toBe(true);
     });
 });
 

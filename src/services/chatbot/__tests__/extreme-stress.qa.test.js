@@ -118,8 +118,8 @@ describe('frustration does not break the conversation', () => {
         }
     });
 
-    it('"this bot isnt understanding me" is recognized as a support request, not counted as a misunderstanding', () => {
+    it('"this bot isnt understanding me" is recognized as a help request, not counted as a misunderstanding', () => {
         const res = ask("this bot isnt understanding me");
-        expect(res.text).toMatch(/help with/i);
+        expect(res.text).toMatch(/help center/i);
     });
 });

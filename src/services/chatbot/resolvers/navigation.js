@@ -45,16 +45,6 @@ const HOWTO_TOPICS = [
         action: ['Open Calendar', 'calendar'],
     },
     {
-        match: /\bhow do i contact support\b|\bwhere do i contact support\b|\bhow do i report a bug\b/,
-        text: 'Contact Support is in the Help Center. Pick a category and describe the issue, and you\'ll see exactly what gets sent before anything goes out.',
-        action: ['Contact Support', 'help:contacting-support'],
-    },
-    {
-        match: /\bhow (do|can) i report (incorrect|wrong) info(rmation)?\b|\bwhere do i report (wrong|incorrect) info(rmation)?\b|\bhow do i report something wrong\b/,
-        text: 'You can report incorrect TSA Hub information through the Help Center. It helps keep things accurate for everyone.',
-        action: ['Report incorrect information', 'help:reporting-incorrect-info'],
-    },
-    {
         match: /\bhow do i change (my )?settings\b|\bwhere do i change settings\b/,
         text: 'Settings has your appearance (light/dark) and your state preference.',
         action: ['Open Settings', 'settings'],
@@ -66,7 +56,7 @@ const HOWTO_TOPICS = [
     },
     {
         match: /\bwhat (data|information) .{0,25}\bsav(e|es)\b|\bwhat do you save\b/,
-        text: 'Personal calendar items stay on your device. Support messages and reports are only sent after you review and confirm them.',
+        text: 'Personal calendar items stay on your device. Feedback is only sent if you choose to send it.',
         action: ['Read Privacy Policy', 'privacy'],
     },
     {

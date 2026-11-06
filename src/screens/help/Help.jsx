@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icon } from '../../components/UI.jsx';
-import { QUICK_HELP, POPULAR_TOPICS, listedArticles, searchHelp } from '../../data/helpContent.js';
-import { ReportIncorrectInfoModal, ContactSupportModal } from './HelpModals.jsx';
+import { POPULAR_TOPICS, listedArticles, searchHelp } from '../../data/helpContent.js';
 import { BackLink } from '../resources/resourcesShared.jsx';
 
 function HelpRow({ icon, title, subtitle, onClick }) {
@@ -21,13 +20,11 @@ function HelpRow({ icon, title, subtitle, onClick }) {
 export default function Help() {
     const navigate = useNavigate();
     const [query, setQuery] = useState('');
-    const [modal, setModal] = useState(null); // 'report' | 'support' | null
 
     // A single dispatcher used by both the normal sections and search
     // results, so a topic behaves identically whichever way it was found.
     function openItem(item) {
-        if (item.modal) setModal(item.modal);
-        else if (item.article) navigate(`/help/article/${item.article}`);
+        if (item.article) navigate(`/help/article/${item.article}`);
         else if (item.to) navigate(item.to);
     }
 
@@ -42,7 +39,7 @@ export default function Help() {
             <div className="section">
                 <div className="rs-eyebrow">Support</div>
                 <h1 className="rs-h1">Help Center</h1>
-                <p className="rs-sub">Find answers, report issues, and get help using TSA Hub.</p>
+                <p className="rs-sub">Find answers and learn how to use TSA Hub.</p>
             </div>
 
             <div className="rs-search">
@@ -77,22 +74,12 @@ export default function Help() {
                                 <button type="button" className="btn ghost small" onClick={() => setQuery('')}>
                                     Try a different search
                                 </button>
-                                <button type="button" className="btn primary small" onClick={() => setModal('support')}>
-                                    Contact support
-                                </button>
                             </div>
                         </div>
                     )}
                 </>
             ) : (
                 <>
-                    <div className="rs-group-label">Quick Help</div>
-                    <div className="rs-card">
-                        {QUICK_HELP.map((item) => (
-                            <HelpRow key={item.id} icon={item.icon} title={item.title} subtitle={item.subtitle} onClick={() => openItem(item)} />
-                        ))}
-                    </div>
-
                     <div className="rs-group-label">Popular Topics</div>
                     <div className="rs-card">
                         {POPULAR_TOPICS.map((item) => (
@@ -114,9 +101,6 @@ export default function Help() {
                     </div>
                 </>
             )}
-
-            {modal === 'report' && <ReportIncorrectInfoModal onClose={() => setModal(null)} />}
-            {modal === 'support' && <ContactSupportModal onClose={() => setModal(null)} />}
         </>
     );
 }

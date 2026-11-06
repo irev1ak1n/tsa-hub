@@ -14,7 +14,7 @@ body {
 ::selection { background: rgba(206, 17, 38, 0.4); color: #fff; }
 
 /* Native <select> dropdowns everywhere in the app (Calendar's Reminder
-   field, the Contact Support / Report Incorrect Info category pickers,
+   field, other category pickers,
    any future one). The closed control already follows theme tokens per
    screen, but the OPEN options popup is drawn by the browser itself and
    only reads color-scheme + each option's own background/color — an

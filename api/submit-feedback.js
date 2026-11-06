@@ -1,6 +1,5 @@
 // ============================================================================
-// TSA HUB — server-side handler for Send Feedback / Report Incorrect
-// Information.
+// TSA HUB — server-side handler for Send Feedback.
 //
 // Runs as a Vercel serverless function and is the only place that holds
 // RESEND_API_KEY and SUPABASE_SERVICE_ROLE_KEY. Per request: same-origin
@@ -21,15 +20,7 @@ const MAX_BODY_BYTES = 32 * 1024;
 const MAX_MESSAGE_LENGTH = 5000;
 const MAX_PAGE_LENGTH = 300;
 
-const TYPE_LABELS = {
-    feedback: 'Feedback',
-    report: 'Incorrect Information Report',
-};
-
-const SUBJECTS = {
-    feedback: 'TSA Hub - New Feedback',
-    report: 'TSA Hub - Incorrect Information Report',
-};
+const SUBJECT = 'TSA Hub - New Feedback';
 
 const IP_LIMIT = { max: 8, windowSeconds: 600 };
 const GLOBAL_LIMIT = { max: 120, windowSeconds: 3600 };
@@ -53,36 +44,21 @@ function clampString(value, maxLength) {
 }
 
 function validatePayload(body) {
-    const type = ['report', 'feedback'].includes(body?.type) ? body.type : null;
-    if (!type) return { error: 'type must be "feedback" or "report"' };
+    const type = body?.type === 'feedback' ? 'feedback' : null;
+    if (!type) return { error: 'type must be "feedback"' };
 
     const page = clampString(body?.page, MAX_PAGE_LENGTH) || null;
 
     const message = clampString(body?.message, MAX_MESSAGE_LENGTH);
     if (!message) return { error: 'message is required' };
 
-    const category = clampString(body?.category, 200) || null;
-    const suggestedCorrection = clampString(body?.suggestedCorrection, MAX_MESSAGE_LENGTH) || null;
-
-    return { value: { type, message, page, category, suggestedCorrection } };
+    return { value: { type, message, page } };
 }
 
-// Plain-text email body — one field per line, only including optional
-// fields the caller actually provided ("if available" / "if provided").
-function buildEmailText(payload) {
-    const { type, message, page, category, suggestedCorrection, submittedAt } = payload;
-    const lines = [`Type: ${TYPE_LABELS[type]}`];
-
-    if (type === 'feedback') {
-        if (category) lines.push(`Feedback category: ${category}`);
-        lines.push('', 'Message:', message);
-        if (page) lines.push('', `Page/source: ${page}`);
-    } else {
-        if (page) lines.push(`Page/resource being reported: ${page}`);
-        lines.push('', 'Description of what is incorrect:', message);
-        if (suggestedCorrection) lines.push('', 'Suggested correction:', suggestedCorrection);
-    }
-
+// Plain-text email body: the message, the page it was sent from, and the time.
+function buildEmailText({ message, page, submittedAt }) {
+    const lines = ['Type: Feedback', '', 'Message:', message];
+    if (page) lines.push('', `Page/source: ${page}`);
     lines.push('', `Submission time: ${submittedAt}`);
     return lines.join('\n');
 }
@@ -108,7 +84,7 @@ async function sendNotificationEmail(payload) {
             body: JSON.stringify({
                 from,
                 to,
-                subject: SUBJECTS[payload.type],
+                subject: SUBJECT,
                 text: buildEmailText({ ...payload, submittedAt }),
             }),
         });

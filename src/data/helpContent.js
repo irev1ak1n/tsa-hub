@@ -206,49 +206,6 @@ export const HELP_ARTICLES = [
         keywords: ['reminder', 'personal event', 'add reminder', 'local storage', 'saved locally'],
     },
     {
-        id: 'contacting-support',
-        title: 'Contacting TSA Hub Support',
-        subtitle: 'Reach the TSA Hub support team.',
-        intro: 'If something about TSA Hub itself isn’t working right, whether that’s a bug, information that looks wrong, or just feedback you want to share, Contact Support is the direct way to reach the people who maintain it.',
-        sections: [
-            {
-                heading: 'What happens when you send one',
-                paragraphs: [
-                    'Start by picking the category that best matches what you’re reaching out about, then write your message in your own words. Before anything actually gets sent, TSA Hub shows you exactly what the message will look like, so you can double check it and fix anything that doesn’t read the way you meant.',
-                    'Nothing goes out until you confirm it. There’s no background submission happening quietly while you’re still typing.',
-                ],
-            },
-            {
-                heading: 'Support versus other options',
-                paragraphs: [
-                    'If you’re not sure whether your question really belongs here, a good rule of thumb is this. If it’s about how TSA Hub works, or something feels broken, Contact Support is the right place. If it’s about an actual TSA rule or event detail, the Resources search will usually get you an answer faster.',
-                ],
-            },
-        ],
-        keywords: ['contact support', 'support', 'help article'],
-    },
-    {
-        id: 'reporting-incorrect-info',
-        title: 'Reporting incorrect information',
-        subtitle: 'Tell us what needs fixing.',
-        intro: 'TSA Hub only stays useful if the information in it is accurate, so if you notice something wrong, an event detail, a date, a contact, or a link that leads nowhere, reporting it helps keep things correct for every student using the app, not just you.',
-        sections: [
-            {
-                heading: 'How to send a report',
-                paragraphs: [
-                    'Choose what’s wrong and where you found it, then describe the issue in your own words. Before you submit anything, TSA Hub shows you a preview of exactly what will be sent, so there’s no guessing about what the report actually says once it’s out of your hands.',
-                ],
-            },
-            {
-                heading: 'Being specific helps a lot',
-                paragraphs: [
-                    'Try to include as much detail as you reasonably can. Naming the exact event and which field looks wrong is far more useful to us than a general “this seems off,” and it means whoever picks up the report can usually fix it much faster.',
-                ],
-            },
-        ],
-        keywords: ['wrong', 'incorrect', 'bad info', 'report error', 'this is wrong', 'wrong information'],
-    },
-    {
         id: 'finding-event-rules',
         title: 'Finding event rules',
         subtitle: 'Find official rules and requirements.',
@@ -333,25 +290,6 @@ export function getHelpArticle(id) {
 // Section content shown directly on the Help Center page.
 // ---------------------------------------------------------------------------
 
-export const QUICK_HELP = [
-    {
-        id: 'contact-support',
-        icon: 'headset',
-        title: 'Contact Support',
-        subtitle: 'Get help from the TSA Hub team.',
-        modal: 'support',
-        keywords: ['support', 'contact support', 'contact us', 'help'],
-    },
-    {
-        id: 'report',
-        icon: 'flag',
-        title: 'Report Incorrect Information',
-        subtitle: 'Help keep TSA Hub accurate.',
-        modal: 'report',
-        keywords: ['wrong', 'incorrect', 'bad info', 'report error', 'this is wrong', 'wrong information'],
-    },
-];
-
 // Popular topics open a help article.
 export const POPULAR_TOPICS = [
     {
@@ -399,7 +337,7 @@ function normalize(s) {
 
 function buildIndex() {
     const rows = [];
-    for (const item of [...QUICK_HELP, ...POPULAR_TOPICS]) {
+    for (const item of POPULAR_TOPICS) {
         rows.push({
             id: item.id,
             title: item.title,
@@ -407,19 +345,15 @@ function buildIndex() {
             icon: item.icon,
             to: item.to,
             article: item.article,
-            modal: item.modal,
             haystack: normalize([item.title, item.subtitle, ...(item.keywords || [])].join(' ')),
         });
     }
     const coveredTitles = new Set(rows.map((r) => normalize(r.title)));
-    // Quick Help opens the form directly, so its article is not a second result.
-    const quickHelpArticles = new Set(['contacting-support', 'reporting-incorrect-info']);
     for (const article of HELP_ARTICLES) {
         // Skip ones already represented above as a section row (matched by
         // article id OR title) to avoid duplicate-looking search results
         // for the same destination.
         if (rows.some((r) => r.article === article.id)) continue;
-        if (quickHelpArticles.has(article.id)) continue;
         if (coveredTitles.has(normalize(article.title))) continue;
         rows.push({
             id: `article-${article.id}`,

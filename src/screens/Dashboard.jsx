@@ -10,7 +10,7 @@ import { resolveQuickActions } from '../data/quickActions.js';
 import HomeCalendarWidget from '../components/HomeCalendarWidget.jsx';
 import HomeMyEvents from '../components/HomeMyEvents.jsx';
 import HomeLeadershipLinks from '../components/HomeLeadershipLinks.jsx';
-import { submitFeedback, submitReport } from '../services/feedbackService.js';
+import { submitFeedback } from '../services/feedbackService.js';
 import nationalOfficersImg from '../assets/img/national-officers.png';
 import recommenderImg from '../assets/img/event-recommender-home.webp';
 
@@ -52,7 +52,7 @@ function QuickActionTile({ action, onOpenModal, onToggleTheme }) {
 export default function Dashboard() {
     const { quickActions, setQuickActions, toggleTheme } = useApp();
     const [showEditor, setShowEditor] = useState(false);
-    const [modal, setModal] = useState(null); // 'feedback' | 'report' | null
+    const [modal, setModal] = useState(null); // 'feedback' | null
 
     const actions = resolveQuickActions(quickActions);
 
@@ -168,17 +168,6 @@ export default function Dashboard() {
                     placeholder="Type your feedback…"
                     doneText="Thanks! Your feedback was sent."
                     onSubmit={submitFeedback}
-                    onClose={() => setModal(null)}
-                />
-            )}
-
-            {modal === 'report' && (
-                <SubmitModal
-                    title="Report Incorrect Information"
-                    hint="See something wrong or out of date? Tell us what needs fixing and where. Please leave out personal information. If you&rsquo;re under 13, ask a parent or teacher first."
-                    placeholder="Describe the incorrect information…"
-                    doneText="Thanks! Your report was sent."
-                    onSubmit={submitReport}
                     onClose={() => setModal(null)}
                 />
             )}

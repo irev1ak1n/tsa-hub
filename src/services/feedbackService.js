@@ -1,5 +1,5 @@
 // ============================================================
-// TSA HUB — feedback + incorrect-info reports.
+// TSA HUB — Send Feedback.
 //
 // The actual Supabase write and email notification both happen server-side
 // (api/submit-feedback.js), so the RESEND_API_KEY never touches the
@@ -34,8 +34,4 @@ async function submit(message, type) {
 
 export function submitFeedback(message) {
     return submit(message, 'feedback');
-}
-
-export function submitReport(message) {
-    return submit(message, 'report');
 }

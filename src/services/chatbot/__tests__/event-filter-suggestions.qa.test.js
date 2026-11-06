@@ -154,7 +154,7 @@ describe('filter answers never trip the 3-strike misunderstanding counter', () =
             'What events can I do solo?',
             'What are the low cost events?',
         ]);
-        for (const t of turns) expect(t.supportOffer).toBeFalsy();
+        for (const t of turns) expect(t.helpOffer).toBeFalsy();
     });
 });
 

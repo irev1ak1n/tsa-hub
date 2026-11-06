@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 // Shared submit modal: a textarea + submit. `onSubmit` returns { ok }.
-// Used for Send Feedback and Report Incorrect Information, from both
+// Used for Send Feedback, from both
 // Settings and Home's Quick Actions — one implementation, reused everywhere
 // this flow is offered.
 export default function SubmitModal({ title, hint, placeholder, doneText, onSubmit, onClose }) {

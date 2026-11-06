@@ -3,7 +3,7 @@
 ## Architecture
 
 - Browser: `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` only. The anon key is public by design; RLS limits it to reading published events.
-- `POST /api/submit-feedback` (Vercel): the only write path for Feedback and Report Incorrect Information. It holds `SUPABASE_SERVICE_ROLE_KEY` and `RESEND_API_KEY` and sends the single notification email.
+- `POST /api/submit-feedback` (Vercel): the only write path, used by Send Feedback only (Contact Support and Report Incorrect Information were removed and the endpoint rejects `type: report`). It holds `SUPABASE_SERVICE_ROLE_KEY` and `RESEND_API_KEY` and sends the single notification email.
 - Retired Supabase functions `ai-feedback` and `feedback-email` are disabled in production (JWT required, inert 410 handlers). Their obsolete entrypoint source files have been deleted from the current Git branch to prevent accidental redeployment. Historical code remains in Git history. Permanent undeployment via Supabase Dashboard/CLI is still pending.
 
 ## What the API enforces

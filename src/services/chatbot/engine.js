@@ -16,7 +16,6 @@ import { answerGeneral } from './resolvers/general.js';
 import { answerCapabilityLimit, answerNationalContactInfo } from './resolvers/capability.js';
 import { resolveNavigation } from './resolvers/navigation.js';
 import { getDestination } from './knowledge/appDestinations.js';
-import { TSA_HUB_SUPPORT_EMAIL, SUPPORT_CATEGORIES } from '../../data/contacts.js';
 import { STATE_TSA, US_STATES } from '../../data/stateTsa.js';
 import { followupsFor } from './suggestions/followups.js';
 import { seasonInQuestion, freshnessWarning } from './guards/dataGuards.js';
@@ -271,13 +270,6 @@ const TOPIC_WORD_HINTS = [
     [/\bsubmissions?\b/, (name) => `${name}'s submission details`],
 ];
 
-// "the calendar is broken" / "coach isn't working" — a bug report, not a
-// request for TSA information. Goes straight into the existing guided TSA
-// Hub Support flow (drafts the actual complaint as the message) rather than
-// a generic "I can't do that" or, worse, trying to answer it as a TSA
-// question. See section 15 of the Coach repositioning brief.
-const BUG_REPORT_RE = /\b(the |my )?(calendar|coach|assistant|events?|resources?|search|help center|app|site|website|page)\s+(is|isnt|is not|arent|are not|doesnt|does not)\s+(broken|working|loading|working right|working properly|showing up|updating)\b|\bsomething('?s| is) (broken|wrong|not working)\b|\b(this|it) (is|s) broken\b/;
-
 /**
  * Process one message against a conversation state.
  * Returns { response, state } where response = { text, domain, intent,
@@ -293,52 +285,12 @@ export function processMessage(input, prevState) {
     const norm = normalize(text);
     const debug = { input: text, normalized: norm.joined };
 
-    // A guided TSA Hub support draft in progress only consumes messages it
-    // genuinely needs (the drafted text itself, or an explicit send/cancel)
-    // — "cancel" always works, and a real question typed while a draft
-    // sits waiting on "send" still gets answered normally rather than
-    // being swallowed as a replacement message (the draft just stays
-    // pending, untouched, until the user actually confirms or cancels it).
-    if (state.supportFlow) {
-        const flow = state.supportFlow;
-        const lower = text.toLowerCase().trim();
-        const isCancel = /\b(cancel|never ?mind|nvm|forget it|stop)\b/.test(lower);
-        // Anchored to the WHOLE message (not just a leading word) — "yes but
-        // also when are nationals" must fall through and answer the real
-        // question, not get swallowed as a bare confirm of the pending draft.
-        const isConfirm = /^(send|yes|confirm|go ahead|do it)[!.\s]*$/.test(lower);
-        const awaitingText = flow.step === 'awaiting_message' || flow.step === 'awaiting_message_after_category';
-        if (isCancel || awaitingText || (flow.step === 'confirm' && isConfirm)) {
-            debug.resolver = `support-flow:${flow.step}`;
-            return finish(handleSupportFlow(text, state), state, debug);
-        }
-        // Otherwise: fall through to normal processing below, draft untouched.
-    }
-
-    // What the user typed the turn before this one — used to auto-draft a
-    // TSA Hub support message from context instead of asking them to
-    // retype a problem they just described (e.g. right after a capability
-    // limit like "can you text them").
-    const prevUserText = state.lastUserText || null;
     state.lastUserText = text;
-
-    // A bug report ("the calendar is broken") is a support matter, not a TSA
-    // question — route it into the real guided Support flow with the
-    // complaint itself already drafted, instead of trying to answer it.
-    // Checked before the generic smalltalk 'requestSupport' control intent
-    // below, which also matches some of this same phrasing ("calendar
-    // broken") but only offers the generic "pick a category" flow — the
-    // drafted-preview flow here is strictly more useful, so it must win.
-    if (BUG_REPORT_RE.test(norm.rawJoined)) {
-        const next = { ...state, misunderstandingCount: 0 };
-        debug.resolver = 'bug-report';
-        return finish(startBugReportFlow(next, text), next, debug);
-    }
 
     // Control intents run first, they change state rather than answer facts.
     const small = detectSmallTalk(norm, state);
     if (small?.control) {
-        const handled = handleControl(small.intent, norm, state, prevUserText);
+        const handled = handleControl(small.intent, norm, state);
         if (handled) {
             debug.resolver = `control:${small.intent}`;
             return finish(handled.response, handled.state, debug);
@@ -468,14 +420,12 @@ export function processMessage(input, prevState) {
         }), state, debug);
     }
 
-    // Same reasoning for a bare "contact" — could mean TSA Hub Support, or
-    // your state/national TSA contacts. Offer both real destinations.
+    // A bare "contact" means state or national TSA contacts.
     if (norm.rawJoined.trim() === 'contact') {
         debug.resolver = 'contact-ambiguous';
-        return finish(reply('What are you looking for?', {
+        return finish(reply('National and state TSA contacts are here.', {
             domain: 'navigation', confidence: 0.8,
             actions: [
-                { type: 'NAVIGATE', label: 'Contact TSA Hub Support', route: '/help/article/contacting-support' },
                 { type: 'NAVIGATE', label: 'State & National TSA Contacts', route: '/resources/leadership-support' },
             ],
         }), state, debug);
@@ -1167,7 +1117,7 @@ function answerWithIntent(intent, state, norm, rawText, confidence = 0.8) {
     });
 }
 
-function handleControl(intent, norm, state, prevUserText) {
+function handleControl(intent, norm, state) {
     switch (intent) {
         case 'restart':
             return { response: reply('Starting fresh. What would you like to know about TSA?'), state: resetState(state) };
@@ -1239,12 +1189,22 @@ function handleControl(intent, norm, state, prevUserText) {
             return { response: reply('Got it. What would you like to know instead?'), state };
         }
         case 'requestSupport': {
-            // A direct ask ("contact support", "human please") opens the
-            // real TSA Hub Support flow (category -> message -> confirm),
-            // not National TSA's info — those are two different
-            // destinations and must not be conflated (see contacts.js).
+            // TSA Hub has no support inbox or message form. Point to the
+            // places that can actually help.
             const next = { ...state, misunderstandingCount: 0 };
-            return { response: startSupportFlow(next, prevUserText), state: next };
+            return {
+                response: reply(
+                    "TSA Hub can't pass messages along from the app. For TSA questions, the Help Center and Resources have answers, and National TSA's contact details are in TSA Leadership & Support.",
+                    {
+                        domain: 'navigation', confidence: 0.8,
+                        actions: [
+                            { type: 'NAVIGATE', label: 'Open Help Center', route: '/help' },
+                            { type: 'NAVIGATE', label: 'TSA Leadership & Support', route: '/resources/leadership-support' },
+                        ],
+                    }
+                ),
+                state: next,
+            };
         }
         case 'keepTrying':
             return { response: reply("Sure, what would you like to know?"), state: { ...state, misunderstandingCount: 0 } };
@@ -1260,104 +1220,6 @@ function handleControl(intent, norm, state, prevUserText) {
     }
 }
 
-// --- TSA Hub Support flow ------------------------------------------------
-// Guided draft: (context-aware auto-draft, or one question for the
-// message) -> preview -> explicit "send" before anything is prepared.
-// Never claims delivery happened — the final step hands the user a real
-// mailto: link they have to actually send themselves, since there is no
-// backend email endpoint in this app to deliver through. A real question
-// asked while a draft sits waiting on "send" is answered normally instead
-// of being swallowed (see the isConfirm/isCancel gate in processMessage) —
-// only the confirm/cancel keywords and the direct answer to "what do you
-// need help with" are treated as flow input.
-
-function startSupportFlow(state, prevUserText) {
-    // If the immediately preceding message already explains the problem
-    // (e.g. a capability-limit trigger like "can you text them"), draft
-    // from it directly instead of making the student retype it.
-    const context = prevUserText && prevUserText.length > 3 ? prevUserText : null;
-    if (context) {
-        const category = 'Something else';
-        const message = `TSA Hub didn't fully resolve my question: "${context}"`;
-        state.supportFlow = { step: 'confirm', category, message };
-        return previewReply(category, message);
-    }
-    state.supportFlow = { step: 'awaiting_message' };
-    return reply('What would you like help with? Pick a category or just tell me the issue.', { suggestions: SUPPORT_CATEGORIES.slice(0, 6) });
-}
-
-// A bug report drafts straight from the complaint itself, with a category
-// guessed from which part of the app was named — "Website/app issue" when
-// nothing more specific is mentioned.
-const BUG_AREA_CATEGORY = [
-    [/\bcalendar\b/, 'Calendar or deadlines'],
-    [/\bevents?\b/, 'Events'],
-    [/\bresources?\b/, 'Resources search'],
-];
-function startBugReportFlow(state, complaintText) {
-    const lower = complaintText.toLowerCase();
-    const category = BUG_AREA_CATEGORY.find(([re]) => re.test(lower))?.[1] || 'Website/app issue';
-    const message = `Something isn't working right: "${complaintText}"`;
-    state.supportFlow = { step: 'confirm', category, message };
-    return previewReply(category, message);
-}
-
-function matchCategory(text) {
-    const lower = text.toLowerCase();
-    return SUPPORT_CATEGORIES.find((c) => lower.includes(c.toLowerCase())) || 'Something else';
-}
-
-function supportMailto(category, message) {
-    const subject = encodeURIComponent(`TSA Hub Support - ${category}`);
-    const body = encodeURIComponent(`Category: ${category}\n\n${message}\n\n(Sent from TSA Hub)`);
-    return `mailto:${TSA_HUB_SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
-}
-
-function previewReply(category, message) {
-    return reply(
-        `Here's what I'll prepare:\n\nCategory: ${category}\nMessage: "${message}"\n\nType "send" to confirm, or "cancel" to stop.`,
-        { suggestions: ['send', 'cancel'] }
-    );
-}
-
-function handleSupportFlow(text, state) {
-    const flow = state.supportFlow;
-    const lower = text.toLowerCase().trim();
-
-    if (/\b(cancel|never ?mind|nvm|forget it|stop)\b/.test(lower)) {
-        state.supportFlow = null;
-        return reply("No problem. Let me know if you need anything else.");
-    }
-
-    if (flow.step === 'awaiting_message') {
-        const trimmed = text.trim();
-        const category = matchCategory(trimmed);
-        // A bare category chip click ("Events") still needs an actual
-        // message — ask once more instead of drafting "Message: Events".
-        if (category.toLowerCase() === trimmed.toLowerCase()) {
-            state.supportFlow = { step: 'awaiting_message_after_category', category };
-            return reply(`Got it, ${category}. What would you like to ask or get help with?`);
-        }
-        state.supportFlow = { step: 'confirm', category, message: trimmed };
-        return previewReply(category, trimmed);
-    }
-
-    if (flow.step === 'awaiting_message_after_category') {
-        const message = text.trim();
-        state.supportFlow = { step: 'confirm', category: flow.category, message };
-        return previewReply(flow.category, message);
-    }
-
-    // flow.step === 'confirm', and the early gate in processMessage already
-    // confirmed this text matches the send keyword.
-    const mailto = supportMailto(flow.category, flow.message);
-    state.supportFlow = null;
-    return reply(
-        `Your message is ready. I've prepared an email to TSA Hub support (${TSA_HUB_SUPPORT_EMAIL}). Open it below and hit send from your email app to finish. I can't confirm it's received until you do.`,
-        { mailto, suggestions: [] }
-    );
-}
-
 // Consecutive GENUINE misunderstandings only — kind 'unknown' (Coach truly
 // has no idea what was asked). Everything else Coach can actually classify —
 // TSA-related-but-no-verified-data ('tsa-unsupported'), clarifications
@@ -1365,7 +1227,7 @@ function handleSupportFlow(text, state) {
 // ('unknown-event'), out-of-scope, personal, and capability-limit — means
 // Coach correctly understood the request, it just doesn't have the data or
 // can't perform the action. None of those are misunderstandings, so none of
-// them should push a student toward "contact support" just because the
+// them should push a student toward the Help Center just because the
 // answer was "I don't have that." See fallback.js for the 'kind' values.
 const MISUNDERSTANDING_KINDS = new Set(['unknown']);
 
@@ -1374,7 +1236,7 @@ const MISUNDERSTANDING_TEXT = [
     "I'm not totally sure what you mean. What are you trying to figure out?",
     "I'm still missing part of what you're asking. Is this about an event, a rule, a deadline, your state TSA, or something else?",
 ];
-const SUPPORT_OFFER_TEXT = "I'm still having trouble understanding what you need. Would you like me to send your question to the TSA Hub support team?";
+const HELP_OFFER_TEXT = "I'm still having trouble understanding what you need. You could browse the Help Center, or search Resources for the topic.";
 
 function trackMisunderstanding(response, state) {
     if (!MISUNDERSTANDING_KINDS.has(response.kind)) {
@@ -1384,7 +1246,13 @@ function trackMisunderstanding(response, state) {
     const n = (state.misunderstandingCount = (state.misunderstandingCount || 0) + 1);
     if (n >= 3) {
         state.misunderstandingCount = 0; // takes 3 more before offering again
-        return { ...response, text: SUPPORT_OFFER_TEXT, suggestions: ['Contact support', 'Keep trying'], supportOffer: true };
+        return {
+            ...response,
+            text: HELP_OFFER_TEXT,
+            suggestions: ['Keep trying'],
+            actions: [{ type: 'NAVIGATE', label: 'Open Help Center', route: '/help' }],
+            helpOffer: true,
+        };
     }
     return { ...response, text: MISUNDERSTANDING_TEXT[n] };
 }

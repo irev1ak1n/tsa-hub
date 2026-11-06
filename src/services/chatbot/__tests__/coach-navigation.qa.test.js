@@ -43,8 +43,7 @@ describe('Coach navigation: every generated action points at a real route', () =
         'where is privacy policy', 'where is the help center', 'navigate to calendar',
         'how do i add an event', 'how do i make a reminder', 'how do i edit an event',
         'how do i delete something from calendar', 'how do i export this to my calendar',
-        'how do i contact support',
-        'how do i report incorrect info', 'how do i change settings',
+        'how do i change settings',
         'how do i use tsa assistant', 'how do i search events',
         'webmaster', 'calendar', 'privacy', 'terms', 'settings', 'resources',
         'instagram', 'find national officers', 'find my state advisor',
@@ -122,7 +121,7 @@ describe('Coach navigation: bare destination fragments act as search', () => {
 describe('Coach navigation: single-word disambiguation offers real choices instead of guessing', () => {
     it.each([
         ['rules', ['/resources/events/themes', '/resources']],
-        ['contact', ['/help/article/contacting-support', '/resources/leadership-support']],
+        ['contact', ['/resources/leadership-support']],
         ['leadership', ['/resources/student-leadership', '/resources/leadership-support']],
     ])('"%s" offers the real destinations', (text, routes) => {
         const res = ask(text);
@@ -172,9 +171,6 @@ describe('Coach navigation: "how do I" app-usage questions get short answers + a
         'how do i delete something from calendar',
         'how do i export this to my calendar',
         'can i add tsa date to my calendar',
-        'how do i report incorrect info',
-        'how can i report wrong info',
-        'how do i report something wrong',
         'how do i change settings',
         'how do i search events',
         'how do i find an event',
@@ -281,34 +277,19 @@ describe('Coach navigation: genuinely ambiguous single words offer real choices,
     });
 });
 
-describe('Coach navigation: bug reports go to Support, not a TSA answer (FLOW G / section 15)', () => {
-    // Asserts the actual DRAFTED-PREVIEW flow specifically (category +
-    // quoted complaint) — not just any response containing the word
-    // "category", which would also pass for the older generic
-    // "pick a category" support flow and silently hide a regression if the
-    // bug-report detector ever got shadowed by that other flow again.
+describe('Coach navigation: support and report requests have no in-app form', () => {
     it.each([
-        ['the calendar is broken', 'Calendar or deadlines'],
-        ['coach isnt working', 'Website/app issue'],
-        ['something is broken', 'Website/app issue'],
-        ['events arent loading', 'Events'],
-    ])('"%s" drafts a real bug report with category "%s"', (text, category) => {
+        'how do i contact support', 'how do i report incorrect info', 'how can i report wrong info',
+        'the calendar is broken', 'coach isnt working', 'something is broken',
+    ])('"%s" never offers a support draft, report form, or email', (text) => {
         const res = ask(text);
-        expect(res.text).toContain(`Category: ${category}`);
-        expect(res.text).toContain(text);
+        expect(res.mailto).toBeUndefined();
+        expect(JSON.stringify(res)).not.toMatch(/contacting-support|reporting-incorrect|tsastudentshub|Category:/i);
     });
 
-    it('does not try to send the user straight to National TSA for an app bug', () => {
-        const res = ask('the calendar is broken');
-        expect(res.text).not.toMatch(/tsaweb\.org|national tsa/i);
-    });
-});
-
-describe('Coach navigation: "contact support" still opens the real guided flow, not just a nav pointer', () => {
-    it('"how do i contact support" starts the interactive support flow', () => {
-        const res = ask('how do i contact support');
-        expect(res.kind).not.toBe('unknown');
-        expect(res.text.toLowerCase()).toMatch(/category|help with/);
+    it('explicit support requests point to the Help Center and leadership contacts', () => {
+        const res = ask('contact support');
+        expect(res.actions.map((a) => a.route)).toEqual(['/help', '/resources/leadership-support']);
     });
 });
 

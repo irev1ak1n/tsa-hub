@@ -180,10 +180,10 @@ describe('successful submissions', () => {
         expect(emailFetch.mock.calls[0][0]).toBe('https://api.resend.com/emails');
     });
 
-    it('handles an incorrect-information report', async () => {
-        const res = await call({ body: { type: 'report', message: 'Wrong date on the calendar', suggestedCorrection: 'June 23' } });
-        expect(res.statusCode).toBe(200);
-        expect(insert.mock.calls[0][0].type).toBe('report');
+    it('no longer accepts incorrect-information reports', async () => {
+        const res = await call({ body: { type: 'report', message: 'Wrong date on the calendar' } });
+        expect(res.statusCode).toBe(400);
+        expect(insert).not.toHaveBeenCalled();
     });
 
     it('still succeeds when the notification email fails, without leaking details', async () => {

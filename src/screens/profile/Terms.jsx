@@ -47,7 +47,8 @@ export default function Terms() {
                     come from TSA's published materials and may be incomplete, out of date, or
                     wrong. Always confirm anything important with the official TSA sources linked
                     in the app and with your advisor before you rely on it. If you spot a
-                    mistake, please use Report Incorrect Information in Settings.
+                    mistake, TSA Hub cannot take reports in the app, so please check the official
+                    TSA source.
                 </p>
 
                 <h2 className="doc-h2">Recommendations, search, and the TSA Coach</h2>
@@ -66,10 +67,10 @@ export default function Terms() {
                     details.
                 </p>
 
-                <h2 className="doc-h2">Feedback and reports</h2>
+                <h2 className="doc-h2">Feedback</h2>
                 <p className="doc-p">
-                    Messages you send may be used to improve TSA Hub without payment or any
-                    obligation to you. Please keep personal information out of them.
+                    Feedback you send may be used to improve TSA Hub without payment or any
+                    obligation to you. Please keep personal information out of it.
                 </p>
 
                 <h2 className="doc-h2">Other websites</h2>

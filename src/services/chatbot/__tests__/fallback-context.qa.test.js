@@ -106,10 +106,10 @@ describe('short recognized TSA vocabulary is never blindly treated as keyboard-s
 });
 
 describe('misunderstanding escalation counter', () => {
-    it('three consecutive genuine unknowns trigger the existing support-offer escalation', () => {
+    it('three consecutive genuine unknowns trigger the Help Center escalation', () => {
         const [, , t3] = askChain(['efwefwe', 'asdfghjkl', 'jjrjgirjgirjgoierjgo']);
-        expect(t3.supportOffer).toBe(true);
-        expect(t3.text).toMatch(/support/i);
+        expect(t3.helpOffer).toBe(true);
+        expect(t3.text).toMatch(/help center/i);
     });
 
     it('one unknown followed by a valid message resets the misunderstanding count', () => {
@@ -117,8 +117,8 @@ describe('misunderstanding escalation counter', () => {
         expect(recovered.kind).not.toBe('unknown');
         // If the counter had NOT reset, this would be the 2nd consecutive
         // unknown (not yet the 3-strike support offer) — asserting no
-        // supportOffer here locks in that the valid middle turn cleared it.
+        // helpOffer here locks in that the valid middle turn cleared it.
         expect(thirdUnknown.kind).toBe('unknown');
-        expect(thirdUnknown.supportOffer).toBeFalsy();
+        expect(thirdUnknown.helpOffer).toBeFalsy();
     });
 });

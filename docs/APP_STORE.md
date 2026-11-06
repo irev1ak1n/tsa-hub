@@ -31,7 +31,7 @@ Technical requirements already handled: privacy manifest (`ios/App/App/PrivacyIn
 - **Promotional text** (170): `Explore competitive events, check requirements, track dates and get event recommendations, all in one place. Independent and student-built.`
 - **Description**: reuse the capability sections from `README.md` (events, recommender, search, calendar and reminders, resources, feedback). Open with the independence statement: "TSA Hub is an independent app and is not affiliated with, endorsed by, or sponsored by the Technology Student Association."
 - **What's New (1.0)**: `First release of TSA Hub.`
-- **Support URL**: a public page with contact info. `https://tsa-hub.vercel.app/help` has a Contact Support option; add the support email `tsastudentshub@gmail.com` to the page if reviewers cannot see it.
+- **Support URL**: a public page with contact info. The Help Center no longer has a contact option, so use `https://tsa-hub.vercel.app/privacy`, which lists the maintainer email `tsastudentshub@gmail.com`. Apple requires a working support contact, so confirm this page is acceptable before submitting.
 - **Marketing URL** (optional): `https://tsa-hub.vercel.app`
 - **Privacy Policy URL** (required): `https://tsa-hub.vercel.app/privacy`
 - **Copyright**: `2026 <your legal name>`.
@@ -53,8 +53,8 @@ Technical requirements already handled: privacy manifest (`ios/App/App/PrivacyIn
 
 Based on what the app does after the privacy audit (`docs/PRIVACY_AUDIT.md`). The privacy manifest matches this.
 
-- **Do you or your third-party partners collect data from this app?** Yes. Only through the optional Feedback and Report forms, plus technical data seen by hosting providers (see the decision below).
-- **User Content, Other User Content**: the free-text message in Feedback and Report. Purpose: App Functionality. Linked to the user: No (there is no account, name or email). Used for tracking: No.
+- **Do you or your third-party partners collect data from this app?** Yes. Only through the optional Feedback form, plus technical data seen by hosting providers (see the decision below).
+- **User Content, Other User Content**: the free-text message in Feedback. Purpose: App Functionality. Linked to the user: No (there is no account, name or email). Used for tracking: No.
 - **Contact Info (name, email)**: not collected. Get Involved was removed.
 - **Identifiers, Usage Data, Location, Contacts, Health, Financial, Purchases, Browsing history, Search history**: not collected. Search and TSA Coach questions stay on the device.
 - **Tracking**: No. No ATT prompt is needed.

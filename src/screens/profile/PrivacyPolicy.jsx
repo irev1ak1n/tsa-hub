@@ -60,19 +60,21 @@ export default function PrivacyPolicy() {
                     analytics or advertising tools.
                 </p>
 
-                <h2 className="doc-h2">Feedback and incorrect information reports</h2>
+                <h2 className="doc-h2">Feedback</h2>
                 <p className="doc-p">
-                    If you choose to send feedback or report incorrect information, we receive
-                    the message you type, whether it is feedback or a report, the time you sent
-                    it, and the page you were on. We do not ask for your name or email, so we
-                    cannot reply to you. Please do not include personal information about
-                    yourself or anyone else in a message.
+                    TSA Hub has no support form and no way to report incorrect information from
+                    inside the app. The only message you can send is feedback, and only if you
+                    choose to. We receive the message you type, the time you sent it, and the
+                    page you were on. We do not ask for your name or email, so we cannot reply
+                    to you. Please do not include personal information about yourself or anyone
+                    else in your feedback.
                 </p>
                 <p className="doc-p">
-                    Messages are saved in our database and sent as an email notification to the
-                    project maintainer through an email service called Resend. We keep them only
-                    as long as we need them to fix problems and improve the app, and we delete
-                    them when they are no longer useful.
+                    Feedback is saved in our database and sent as an email notification to the
+                    project maintainer through an email service called Resend. We keep it only
+                    as long as we need it to improve the app, and we delete it when it is no
+                    longer useful. Support messages and incorrect information reports that were
+                    sent through earlier versions of the app are handled the same way.
                 </p>
                 <p className="doc-p">
                     To stop spam, our server briefly keeps a scrambled (hashed) form of your
@@ -112,7 +114,7 @@ export default function PrivacyPolicy() {
                     TSA Hub is made for middle and high school students. Because there are no
                     accounts and we do not ask for personal information, you can use almost
                     everything in the app without sharing any. The only place a message could
-                    contain personal information is the feedback and report boxes. If you are
+                    contain personal information is the feedback box. If you are
                     under 13, please ask a parent, guardian, or teacher before you send
                     anything, and leave out names, contact details, and other personal
                     information. We do not knowingly collect personal information from children
@@ -121,7 +123,7 @@ export default function PrivacyPolicy() {
 
                 <h2 className="doc-h2">Access and deletion requests</h2>
                 <p className="doc-p">
-                    Messages have no name or email attached, so we cannot tell who sent which
+                    Feedback has no name or email attached, so we cannot tell who sent which
                     one. To ask us to find or delete something you sent, email us the
                     approximate date and the wording of your message, and we will look for it
                     and delete it. Parents and guardians can make the same request. We will
@@ -133,7 +135,7 @@ export default function PrivacyPolicy() {
                 <p className="doc-p">
                     TSA Hub uses encrypted connections, limits who can read the database, and
                     keeps secret keys on the server instead of in the app. No system is
-                    perfectly secure, so please keep personal details out of messages.
+                    perfectly secure, so please keep personal details out of your feedback.
                 </p>
 
                 <h2 className="doc-h2">Changes</h2>

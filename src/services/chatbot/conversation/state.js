@@ -15,7 +15,6 @@ export function createState() {
         turn: 0,
         misunderstandingCount: 0,   // consecutive genuine misunderstandings — see engine.js trackMisunderstanding
         lastUserText: null,         // previous turn's raw text — seeds a support-flow draft from context
-        supportFlow: null,          // { step: 'category'|'message'|'confirm', category, message, context } while drafting a TSA Hub support message
     };
 }
 

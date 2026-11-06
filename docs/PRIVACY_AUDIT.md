@@ -7,7 +7,7 @@ This is an engineering inventory, not legal advice. Items that need a legal or m
 ## 1. Summary
 
 - No accounts exist in the app, no analytics, no advertising, no crash reporting, no push notifications, no tracking.
-- Personal data can still reach us in four ways: free text in Feedback and Report messages, technical data (IP address and device details) seen by Vercel, Supabase and Resend, a hashed IP in the rate limiter, and **legacy account data still stored in Supabase** (section 4).
+- Personal data can still reach us in four ways: free text in Feedback messages, technical data (IP address and device details) seen by Vercel, Supabase and Resend, a hashed IP in the rate limiter, and **legacy account data still stored in Supabase** (section 4).
 - Get Involved has been removed everywhere. No Get Involved records exist in the database (0 rows of that type at audit time).
 
 ## 2. Data inventory
@@ -24,7 +24,7 @@ This is an engineering inventory, not legal advice. Items that need a legal or m
 | `.ics` calendar export | Written to the app cache then handed to the iOS share sheet | Add to calendar | Whatever app the user picks | Cache is cleared by iOS |
 | Event list requests | Supabase API logs (IP address, user agent, time) | Serve public event data | Supabase | Per Supabase plan, **not verified in the dashboard** |
 | Page and API requests | Vercel request and function logs (IP address, user agent, URL, status) | Hosting and security | Vercel | Per Vercel plan, **not verified in the dashboard**. Our own function logs record error codes only, never message text |
-| Feedback and Report messages | Supabase table `feedback` (`id`, `message`, `type`, `created_at`), RLS on with no policies, written only by the server with the service-role key | Fix problems, improve the app | Supabase | **Indefinite. No automatic deletion.** 13 rows at audit time (11 feedback, 2 report, 7 of them test messages). None contained an email-like string |
+| Feedback messages | Supabase table `feedback` (`id`, `message`, `type`, `created_at`), RLS on with no policies, written only by the server with the service-role key | Fix problems, improve the app | Supabase | **Indefinite. No automatic deletion.** 13 rows at audit time (11 feedback, 2 report, 7 of them test messages). None contained an email-like string |
 | Same message as an email notification (message, type, page path, timestamp) | Resend, then the maintainer's inbox | Notify the maintainer | Resend | Per Resend and the mail provider, **not verified** |
 | Rate-limit records | Supabase table `rate_limits` (`key`, `window_start`, `hits`). Keys are `feedback:ip:<sha256 of IP>`, `feedback:global`, `feedback:dup:<sha256 of type and message>` | Stop spam and double submits | Supabase | Cleaned opportunistically (rows older than 2 days are deleted on about 2 percent of calls). Oldest row at audit time was 4 days old, so the policy says "a few days" |
 
@@ -48,6 +48,16 @@ Left on purpose:
 - **Stored submissions.** None. No records to review or delete.
 - "Get involved" in the National Service Project content is TSA's own program text and is unrelated.
 
+## 3b. Contact Support and Report Incorrect Information removal
+
+Removed: both Help Center rows (and the Quick Help section), their modals and mailto builder, the help articles about them, the Settings and Quick Actions "Report Incorrect Information" entries, `submitReport`, the `report` type in `api/submit-feedback.js`, the Coach's support draft flow (it now points to the Help Center and National TSA contacts), and related styles and tests. The Privacy Policy and Terms were updated. Send Feedback was not part of the request and still works.
+
+Left on purpose, for you to review:
+
+- **Existing records.** `public.feedback` holds 13 rows: 11 `feedback` (7 begin with "TEST") and 2 `report`, dated 2026-08-04 to 2026-09-17. Nothing was deleted.
+- **Database constraint.** The table still allows type `report`. Tighten it only after you decide what to do with the 2 rows.
+- **Environment.** `RESEND_API_KEY` and `FEEDBACK_TO_EMAIL` are still used by Send Feedback.
+
 ## 4. Legacy account data (needs your review)
 
 The production Supabase project still holds data from an earlier version of the app that had accounts:
@@ -67,10 +77,10 @@ Nothing in the current app reads or writes these (`src/services/profileService.j
 
 ## 5. What the policies now say
 
-- **Privacy Policy:** no accounts (and a note about earlier test accounts), what stays on the device, what Vercel and Supabase receive, feedback and report contents, the hashed IP for spam control, notification permission and what is not requested, links to other sites, the three service providers, a section for students and users under 13, how to request access or deletion, security, changes, contact.
+- **Privacy Policy:** no accounts (and a note about earlier test accounts), what stays on the device, what Vercel and Supabase receive, feedback contents, the hashed IP for spam control, notification permission and what is not requested, links to other sites, the three service providers, a section for students and users under 13, how to request access or deletion, security, changes, contact.
 - **Terms and Policies:** independent project, permitted use, check official sources, limits of recommendations, search and Coach, device-only storage, feedback, other websites, ownership, availability, limits of responsibility, younger users, changes, contact.
 - Both avoid colons, semicolons, en dashes and em dashes. `src/screens/profile/__tests__/policies.test.js` enforces that, requires the disclaimer, contact address and date, and fails if Get Involved, AI answers or project management come back.
-- The feedback and report windows now tell users to leave out personal information and to ask a parent or teacher first if under 13.
+- The feedback window now tells users to leave out personal information and to ask a parent or teacher first if under 13.
 
 ## 6. Open items for you
 

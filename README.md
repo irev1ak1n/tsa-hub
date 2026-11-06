@@ -86,10 +86,10 @@ TSA Hub allows students to explore competitive events, view eligibility requirem
 - Switch between Dark and Light Theme
 - Explore National TSA leadership and important links
 
-## 8) Help improve TSA Hub by sharing feedback or reporting problems.
+## 8) Help improve TSA Hub by sharing feedback.
 
 - Submit feedback and feature suggestions
-- Report incorrect or outdated information
+- (Contact Support and Report Incorrect Information were removed)
 - Contact TSA Hub support
 
 ---
@@ -106,7 +106,7 @@ cp .env.example .env     # fill VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
 npm run dev              # http://localhost:5173 (also on your LAN for phone testing)
 ```
 
-The Feedback and Report forms call `/api/submit-feedback`, which only runs on Vercel (or `vercel dev` with the server-side variables from `.env.example`). Everything else works with the dev server alone.
+The Feedback form calls `/api/submit-feedback`, which only runs on Vercel (or `vercel dev` with the server-side variables from `.env.example`). Everything else works with the dev server alone.
 
 ## Test and build the web version
 
