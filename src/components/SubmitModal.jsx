@@ -19,7 +19,7 @@ export default function SubmitModal({ title, hint, placeholder, doneText, onSubm
     return (
         <div className="rs-modal-backdrop" onClick={onClose}>
             <div
-                className="rs-modal"
+                className="rs-modal fb-modal"
                 role="dialog"
                 aria-modal="true"
                 aria-label={title}

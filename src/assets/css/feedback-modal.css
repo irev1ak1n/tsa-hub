@@ -135,3 +135,24 @@ html[data-theme="light"] .fb-textarea {
 html[data-theme="light"] .fb-textarea::placeholder {
     color: #8a8a95;
 }
+
+/* Send Feedback and Report Incorrect Information, light theme: plain white
+   window and dark (not grey) text. */
+html[data-theme="light"] .rs-modal.fb-modal,
+html[data-theme="light"] .fb-modal .rs-modal-head {
+    background: #ffffff;
+}
+
+html[data-theme="light"] .fb-modal .fb-hint,
+html[data-theme="light"] .fb-modal .fb-label,
+html[data-theme="light"] .fb-modal .fb-thanks,
+html[data-theme="light"] .fb-modal .fb-preview,
+html[data-theme="light"] .fb-modal .fb-preview strong {
+    color: #111111;
+}
+
+html[data-theme="light"] .fb-modal .fb-textarea,
+html[data-theme="light"] .fb-modal .fb-select,
+html[data-theme="light"] .fb-modal .fb-preview {
+    border-color: #b8b8c4;
+}

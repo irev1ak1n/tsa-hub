@@ -39,7 +39,7 @@ export default function ReportModal({ onClose }) {
     const title = 'Report Incorrect Information';
     return (
         <div className="rs-modal-backdrop" onClick={onClose}>
-            <div className="rs-modal" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
+            <div className="rs-modal fb-modal" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
                 <div className="rs-modal-head">
                     <h3>{title}</h3>
                     <button type="button" className="rs-modal-close" onClick={onClose} aria-label="Close">×</button>
