@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { useLocation, useNavigationType } from 'react-router-dom';
 
 // Scroll handling on route changes.
@@ -15,23 +15,15 @@ import { useLocation, useNavigationType } from 'react-router-dom';
 //
 // Mounted once in Layout.jsx above <Outlet>.
 
-const STORAGE_KEY = 'tsa-hub-scroll-positions-v1';
 const MAX_ENTRIES = 80;
 
+// Memory only: positions are per history entry for the current page load.
 const positions = new Map();
-try {
-    const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '[]');
-    for (const [k, v] of saved) positions.set(k, v);
-} catch { /* storage unavailable, memory only */ }
 
 function remember(key, y) {
     positions.delete(key);
     positions.set(key, y);
     while (positions.size > MAX_ENTRIES) positions.delete(positions.keys().next().value);
-}
-
-function persist() {
-    try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify([...positions])); } catch { /* ignore */ }
 }
 
 try { window.history.scrollRestoration = 'manual'; } catch { /* ignore */ }
@@ -65,12 +57,18 @@ export default function ScrollToTop() {
     const navType = useNavigationType();
 
     // Track where the user is on the current history entry.
-    useEffect(() => {
+    // A layout effect, so the old page's listener is removed in the same commit
+    // that swaps the page. Otherwise the scroll jump caused by the new page
+    // would be recorded as the old page's position.
+    useLayoutEffect(() => {
         const onScroll = () => remember(key, window.scrollY);
         window.addEventListener('scroll', onScroll, { passive: true });
+        // Scroll events arrive a frame late, so also note the exact position at
+        // the moment of a tap or click, which is what starts most navigations.
+        document.addEventListener('click', onScroll, true);
         return () => {
             window.removeEventListener('scroll', onScroll);
-            persist();
+            document.removeEventListener('click', onScroll, true);
         };
     }, [key]);
 

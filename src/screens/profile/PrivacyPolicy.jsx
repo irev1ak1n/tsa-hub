@@ -1,5 +1,4 @@
-import { Link } from 'react-router-dom';
-import { Icon } from '../../components/UI.jsx';
+import { BackLink } from '../resources/resourcesShared.jsx';
 
 // Static privacy page for the website and the iOS app. Keep it in step with
 // what the code really does (see docs/PRIVACY_AUDIT.md) and with the App Store
@@ -7,10 +6,7 @@ import { Icon } from '../../components/UI.jsx';
 export default function PrivacyPolicy() {
     return (
         <div className="doc-page">
-            <Link to="/settings" className="rs-back">
-                <span className="rs-back-arrow"><Icon name="arrow-left" size={20} /></span>
-                Back
-            </Link>
+            <BackLink to="/settings" label="Back" />
 
             <div className="section">
                 <div className="rs-eyebrow">TSA HUB</div>
