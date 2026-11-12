@@ -7,6 +7,7 @@ import { EventGrid, EventGridSkeleton } from './eventsShared.jsx';
 import { LoadError } from '../../components/Skeleton.jsx';
 import EventInfoModal from './EventInfoModal.jsx';
 import SupportButton from '../../components/SupportButton.jsx';
+import useEntryState from '../../hooks/useEntryState.js';
 
 const SORTS = [
     { id: 'default', label: 'Default' },
@@ -109,12 +110,12 @@ export default function Events() {
     // starting division via navigate('/events', { state: { division } })
     // instead of a URL param — read once as the initial state, same as any
     // other default.
-    const [division, setDivision] = useState(location.state?.division || 'all');
-    const [category, setCategory] = useState('All');
+    const [division, setDivision] = useEntryState('division', () => location.state?.division || 'all');
+    const [category, setCategory] = useEntryState('category', 'All');
 
     const [panelOpen, setPanelOpen] = useState(false);
-    const [sort, setSort] = useState('default');
-    const [active, setActive] = useState({});
+    const [sort, setSort] = useEntryState('sort', 'default');
+    const [active, setActive] = useEntryState('active', {});
     const [openEvent, setOpenEvent] = useState(null);
 
     const byDivision = EVENTS.filter((e) => division === 'all' || e.division === division);

@@ -7,6 +7,7 @@ import { matchesQuery } from '../../data/eventSearch.js';
 import { EventGrid, EventGridSkeleton } from './eventsShared.jsx';
 import { LoadError } from '../../components/Skeleton.jsx';
 import EventInfoModal from './EventInfoModal.jsx';
+import useEntryState from '../../hooks/useEntryState.js';
 
 const RECENT_KEY = 'ev-recent';
 
@@ -14,7 +15,7 @@ export default function EventSearchPage() {
     const { eventsLoading, eventsError, reloadEvents } = useApp();
     const inputRef = useRef(null);
 
-    const [query, setQuery] = useState('');
+    const [query, setQuery] = useEntryState('query', '');
     const [openEvent, setOpenEvent] = useState(null);
     const [recent, setRecent] = useState(() => {
         try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch { return []; }
@@ -22,7 +23,9 @@ export default function EventSearchPage() {
 
     const q = query.trim();
 
-    useEffect(() => { inputRef.current?.focus(); }, []);
+    // Focus an empty search box on arrival. When coming back to a search, leave focus
+    // (and the keyboard) alone and never scroll the page to the input.
+    useEffect(() => { if (!query) inputRef.current?.focus({ preventScroll: true }); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const saveRecent = (list) => {
         setRecent(list);

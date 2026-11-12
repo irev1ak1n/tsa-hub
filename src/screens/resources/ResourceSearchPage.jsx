@@ -7,6 +7,7 @@ import { BackLink } from './resourcesShared.jsx';
 import { buildResourceIndex, searchResources, SearchResults } from './resourceSearch.jsx';
 import { Skeleton, LoadingRegion } from '../../components/Skeleton.jsx';
 import { getSearchAssistAnswer } from '../../services/chatbot/searchAssist.js';
+import useEntryState from '../../hooks/useEntryState.js';
 
 // TSA Coach's direct-answer suggestion for a question-like search — reuses
 // Coach's real answering engine (see searchAssist.js), shown above the
@@ -35,7 +36,7 @@ export default function ResourceSearch() {
     const stateInfo = getStateTsa(prefs?.state);
     const inputRef = useRef(null);
 
-    const [query, setQuery] = useState('');
+    const [query, setQuery] = useEntryState('query', '');
     const [recent, setRecent] = useState(() => {
         try { return JSON.parse(localStorage.getItem('rs-recent') || '[]'); } catch { return []; }
     });
@@ -43,7 +44,9 @@ export default function ResourceSearch() {
     const q = query.trim().toLowerCase();
 
     // Focus the field as soon as the page opens.
-    useEffect(() => { inputRef.current?.focus(); }, []);
+    // Focus an empty search box on arrival. When coming back to a search, leave focus
+    // (and the keyboard) alone and never scroll the page to the input.
+    useEffect(() => { if (!query) inputRef.current?.focus({ preventScroll: true }); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
 
     const saveRecent = (list) => {

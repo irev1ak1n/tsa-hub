@@ -6,6 +6,7 @@ import ReportModal from '../../components/ReportModal.jsx';
 import SubmitModal from '../../components/SubmitModal.jsx';
 import { submitFeedback } from '../../services/feedbackService.js';
 import { BackLink } from '../resources/resourcesShared.jsx';
+import useEntryState from '../../hooks/useEntryState.js';
 
 function HelpRow({ icon, title, subtitle, onClick }) {
     return (
@@ -22,7 +23,7 @@ function HelpRow({ icon, title, subtitle, onClick }) {
 
 export default function Help() {
     const navigate = useNavigate();
-    const [query, setQuery] = useState('');
+    const [query, setQuery] = useEntryState('query', '');
     const [modal, setModal] = useState(null); // 'report' | 'feedback' | null
 
     // A single dispatcher used by both the normal sections and search

@@ -5,6 +5,7 @@ import { Icon } from '../../components/UI.jsx';
 import { EVENTS } from '../../data/events.js';
 import { BackLink } from './resourcesShared.jsx';
 import { Skeleton, LoadingRegion, LoadError } from '../../components/Skeleton.jsx';
+import useEntryState from '../../hooks/useEntryState.js';
 
 function byName(a, b) {
     return a.name.localeCompare(b.name);
@@ -54,7 +55,7 @@ function DivisionGroup({ label, events }) {
 
 export default function ResourcesEventThemes() {
     const { eventsLoading, eventsError, reloadEvents } = useApp();
-    const [query, setQuery] = useState('');
+    const [query, setQuery] = useEntryState('query', '');
 
     const q = query.trim().toLowerCase();
     const matches = (e) => !q || e.name.toLowerCase().includes(q);
