@@ -52,7 +52,11 @@ Last updated 2026-11-03.
 | Permission from TSA for name, content and officer photos | **Blocked** (highest rejection risk) |
 | Get Involved feature removed (code, API, copy, docs). No stored submissions existed | Done |
 | Privacy audit (`docs/PRIVACY_AUDIT.md`) | Done |
-| Review the 4 legacy Supabase accounts and `profiles` table, turn off new sign-ups, decide retention for `feedback` | **Blocked** on you (live data, not changed) |
+| `profiles` table locked to least privilege (2026-11-15); the 4 student records are intact and unreadable from the public API | Done and verified |
+| Turn off Supabase Auth sign-ups; decide whether to delete the 4 legacy accounts; decide retention for `feedback` | **Blocked** on you (Auth setting cannot be changed from the tools used; live data not touched) |
+| Retired Edge Functions deleted, `get-involved` type retired | Done |
+| Security audit (`docs/SECURITY_AUDIT.md`): all findings fixed or documented, `npm audit` clean, Dependabot alerts on | Done |
+| Turn on the native CSP after the device check (`docs/IOS_BUILD.md`, "Native CSP check") | **Manual** (first TestFlight build) |
 | Legal review of COPPA exposure (messages and provider logs, audience under 13) | **Blocked** (needs legal input) |
 | Decide whether to declare diagnostics for provider IP logs in App Privacy | **Blocked** on you |
 | Enroll in the Apple Developer Program | **Blocked** (your account and payment) |

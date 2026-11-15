@@ -81,6 +81,20 @@ Because there is no Simulator on Windows, collect App Store screenshots from the
 - Feedback and Report submit successfully and produce one email in the owner's inbox.
 - Rotate on iPad; both orientations are enabled.
 
+## Native CSP check
+
+The app can carry a Content Security Policy (`scripts/nativeCsp.mjs`). It is **off by default** because a policy that the iOS WebView rejects shows a blank screen, and that can only be ruled out on a device. It was checked on Windows: the production build has no inline script or `eval`, and a desktop browser ran Home, Events, Calendar, Resources and Help under the policy with no violations.
+
+To try it, run one TestFlight build with `NATIVE_CSP=1` added to the `tsa_hub_web_env` group in Codemagic (the build script then adds the policy to `index.html`). On a real iPhone confirm:
+
+- The app opens to Home, not a blank or white screen, and tab pages render.
+- Events load (they come from Supabase), and event photos and the splash appear.
+- Fonts look right in both themes.
+- Add a calendar event with a reminder, and "Add to calendar" still opens the share sheet.
+- External links open the in-app Safari sheet; `mailto:` opens Mail.
+- Send Feedback works (it calls the deployed site's `/api`).
+- If anything fails, remove `NATIVE_CSP`, rebuild, and send the failing screen so the policy can be adjusted. If everything passes, keep it set (or make it the default in `scripts/buildNative.mjs`).
+
 ## What was verified on Windows, and what was not
 
 Verified before the first cloud build:

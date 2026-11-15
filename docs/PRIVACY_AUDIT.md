@@ -56,6 +56,8 @@ Existing records: `public.feedback` holds 13 rows (11 feedback, 7 of them starti
 
 ## 4. Legacy account data (needs your review)
 
+Update 2026-11-15: the `profiles` table is now locked to least privilege, so the public API can no longer read these records. They are still stored and still need your decision (see `docs/SECURITY_AUDIT.md`, section 12). The retired Edge Functions were deleted and the `get-involved` type was removed from the `feedback` constraint.
+
 The production Supabase project still holds data from an earlier version of the app that had accounts:
 
 - `auth.users`: **4 users**, all with an email address, created between 2026-07-23 and 2026-07-31 (last sign-in 2026-07-31), none anonymous.

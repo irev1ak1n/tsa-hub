@@ -6,17 +6,17 @@ This is a review of what could be inspected, not a guarantee. Passing tests do n
 
 ## 1. Summary
 
+Two passes: the audit (commit `889d68b`) and the remediation pass that followed (this file's section 12). Final status, 2026-11-15:
+
 | | Count |
 |---|---|
-| Confirmed vulnerabilities | **1** (Low) |
+| Confirmed vulnerabilities | **2**, both fixed and verified: V1 (Low) unpaired-surrogate 500, V2 (**High**) student data in `profiles` readable by any signed-in user while sign-ups were open |
 | Potential risks hardened in code | 7 (all Low or Info) |
-| Potential risk needing your action | 1 (**Medium to High if sign-ups are on**, see S1) |
 | Already protected | 12 areas |
 | Attack classes that do not apply | 7 |
+| Open items needing you | 2 (turn off Auth sign-ups, enable the native CSP after a device test) |
 
-Confirmed: V1, feedback with an unpaired Unicode surrogate returned a 500 and used up the sender's rate-limit allowance.
-
-The most important open item is S1: `public.profiles` holds names and schools of 4 real students and is readable by any signed-in user. Whether the public can sign in depends on a Supabase Auth setting that could not be read. See section 3 and the manual steps in section 12.
+V2 was upgraded from "potential" to "confirmed" in the second pass: Supabase Auth settings showed `disable_signup: false` and `mailer_autoconfirm: true`, and a simulated signed-in user with no profile could read all 4 rows including names. The table is now locked (see S1).
 
 ## 2. Attack surface
 
@@ -83,20 +83,20 @@ An unauthenticated attacker can: call the API with any headers (Origin and Host 
 | `rate_limits` | Same. **Already protected.** |
 | Functions | Only `check_rate_limit` (service role only) and `notify_feedback` (no callable roles; trigger already removed). Both `SECURITY DEFINER` with an empty `search_path`. |
 | Storage | No buckets. |
-| Edge Functions | `ai-feedback` and `feedback-email` are ACTIVE, `verify_jwt = true`, and their source only returns 410. The anon key is a valid JWT, so the JWT check does not stop anyone calling them, but they do nothing. Recommend deleting (S3). |
+| Edge Functions | `ai-feedback` and `feedback-email` were ACTIVE and inert (returned 410). **Deleted 2026-11-15** after confirming no code references them and 0 invocations in 24 hours. `supabase functions list` is now empty. |
 | Service-role key in bundles | **Not present.** Scanned `dist/` and `ios/App/App/public/`: one JWT, role `anon`. The string `sb_secret_` appears only inside supabase-js's own key-format check. |
-| Constraints | `feedback.message` 1 to 12000 characters; `type` still allows `get-involved` (see S2). |
+| Constraints | `feedback.message` 1 to 12000 characters; `type` is now limited to `feedback` and `report` (migration `retire_get_involved_type`, applied 2026-11-15, 0 rows of the old type, all 15 rows kept). |
 | Advisors | `rls_enabled_no_policy` on `feedback` and `rate_limits` (INFO, intended). `pg_net` in the public schema (WARN, unused by the app). Leaked-password protection off (WARN, only relevant if sign-ups are on). |
 
 Repository SQL (`supabase/security/`) matches what is live for events, feedback, rate limiting and the function; `03` is the only file not applied.
 
-**S1. Student data in `public.profiles` (Potential risk, Medium to High if sign-ups are enabled) Not fixed in production.**
+**S1 / V2. Student data in `public.profiles` (Confirmed, High) Fixed and verified 2026-11-15.**
 
-- **Evidence:** the table holds first and last name, school, city, grade, state and division for 4 legacy accounts, all `is_private = false`. The policy `read own or public profiles` lets any authenticated user read them. Whether a stranger can become authenticated depends on whether email sign-ups are enabled in Supabase Auth. That setting cannot be read from SQL and was not available through the tools used.
-- **Exploitation (if sign-ups are on):** call `/auth/v1/signup` with the public anon key, then `GET /rest/v1/profiles`. No app code is needed.
-- **App dependence:** none. `profileService.js` was dead code and has been deleted.
-- **Prepared fix:** `supabase/security/04_lock_profiles.sql` (own row only, with rollback and a stricter option). Not applied.
-- **Manual:** turn off sign-ups, then run `04`. See section 12.
+- **Evidence before the fix:** 4 legacy accounts with first and last name, school, city, grade, state and division, all `is_private = false`. The policy `read own or public profiles` let any authenticated user read every row. `GET /auth/v1/settings` (public, read-only) reported `disable_signup: false` and `mailer_autoconfirm: true`, so anyone with the public anon key could create an account with no email confirmation and become authenticated. A simulated signed-in user with no profile (role switched inside a rolled-back transaction) saw **4 of 4 rows with names**. Not exercised against the real signup endpoint, because that would have created a production account.
+- **Dependencies checked:** no application code reads the table (`profileService.js` was removed in `889d68b`); no views, functions, triggers or realtime publications reference it; no one has signed in since 2026-07-31; the only foreign key is `profiles.id` to `auth.users`.
+- **Fix applied (migration `lock_profiles_least_privilege`):** all privileges on `public.profiles` revoked from `anon` and `authenticated`, and the read policy narrowed to the user's own row so access stays closed even if a privilege is granted again. Script and rollback: `supabase/security/04_lock_profiles.sql`.
+- **Verified after:** 4 profile rows and 4 users intact, 0 client grants left, the simulated signed-in user now gets `permission denied for table profiles`, and an anonymous REST read returns 401 `permission denied`. No data was changed or deleted.
+- **Still open:** sign-ups are still enabled. They no longer expose any student data, but they let anyone create accounts. Turn them off (section 12, step 1). The tools available could not change Auth settings.
 
 ### F4. API input handling (Already protected, tests added)
 
@@ -144,16 +144,15 @@ The Supabase client was configured to persist and refresh a session although the
 - No App Transport Security exceptions, no `server.url`, no cleartext, no `allowNavigation`, no URL scheme or associated domain registered, no extra permission strings in `Info.plist`. Plugins: app, browser, filesystem, keyboard, local-notifications, share, splash-screen, status-bar. Filesystem and Share are used only to write and share one ICS file.
 - External links open through `@capacitor/browser`, and only http(s) links to other sites.
 - `routeFromAppUrl` (deep links) is hardened: it now refuses double-slash and backslash paths, so a crafted link cannot become a protocol-relative address or throw. It is currently unreachable because no scheme or universal link is registered. Tested.
-- **Gap:** Vercel's CSP header does not apply to the bundled app, which loads from `capacitor://localhost`. A CSP meta tag would help but could blank the app if wrong, so it was **not added without a device to test it**. Suggested policy to try in a TestFlight build: `default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co https://tsa-hub.vercel.app; object-src 'none'; base-uri 'self'; form-action 'none'`.
+- **Gap and status:** Vercel's CSP header does not apply to the bundled app, which loads from `capacitor://localhost`. A CSP meta tag is now **built and tested but off by default**, because a wrong policy shows a blank screen and that can only be ruled out on a device. `scripts/nativeCsp.mjs` builds the policy and `NATIVE_CSP=1 node scripts/buildNative.mjs` adds it to the app's `index.html`. Checked on Windows: the real production build has no inline script, no `eval` or `Function`, and loads everything from its own origin; with the policy applied, a desktop browser rendered Home, Events (67 events from Supabase), Calendar, Resources and Help with fonts and zero CSP violations. **Not checked: the iOS WebView itself.** Enable it only after the device check in `docs/IOS_BUILD.md`, "Native CSP check".
 - Nothing in this audit was run on macOS or iOS.
 
-### F11. Dependencies and supply chain
+### F11. Dependencies and supply chain (Fixed)
 
-- `npm audit --omit=dev`: **0 vulnerabilities** in what ships.
-- `npm audit`: 4 moderate, all in the dev-only chain `@capacitor/assets` to `@trapezedev/project` to `xcode` to `uuid` (missing buffer bounds check in uuid v3/v5/v6 when a buffer is passed). It runs only on your machine to generate icons, never in the app. The only automatic fix downgrades `@capacitor/assets`, so it was left. Re-check on upgrade.
-- No install scripts were added. No GitHub Actions exist. `codemagic.yaml` keeps secrets in Codemagic variable groups and integrations, not in the file; the compile-check workflow needs no Apple account.
-- Capacitor packages are on 7.x. `npm outdated` could not run (the C: drive is full, see section 12).
-- An unused dependency check was not run; the production dependency list is short and all are imported.
+- `npm audit` now reports **0 vulnerabilities** (production and development). The 4 moderate findings came from one dev-only chain (`@capacitor/assets` to `@trapezedev/project` to `xcode` to `uuid@7`, fixed in `uuid` 11.1.1). It is pinned with an `overrides` entry in `package.json`. `xcode` still parses the real iOS project and generates identifiers after the override. No breaking upgrade was needed.
+- **Not in the production bundle:** `@capacitor/assets` is a dev dependency, `npm audit --omit=dev` was clean before and after, and `uuid` does not appear in `dist/`.
+- No install scripts were added. No GitHub Actions exist. `codemagic.yaml` keeps secrets in Codemagic variable groups and integrations, not in the file.
+- Capacitor packages are on 7.x. An unused-dependency check was not run.
 
 ## 4. Already protected
 
@@ -177,10 +176,9 @@ Session fixation, JWT validation weaknesses and token timing attacks (no session
 
 | Check | Result |
 |---|---|
-| `npx vitest run` | 6,461 tests pass (42 files) |
+| `npx vitest run` | 6,480 tests pass (43 files) |
 | `npm run build` | passes |
-| `npm audit --omit=dev` | 0 vulnerabilities |
-| `npm audit` | 4 moderate, dev-only (F11) |
+| `npm audit` (with and without `--omit=dev`) | 0 vulnerabilities |
 | Bundle scan for service-role or Resend keys | none |
 | Git history scan | no secrets |
 | Supabase RLS, grants, functions, buckets, constraints, advisors, edge functions | inspected live, read-only |
@@ -211,22 +209,48 @@ The repository SQL could be compared with live state for tables, policies, grant
 
 `api/_lib/security.js` (IP derivation, keyed hash), `api/submit-feedback.js` (surrogates, page sanitising, keyed hashes), `src/utils/safeUrl.js` (new), `src/screens/resources/resourcesShared.jsx`, `src/screens/calendar/CalendarPanels.jsx`, `src/native/platform.js`, `src/services/supabase.js`, `src/services/chatbot/engine.js`, `src/screens/resources/resourceSearch.jsx`, `src/data/helpContent.js`, four search inputs, `vercel.json`, `.env.example`; deleted `src/services/profileService.js`; new `supabase/security/04_lock_profiles.sql`.
 
-## 12. Manual steps
+## 12. Remediation status and manual steps
 
-**Supabase** (highest priority first)
-1. Authentication > Sign In / Providers: turn **off** "Allow new users to sign up" (the app has no accounts). Then run `supabase/security/04_lock_profiles.sql` in the SQL editor. Decide whether to delete the 4 legacy users and profile rows.
-2. Edge Functions: delete `ai-feedback` and `feedback-email`.
-3. Optionally run `supabase/security/03_retire_get_involved.sql` (it refuses to run if any such row exists).
-4. If sign-ups stay on for any reason, enable leaked-password protection.
-5. Optionally move `pg_net` out of the public schema (advisor warning).
+### Fully fixed and verified
 
-**Vercel**
-6. Add `RATE_LIMIT_SALT` (a long random value) to Production and Preview. Optional, the service-role key is used otherwise.
-7. After the next deploy, run the curl checks in section 9.
-8. Remove `RESEND_API_KEY` or `FEEDBACK_TO_EMAIL` only if you ever retire feedback; they are in use.
+| Item | How it was verified |
+|---|---|
+| V1 unpaired surrogate | Postgres rejection reproduced read-only; unit tests |
+| V2 / S1 `profiles` exposure | Before and after role-simulation queries, anonymous REST call returns 401, 4 rows intact |
+| `feedback.type` allowed `get-involved` | Constraint now `feedback` or `report`; 15 rows kept |
+| Retired Edge Functions | Deleted; `supabase functions list` is empty; nothing referenced them and 0 calls in 24 hours |
+| IP derivation and rate limit in production | On the live site, 9 requests with rotating forged `X-Forwarded-For` and `X-Real-IP` headers all landed in one bucket: 400 seven times, then 429. `rate_limits` shows one row for them. |
+| Production deployment | `fa03ddf` (includes everything in `889d68b`) is READY on Vercel production |
+| Production headers and CORS | Site: CSP with `img-src 'self' data: blob:`, HSTS, COOP, `X-Frame-Options`, nosniff, referrer and permissions policies. API: 405 for GET, 403 untrusted origin, 415 wrong type, 405 and no CORS headers for another origin's preflight, 204 with `Access-Control-Allow-Origin: capacitor://localhost` for the app, `Cache-Control: no-store`, generic error bodies |
+| Dependency audit | 0 vulnerabilities |
+| Dependabot alerts | Enabled on 2026-11-15 (were off). The first alert (uuid, development scope) shows as fixed |
+| Secret scanning and push protection | Already enabled (public repository) |
+| `RATE_LIMIT_SALT` | Generated with `openssl rand`, piped straight into Vercel as a Sensitive variable for Production and Preview; never printed or written to disk. Live after `fa03ddf` deployed. |
 
-**GitHub:** nothing required. Enable Dependabot alerts and secret scanning if not already on.
+### Fixed in code, waiting for a device or a decision
 
-**Codemagic and Apple Developer:** nothing required from this audit. When you have a first TestFlight build, test on a device: external links open in the in-app browser, feedback sends, and try the suggested native CSP from F10 before adding it.
+| Item | What is left |
+|---|---|
+| Native CSP | Built and tested, off by default. Turn it on after the device check in `docs/IOS_BUILD.md` |
+| iOS settings | Locked by tests (no ATS exceptions, no URL schemes, no permissions, no remote server, no credentials). Real-device behaviour still unverified |
 
-**Your computer:** the C: drive reported 0 GB free while running `npm` (the npm cache lives there). Free some space or builds and installs will fail.
+### Needs you
+
+1. **Supabase: turn off sign-ups.** Dashboard > Authentication > Sign In / Providers > Email > turn off **Allow new users to sign up** (or Authentication > Settings > "Allow new users to sign up"). If you ever turn sign-ups back on, also require email confirmation (it currently auto-confirms). The tools used here could not change Auth settings. Verify afterwards with `curl -s "$VITE_SUPABASE_URL/auth/v1/settings" -H "apikey: $VITE_SUPABASE_ANON_KEY"` and look for `"disable_signup":true`.
+2. **Decide what to do with the 4 legacy accounts** (Authentication > Users, and the `profiles` rows). They are untouched and now unreadable from the public API. Delete them only if you are sure; this was not done.
+3. **Codemagic and Apple:** on the first TestFlight build, do the "Native CSP check" in `docs/IOS_BUILD.md` and then set `NATIVE_CSP=1` in the Codemagic variable group (or make it the default in `scripts/buildNative.mjs`).
+4. **Vercel:** nothing required. Optional: add `RATE_LIMIT_SALT` rotation to your calendar. Rotating it only resets the rate-limit buckets.
+5. **GitHub:** nothing required. Optional: turn on "Dependabot security updates" (Settings > Code security) if you want automatic fix pull requests; it was left off because it creates pull requests on its own.
+6. **Your computer:** the C: drive had 0 GB free during this work, which breaks `npm`. A folder `D:\tmp_tsa` (temporary files and an npm cache) was created to work around it and can be deleted.
+
+## 13. Accepted risks and remaining limitations
+
+- Anyone can send feedback up to the limits. The global cap (120 per hour) can be exhausted by an attacker with many addresses, blocking feedback for everyone for up to an hour.
+- Origin and Host checks do not stop scripted clients; the rate limits are the real control.
+- Feedback and reports may contain personal information typed by users, are stored until you delete them, and are emailed to the maintainer. 13 feedback and 2 report rows exist and were left untouched.
+- Hosting providers see IP addresses in their own logs.
+- `style-src 'unsafe-inline'` (React inline styles). HSTS has no `preload` (permanent, so left to you).
+- Future tables in the `public` schema get default grants to `anon` and `authenticated` (Supabase default). Enable RLS and review grants on every new table.
+- Preview deployments use the per-instance fallback limiter if the shared one errors, and have no service key, so they cannot write feedback.
+- The Vercel IP-header behaviour is confirmed by Vercel's documentation and by the production test above, not by reading Vercel's source.
+- Nothing was run on macOS or iOS. Request smuggling and HTTP/2 abuse are Vercel's to defend.
