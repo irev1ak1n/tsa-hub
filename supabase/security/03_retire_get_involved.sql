@@ -1,4 +1,6 @@
--- NOT APPLIED. Optional cleanup after the Get Involved feature was removed from
+-- APPLIED 2026-11-15 to project zpjdybbvtolwwxsfjcny (migration
+-- "retire_get_involved_type"; 0 rows of that type existed, 13 feedback and 2 report
+-- rows were kept). Original note: optional cleanup after the Get Involved feature was removed from
 -- the app and the API. Review, then run in the Supabase SQL editor (or
 -- `supabase db query --linked -f supabase/security/03_retire_get_involved.sql`).
 --

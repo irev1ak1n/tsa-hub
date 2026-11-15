@@ -1,32 +1,39 @@
--- NOT APPLIED. Review, then run in the Supabase SQL editor.
+-- APPLIED 2026-11-15 to project zpjdybbvtolwwxsfjcny (TSA Portal) as migration
+-- "lock_profiles_least_privilege". Idempotent, so it is safe to run again.
 --
--- Why: public.profiles holds first and last name, school, city, grade and state
--- for 4 legacy accounts, and every row is is_private = false. The current policy
--- "read own or public profiles" lets ANY authenticated user read those rows. If
--- email sign-ups are enabled on the project, anyone with the public anon key can
--- create an account and become authenticated, so these student records are
--- readable by the public. TSA Hub has no accounts and no code reads this table
--- (src/services/profileService.js was removed), so nothing in the app depends on
--- it.
+-- Why: public.profiles holds first and last name, school, city, grade, state and
+-- division for 4 legacy student accounts, all is_private = false. The policy
+-- "read own or public profiles" let ANY authenticated user read every row, and
+-- Supabase Auth had sign-ups enabled with auto-confirm, so anyone with the public
+-- anon key could create an account and read them. Verified before this change:
+-- a signed-in user with no profile saw 4 of 4 rows including names.
 --
--- What this does: restricts reads to a user's own row. No data is changed or
--- deleted. Combine with turning sign-ups off (see docs/SECURITY_AUDIT.md).
+-- Dependencies checked before applying: no code in the app reads this table
+-- (src/services/profileService.js was removed), no views, functions, triggers or
+-- realtime publications reference it, and no one has signed in since 2026-07-31.
+--
+-- What this does: removes all table privileges from anon and authenticated (the
+-- service role and owner are unaffected) and narrows the read policy to a user's
+-- own row, so access stays closed even if a privilege is granted again by
+-- mistake. No rows are changed or deleted.
 
 begin;
 
+revoke all on public.profiles from anon, authenticated;
+
 drop policy if exists "read own or public profiles" on public.profiles;
+drop policy if exists "read own profile" on public.profiles;
 create policy "read own profile" on public.profiles
     for select to authenticated
     using ((select auth.uid()) = id);
 
 commit;
 
--- Rollback (restores the old, wider read access):
+-- Rollback (restores the previous access exactly):
+--   begin;
+--   grant select, insert, update on public.profiles to authenticated;
 --   drop policy if exists "read own profile" on public.profiles;
 --   create policy "read own or public profiles" on public.profiles
 --       for select to authenticated
 --       using (((select auth.uid()) = id) or (is_private = false));
---
--- Stricter option once you have decided what to do with the legacy rows (this
--- also stops owners reading their own row, which nothing uses):
---   revoke all on public.profiles from authenticated;
+--   commit;

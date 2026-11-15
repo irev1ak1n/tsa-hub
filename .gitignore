@@ -48,3 +48,6 @@ ExportOptions.plist
 ios/App/Pods/
 ios/App/build/
 ios/App/output/
+
+.vercel
+.env*.local
