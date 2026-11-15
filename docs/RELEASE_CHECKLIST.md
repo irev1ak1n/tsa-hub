@@ -2,19 +2,19 @@
 
 Legend: **Done** = implemented and verified here. **Done, unverified on device** = implemented, builds and unit-tests pass, but it needs a Mac or iPhone to confirm. **Blocked** = waiting on something only the owner can provide. **Manual** = a step you do in Xcode, App Store Connect or by email.
 
-Last updated 2026-11-03.
+Last updated 2026-11-15.
 
 ## Web app (the same code the iOS app bundles)
 
 | Item | Status |
 | --- | --- |
 | Production build (`npm run build`) | Done |
-| Unit and integration tests (6,349, `npm test`) | Done |
+| Unit and integration tests (6,482, `npm test`) | Done |
 | Crawl of every in-app route (84 pages) for console errors, 404s and broken images | Done, none found |
 | Layout overflow check at 375 px and 768 px across 16 routes | Done, none found |
 | Accessibility scan (names on buttons, links, inputs, image alt text) across 11 routes | Done; three list pages have no `h1` (Events, Event Search, Resource Search), cosmetic |
-| Security headers, rate limiting, fail-closed API, RLS, verified backup | Done (see `SECURITY.md`) |
-| Dependency audit | Done, 0 known vulnerabilities (upgraded `vite` 5 to 7 and `react-router-dom` 6 to 7) |
+| Security audit and remediation: headers, rate limiting and IP handling, fail-closed API, RLS, Supabase lock-down, secrets scan, GitHub alerts | Done and verified on production (see `docs/SECURITY_AUDIT.md`) |
+| Dependency audit | Done, 0 known vulnerabilities (`vite` 7, `react-router-dom` 7, `uuid` pinned in the dev-only icon tool) |
 | Leftover Project Management text and routes | Done, removed; the old route shows the 404 page |
 | Fonts self-hosted (no request to Google Fonts; tightened the CSP to match) | Done |
 | Events list cached for offline launches | Done |
@@ -56,7 +56,8 @@ Last updated 2026-11-03.
 | Turn off Supabase Auth sign-ups; decide whether to delete the 4 legacy accounts; decide retention for `feedback` | **Blocked** on you (Auth setting cannot be changed from the tools used; live data not touched) |
 | Retired Edge Functions deleted, `get-involved` type retired | Done |
 | Security audit (`docs/SECURITY_AUDIT.md`): all findings fixed or documented, `npm audit` clean, Dependabot alerts on | Done |
-| Turn on the native CSP after the device check (`docs/IOS_BUILD.md`, "Native CSP check") | **Manual** (first TestFlight build) |
+| Native CSP: built, tested on Windows, **off by default** (`NATIVE_CSP=1` turns it on) | Done, unverified on device. **Manual**: run the "Native CSP check" in `docs/IOS_BUILD.md` on the first TestFlight build |
+| Native project still syncs after the security changes (`scripts/buildNative.mjs`, 8 plugins found) | Done on Windows. Not compiled: needs macOS |
 | Legal review of COPPA exposure (messages and provider logs, audience under 13) | **Blocked** (needs legal input) |
 | Decide whether to declare diagnostics for provider IP logs in App Privacy | **Blocked** on you |
 | Enroll in the Apple Developer Program | **Blocked** (your account and payment) |
@@ -64,7 +65,7 @@ Last updated 2026-11-03.
 | Run the **iOS TestFlight** Codemagic workflow | **Manual** (needs enrollment) |
 | Screenshots (6.9-inch iPhone and 13-inch iPad) | **Manual** (no Simulator on Windows: capture from the TestFlight build on a real iPhone and iPad) |
 | TestFlight upload, internal testing, external beta review | **Manual** |
-| Delete the 7 production `feedback` rows that begin with "TEST" | **Manual** (production data; deliberately not touched) |
+| Delete the 9 production `feedback` rows that begin with "TEST" (7 older, 2 added on 2026-11-15) | **Manual** (production data; deliberately not touched) |
 | Submit for App Review | **Manual** |
 
 ## Known limitations and risks

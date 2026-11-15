@@ -97,6 +97,17 @@ describe.skipIf(!hasBuild)('real build is compatible with the native CSP', () =>
     });
 });
 
+describe('native CSP stays off until it has been tested on a device', () => {
+    it('is only added when NATIVE_CSP is exactly "1"', () => {
+        const script = read('scripts/buildNative.mjs');
+        expect(script).toContain("process.env.NATIVE_CSP === '1'");
+    });
+
+    it('is not switched on in the Codemagic config', () => {
+        expect(read('codemagic.yaml')).not.toMatch(/NATIVE_CSP\s*:/);
+    });
+});
+
 describe('iOS project settings stay locked down', () => {
     const plist = read('ios/App/App/Info.plist');
     const config = JSON.parse(read('capacitor.config.json'));

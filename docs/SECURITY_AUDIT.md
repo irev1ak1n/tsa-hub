@@ -6,7 +6,7 @@ This is a review of what could be inspected, not a guarantee. Passing tests do n
 
 ## 1. Summary
 
-Two passes: the audit (commit `889d68b`) and the remediation pass that followed (this file's section 12). Final status, 2026-11-15:
+Three passes: the audit (`889d68b`), the remediation (`fa03ddf`) and the final cleanup (this version). Status on 2026-11-15:
 
 | | Count |
 |---|---|
@@ -14,9 +14,9 @@ Two passes: the audit (commit `889d68b`) and the remediation pass that followed 
 | Potential risks hardened in code | 7 (all Low or Info) |
 | Already protected | 12 areas |
 | Attack classes that do not apply | 7 |
-| Open items needing you | 2 (turn off Auth sign-ups, enable the native CSP after a device test) |
+| Open items | Turn off Auth sign-ups (dashboard only), native CSP device test, decisions about the legacy accounts |
 
-V2 was upgraded from "potential" to "confirmed" in the second pass: Supabase Auth settings showed `disable_signup: false` and `mailer_autoconfirm: true`, and a simulated signed-in user with no profile could read all 4 rows including names. The table is now locked (see S1).
+V2 was found in the second pass: Supabase Auth had `disable_signup: false` and `mailer_autoconfirm: true`, and a simulated signed-in user with no profile could read all 4 rows including names. The table is now locked (S1). Sign-ups themselves are still enabled because the Auth setting cannot be changed with the tools available (section 12).
 
 ## 2. Attack surface
 
@@ -164,19 +164,13 @@ Session fixation, JWT validation weaknesses and token timing attacks (no session
 
 ## 6. Residual and accepted risks
 
-- Anyone can send feedback up to the limits; the global cap can be exhausted, which blocks feedback for everyone for up to an hour.
-- Origin and Host checks do not stop scripted clients.
-- Feedback and reports may contain personal information typed by users. They are unauthenticated, stored indefinitely until you delete them, and emailed to the maintainer.
-- Hosting providers see IP addresses in their own logs.
-- The 13 existing `feedback` rows and the 4 `profiles` rows were left untouched.
-- `style-src 'unsafe-inline'`.
-- Future tables created in the `public` schema get default grants to `anon` and `authenticated` (Supabase default). Enable RLS on every new table and review its grants.
+See section 13.
 
 ## 7. Verification performed
 
 | Check | Result |
 |---|---|
-| `npx vitest run` | 6,480 tests pass (43 files) |
+| `npx vitest run` | 6,482 tests pass (43 files) |
 | `npm run build` | passes |
 | `npm audit` (with and without `--omit=dev`) | 0 vulnerabilities |
 | Bundle scan for service-role or Resend keys | none |
@@ -203,54 +197,79 @@ curl -s "$SUPABASE_URL/rest/v1/feedback?select=*&limit=1" -H "apikey: $ANON_KEY"
 
 ## 10. Verifying the live Supabase configuration
 
-The repository SQL could be compared with live state for tables, policies, grants and functions. These were **not** available and need the dashboard: Authentication > Sign In / Providers (are email sign-ups enabled?), Authentication > Attack Protection (leaked-password protection, rate limits), Project Settings > API (which keys exist and whether the legacy `service_role` JWT has been rotated), and Network restrictions.
+Tables, policies, grants, functions, buckets, constraints, advisors and Edge Functions were inspected live (read-only) and match the repository SQL. Auth sign-up status can be read without a login from `GET /auth/v1/settings` (`disable_signup`, `mailer_autoconfirm`). Still dashboard-only: Authentication > Attack Protection (leaked-password protection, rate limits), Project Settings > API (whether the legacy `service_role` JWT has been rotated) and Network restrictions.
 
 ## 11. What changed in code
 
 `api/_lib/security.js` (IP derivation, keyed hash), `api/submit-feedback.js` (surrogates, page sanitising, keyed hashes), `src/utils/safeUrl.js` (new), `src/screens/resources/resourcesShared.jsx`, `src/screens/calendar/CalendarPanels.jsx`, `src/native/platform.js`, `src/services/supabase.js`, `src/services/chatbot/engine.js`, `src/screens/resources/resourceSearch.jsx`, `src/data/helpContent.js`, four search inputs, `vercel.json`, `.env.example`; deleted `src/services/profileService.js`; new `supabase/security/04_lock_profiles.sql`.
 
-## 12. Remediation status and manual steps
+## 12. Final status
 
-### Fully fixed and verified
+### Completed and verified
 
 | Item | How it was verified |
 |---|---|
 | V1 unpaired surrogate | Postgres rejection reproduced read-only; unit tests |
-| V2 / S1 `profiles` exposure | Before and after role-simulation queries, anonymous REST call returns 401, 4 rows intact |
-| `feedback.type` allowed `get-involved` | Constraint now `feedback` or `report`; 15 rows kept |
-| Retired Edge Functions | Deleted; `supabase functions list` is empty; nothing referenced them and 0 calls in 24 hours |
-| IP derivation and rate limit in production | On the live site, 9 requests with rotating forged `X-Forwarded-For` and `X-Real-IP` headers all landed in one bucket: 400 seven times, then 429. `rate_limits` shows one row for them. |
-| Production deployment | `fa03ddf` (includes everything in `889d68b`) is READY on Vercel production |
-| Production headers and CORS | Site: CSP with `img-src 'self' data: blob:`, HSTS, COOP, `X-Frame-Options`, nosniff, referrer and permissions policies. API: 405 for GET, 403 untrusted origin, 415 wrong type, 405 and no CORS headers for another origin's preflight, 204 with `Access-Control-Allow-Origin: capacitor://localhost` for the app, `Cache-Control: no-store`, generic error bodies |
-| Dependency audit | 0 vulnerabilities |
-| Dependabot alerts | Enabled on 2026-11-15 (were off). The first alert (uuid, development scope) shows as fixed |
-| Secret scanning and push protection | Already enabled (public repository) |
-| `RATE_LIMIT_SALT` | Generated with `openssl rand`, piped straight into Vercel as a Sensitive variable for Production and Preview; never printed or written to disk. Live after `fa03ddf` deployed. |
+| V2 / S1 `profiles` exposure | Role-simulation queries before and after; an anonymous request returns 401; 4 profiles and 4 users intact |
+| Legacy accounts do not affect the app | See S2 below |
+| `feedback.type` allowed `get-involved` | Constraint is now `feedback` or `report`; no rows lost |
+| Retired Edge Functions | Deleted; `supabase functions list` is empty |
+| Production deployment | `027124d` (includes `889d68b` and `fa03ddf`) is READY on Vercel production |
+| Feedback and report submissions in production | One test submission of each type on 2026-11-15 returned `{"ok":true}` and both rows exist. Vercel runtime logs show no error or warning (the handler logs one when the email provider rejects). Inbox delivery was not checked. |
+| Rate limiting and IP handling in production | Nine requests with rotating forged `X-Forwarded-For` and `X-Real-IP` shared one bucket (400 seven times, then 429). The 429 body is generic. |
+| CORS, headers, caching, errors | 405 GET, 403 untrusted origin, 415 wrong content type, 405 and no CORS headers for another origin's preflight, 204 with `Access-Control-Allow-Origin: capacitor://localhost` for the app, `Cache-Control: no-store`, generic JSON errors. Site: CSP, HSTS, COOP, frame, nosniff, referrer and permissions policies |
+| Public events load | 79 events returned to an anonymous client; `feedback`, `rate_limits`, `profiles` and the backup schema are unreadable |
+| `RATE_LIMIT_SALT` | Set as a Sensitive variable for Production and Preview, never displayed |
+| Dependencies | `npm audit`: 0 vulnerabilities (with and without `--omit=dev`); `uuid` pinned to 11.1.1 through `overrides`; `npm ci --dry-run` resolves |
+| GitHub | Dependabot alerts enabled (204), secret scanning and push protection enabled, 0 open alerts of either kind |
+| Secrets in git | All branches' added lines scanned for JWTs, Resend keys, `sb_secret_` keys, private keys, AWS and GitHub tokens: no matches. No `.env`, key or provisioning files tracked. Contents were not displayed. |
+| Native project on Windows | `node scripts/buildNative.mjs` builds the bundle and `cap sync ios` finds all 8 plugins and leaves the git tree clean. The synced app has no CSP (off by default) |
+| Automated tests and build | 6,482 tests pass, production build passes |
 
-### Fixed in code, waiting for a device or a decision
+**S2. Legacy Supabase accounts (reviewed, nothing deleted).**
 
-| Item | What is left |
+- **Facts:** 4 email accounts, all confirmed, created 2026-07-23 or later, last sign-in 2026-07-31, no phone numbers, one provider (`email`), each with user metadata, 4 profile rows (role `student`) linked one to one, and 1 live session with 167 refresh tokens.
+- **The app does not depend on them:** no code reads `auth` or `profiles`; the Supabase client no longer stores sessions; no function, view, trigger or realtime publication uses them; `grep` finds no reference to the Edge Functions that were deleted.
+- **Access:** anonymous clients and a signed-in user who owns none of the rows both get "permission denied" on `profiles`, and no client role has any privilege on it. The schema `security_backup_20261030` (a copy of events, feedback and profiles made before the first hardening) is not exposed through the API (`PGRST106`) and neither client role has USAGE on it.
+- **Would deleting them help?** A little, and only as data minimization. The accounts hold email addresses (in `auth.users`) and names, schools and cities (in `profiles`) of students who may be minors, and nothing needs them. Deleting reduces what exists to leak through a future mistake, a dashboard or backup exposure, or a legal request, and it removes the live session and tokens. It does not fix any current vulnerability. It would not remove the copy in `security_backup_20261030` or in Supabase's own backups, so a full removal also means dropping that schema and waiting for backups to age out. It cannot be undone. If you decide to delete, export the data first and do it from Authentication > Users (this removes the matching `profiles` rows), then drop the backup schema. Nothing was deleted.
+
+### Awaiting native iOS testing
+
+| Item | Needs |
 |---|---|
-| Native CSP | Built and tested, off by default. Turn it on after the device check in `docs/IOS_BUILD.md` |
-| iOS settings | Locked by tests (no ATS exceptions, no URL schemes, no permissions, no remote server, no credentials). Real-device behaviour still unverified |
+| Native CSP (built, tested, off by default) | The "Native CSP check" in `docs/IOS_BUILD.md` on a TestFlight build, then set `NATIVE_CSP=1` |
+| Compile, signing and App Review behaviour of the whole iOS app, external-link sheet, local notifications, `.ics` share sheet, keyboard, safe areas, offline launch | First Codemagic run and a real iPhone. Nothing has been compiled or run on macOS or iOS |
 
-### Needs you
+### Requires your Apple Developer account
 
-1. **Supabase: turn off sign-ups.** Dashboard > Authentication > Sign In / Providers > Email > turn off **Allow new users to sign up** (or Authentication > Settings > "Allow new users to sign up"). If you ever turn sign-ups back on, also require email confirmation (it currently auto-confirms). The tools used here could not change Auth settings. Verify afterwards with `curl -s "$VITE_SUPABASE_URL/auth/v1/settings" -H "apikey: $VITE_SUPABASE_ANON_KEY"` and look for `"disable_signup":true`.
-2. **Decide what to do with the 4 legacy accounts** (Authentication > Users, and the `profiles` rows). They are untouched and now unreadable from the public API. Delete them only if you are sure; this was not done.
-3. **Codemagic and Apple:** on the first TestFlight build, do the "Native CSP check" in `docs/IOS_BUILD.md` and then set `NATIVE_CSP=1` in the Codemagic variable group (or make it the default in `scripts/buildNative.mjs`).
-4. **Vercel:** nothing required. Optional: add `RATE_LIMIT_SALT` rotation to your calendar. Rotating it only resets the rate-limit buckets.
-5. **GitHub:** nothing required. Optional: turn on "Dependabot security updates" (Settings > Code security) if you want automatic fix pull requests; it was left off because it creates pull requests on its own.
-6. **Your computer:** the C: drive had 0 GB free during this work, which breaks `npm`. A folder `D:\tmp_tsa` (temporary files and an npm cache) was created to work around it and can be deleted.
+Enrolment, registering the Bundle ID, the App Store Connect app record and API key, the Codemagic integration named `TSA Hub App Store Connect`, running the `iOS TestFlight` workflow, screenshots, and submission. The unsigned `iOS compile check` workflow does not need an account.
+
+### Requires dashboard access
+
+1. **Supabase: turn off sign-ups** (exact steps in the final message and below).
+2. **Supabase: decide about the legacy accounts** (S2).
+3. **Optional, Supabase:** enable leaked-password protection (only matters if sign-ups stay on) and move `pg_net` out of the public schema.
+4. **Optional, GitHub:** Dependabot security updates (automatic fix pull requests).
+5. **Optional, Vercel:** nothing required.
+
+Turn-off steps: Supabase Dashboard > project `TSA Portal` > Authentication > Sign In / Providers > Email > switch off **Allow new users to sign up** > Save. Then check: `curl -s "$VITE_SUPABASE_URL/auth/v1/settings" -H "apikey: $VITE_SUPABASE_ANON_KEY"` should show `"disable_signup":true`. If it is on, an unauthenticated request to `/auth/v1/signup` is refused (do not test this by creating an account).
+
+### Optional improvements that can wait
+
+- Delete the legacy accounts and the backup schema (S2).
+- Delete the test rows in `feedback` that begin with "TEST", including the two added on 2026-11-15.
+- A retention rule for `feedback`.
+- HSTS `preload`, tightening `style-src 'unsafe-inline'`, an ESLint config, an unused-dependency check.
+- Universal Links (needs an Associated Domains entitlement).
 
 ## 13. Accepted risks and remaining limitations
 
 - Anyone can send feedback up to the limits. The global cap (120 per hour) can be exhausted by an attacker with many addresses, blocking feedback for everyone for up to an hour.
 - Origin and Host checks do not stop scripted clients; the rate limits are the real control.
-- Feedback and reports may contain personal information typed by users, are stored until you delete them, and are emailed to the maintainer. 13 feedback and 2 report rows exist and were left untouched.
+- Feedback and reports may contain personal information typed by users, are stored until you delete them, and are emailed to the maintainer. 15 earlier rows and 2 test rows from 2026-11-15 exist and were left untouched.
 - Hosting providers see IP addresses in their own logs.
 - `style-src 'unsafe-inline'` (React inline styles). HSTS has no `preload` (permanent, so left to you).
 - Future tables in the `public` schema get default grants to `anon` and `authenticated` (Supabase default). Enable RLS and review grants on every new table.
 - Preview deployments use the per-instance fallback limiter if the shared one errors, and have no service key, so they cannot write feedback.
-- The Vercel IP-header behaviour is confirmed by Vercel's documentation and by the production test above, not by reading Vercel's source.
-- Nothing was run on macOS or iOS. Request smuggling and HTTP/2 abuse are Vercel's to defend.
+- Vercel's IP-header behaviour is confirmed by its documentation and by the production test, not by reading its source. Request smuggling and HTTP/2 abuse are Vercel's to defend.
+- Nothing was run on macOS or iOS.
