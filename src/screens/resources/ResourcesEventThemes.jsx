@@ -84,6 +84,7 @@ export default function ResourcesEventThemes() {
                     className="rs-search-input"
                     placeholder="Search events by name"
                     value={query}
+                    maxLength={200}
                     onChange={(e) => setQuery(e.target.value)}
                     aria-label="Search Event Guide by event name"
                 />

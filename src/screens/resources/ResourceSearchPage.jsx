@@ -76,6 +76,7 @@ export default function ResourceSearch() {
                     className="rs-search-input"
                     placeholder="Search resources"
                     value={query}
+                    maxLength={200}
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') addRecent(query); }}
                     aria-label="Search resources"

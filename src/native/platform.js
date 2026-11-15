@@ -17,9 +17,15 @@ export function isExternalUrl(href) {
 }
 
 // Deep links (universal links or the app's own scheme) -> an in-app route.
+// Only a single-slash path is returned, so a crafted link such as
+// "scheme://x//evil.example" or "/\\evil.example" can never become a
+// protocol-relative address or leave the app.
 export function routeFromAppUrl(href) {
     try {
         const url = new URL(href);
-        return `${url.pathname}${url.search}${url.hash}` || '/';
+        const path = url.pathname || '/';
+        if (!path.startsWith('/') || path.startsWith('//') || path.includes('\\')) return null;
+        if (/[\u0000-\u001f\u007f]/.test(path)) return null;
+        return `${path}${url.search}${url.hash}`;
     } catch { return null; }
 }

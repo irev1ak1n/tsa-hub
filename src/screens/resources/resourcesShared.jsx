@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Icon } from '../../components/UI.jsx';
 import { STATE_DIRECTORY_URL, US_STATES } from '../../data/stateTsa.js';
+import { isSafeSvgFragment } from '../../utils/safeUrl.js';
 
 export { STATE_DIRECTORY_URL };
 
@@ -39,7 +40,9 @@ export function RowIcon({ node, icon, img, svg, color, mono }) {
             </span>
         );
     }
-    if (svg) {
+    // Only a vetted fragment is ever injected; anything else falls through to the
+    // named icon below.
+    if (svg && isSafeSvgFragment(svg)) {
         return (
             <span className="rs-ico">
                 <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"

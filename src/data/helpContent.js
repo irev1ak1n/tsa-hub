@@ -416,7 +416,7 @@ function buildIndex() {
 
 let cachedIndex = null;
 export function searchHelp(query) {
-    const q = normalize(query);
+    const q = normalize(String(query || '').slice(0, 200));
     if (!q) return [];
     if (!cachedIndex) cachedIndex = buildIndex();
     return cachedIndex.filter((row) => row.haystack.includes(q));

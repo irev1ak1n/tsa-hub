@@ -11,9 +11,12 @@ if (!url || !key) {
   );
 }
 
+// The app has no accounts, so no session is ever created, stored or refreshed,
+// and nothing is read from the URL. This keeps tokens out of localStorage.
 export const supabase = createClient(url, key, {
   auth: {
-    persistSession: true,
-    autoRefreshToken: true,
+    persistSession: false,
+    autoRefreshToken: false,
+    detectSessionInUrl: false,
   },
 });

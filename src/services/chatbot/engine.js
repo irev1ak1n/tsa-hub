@@ -270,6 +270,8 @@ const TOPIC_WORD_HINTS = [
     [/\bsubmissions?\b/, (name) => `${name}'s submission details`],
 ];
 
+const MAX_INPUT_CHARS = 500;
+
 /**
  * Process one message against a conversation state.
  * Returns { response, state } where response = { text, domain, intent,
@@ -279,7 +281,9 @@ export function processMessage(input, prevState) {
     let state = prevState ? { ...prevState } : createState();
     state.turn = (state.turn || 0) + 1;
 
-    const text = String(input || '').trim();
+    // Cap the length so a pasted wall of text cannot make every keystroke or
+    // message expensive. Real questions are far shorter than this.
+    const text = String(input || '').trim().slice(0, MAX_INPUT_CHARS);
     if (!text) return { response: reply('Ask me anything about TSA events, rules, or deadlines.'), state };
 
     const norm = normalize(text);

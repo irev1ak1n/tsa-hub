@@ -1,5 +1,7 @@
 # TSA Hub security notes and deployment runbook
 
+See `docs/SECURITY_AUDIT.md` for the latest full audit (2026-11-15), its findings and the manual steps.
+
 ## Architecture
 
 - Browser: `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` only. The anon key is public by design; RLS limits it to reading published events.

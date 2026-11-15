@@ -288,7 +288,7 @@ export function scoreResource(item, tokens, { stateName = null } = {}) {
 // returns matching resources sorted by relevance (ties keep index order —
 // i.e. the Resources page's own natural section order).
 export function searchResources(index, rawQuery) {
-    const q = String(rawQuery || '').trim().toLowerCase();
+    const q = String(rawQuery || '').slice(0, 200).trim().toLowerCase();
     if (!q) return [];
 
     // Punctuation-stripped the same way haystack words are, so "D.C." finds

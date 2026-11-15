@@ -7,6 +7,7 @@ import { REMINDER_OPTIONS, defaultReminder, normalizeReminder, reminderLabel } f
 import { getPermissionStatus, isSupported as notificationsSupported, requestPermission } from '../../services/notificationService.js';
 import { isNativeApp } from '../../native/platform.js';
 import { addEvent as addToDeviceCalendar } from '../../services/deviceCalendarService.js';
+import { safeHttpUrl } from '../../utils/safeUrl.js';
 
 const WEEKDAYS_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -167,12 +168,12 @@ export function ItemDetailsModal({ item, onClose, onEdit, onDelete, onToggleComp
                         </div>
                     )}
 
-                    {item.kind === 'official' && item.sourceUrl && (() => {
+                    {item.kind === 'official' && safeHttpUrl(item.sourceUrl) && (() => {
                         const provider = item.raw?.source?.provider || 'National TSA';
                         return (
                             <div className="rec-modal-section">
                                 <div className="rec-modal-section-title">Official Resources</div>
-                                <a href={item.sourceUrl} target="_blank" rel="noreferrer" className="eth-resource-row">
+                                <a href={safeHttpUrl(item.sourceUrl)} target="_blank" rel="noreferrer" className="eth-resource-row">
                                     <span className="eth-resource-ico"><Icon name="external-link" size={14} /></span>
                                     <span className="eth-resource-text">
                                         <span className="eth-resource-title">{`View on ${provider}`}</span>

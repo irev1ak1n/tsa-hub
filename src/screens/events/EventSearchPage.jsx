@@ -55,6 +55,7 @@ export default function EventSearchPage() {
                         className="ev-search-input"
                         placeholder="Search TSA events..."
                         value={query}
+                        maxLength={200}
                         onChange={(e) => setQuery(e.target.value)}
                         onBlur={() => addRecent(query)}
                         aria-label="Search TSA events"

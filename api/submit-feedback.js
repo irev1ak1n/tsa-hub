@@ -12,7 +12,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import {
-    sha256, getClientIp, setApiHeaders, isTrustedOrigin, applyNativeCors, isJsonRequest, parseBody, getServiceClient, allowRequest, releaseRequest, isProduction, LimiterUnavailableError,
+    keyedHash, getClientIp, setApiHeaders, isTrustedOrigin, applyNativeCors, isJsonRequest, parseBody, getServiceClient, allowRequest, releaseRequest, isProduction, LimiterUnavailableError,
 } from './_lib/security.js';
 
 export const config = { api: { bodyParser: { sizeLimit: '32kb' } } };
@@ -45,10 +45,23 @@ function getWriteClient(serviceClient) {
     return url && anonKey ? createClient(url, anonKey, { auth: { persistSession: false } }) : null;
 }
 
+const LONE_SURROGATE = /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g;
+
+// Only a plain in-app path is accepted as the page. The value goes into a
+// notification email, so anything else (a URL, markup, whitespace) is dropped.
+const SAFE_PAGE = /^\/[A-Za-z0-9\-._~!$&'()*+,;=:@%/]*$/;
+function sanitizePage(value) {
+    const page = clampString(value, MAX_PAGE_LENGTH);
+    return page && SAFE_PAGE.test(page) ? page : null;
+}
+
 function clampString(value, maxLength) {
     if (typeof value !== 'string') return '';
     // eslint-disable-next-line no-control-regex
-    const trimmed = value.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '').trim();
+    const cleaned = value.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '');
+    // JSON allows unpaired surrogates (\ud800) but Postgres rejects them, which
+    // would turn a bad request into a 500 after the limiter was already charged.
+    const trimmed = cleaned.replace(LONE_SURROGATE, '�').trim();
     return trimmed.length > maxLength ? trimmed.slice(0, maxLength) : trimmed;
 }
 
@@ -56,7 +69,7 @@ function validatePayload(body) {
     const type = ['report', 'feedback'].includes(body?.type) ? body.type : null;
     if (!type) return { error: 'type must be "feedback" or "report"' };
 
-    const page = clampString(body?.page, MAX_PAGE_LENGTH) || null;
+    const page = sanitizePage(body?.page);
 
     const message = clampString(body?.message, MAX_MESSAGE_LENGTH);
     if (!message) return { error: 'message is required' };
@@ -145,7 +158,7 @@ async function handle(req, res) {
         return res.status(503).json({ ok: false, error: 'service temporarily unavailable' });
     }
 
-    if (!(await allowRequest(serviceClient, `feedback:ip:${sha256(getClientIp(req))}`, IP_LIMIT.max, IP_LIMIT.windowSeconds))) {
+    if (!(await allowRequest(serviceClient, `feedback:ip:${keyedHash(getClientIp(req))}`, IP_LIMIT.max, IP_LIMIT.windowSeconds))) {
         return res.status(429).json({ ok: false, error: 'too many submissions, please try again later' });
     }
 
@@ -160,7 +173,7 @@ async function handle(req, res) {
     }
 
     // Identical resubmissions (double taps, replays) are acknowledged once.
-    const dedupeKey = `feedback:dup:${sha256(`${value.type}
+    const dedupeKey = `feedback:dup:${keyedHash(`${value.type}
 ${value.message}`)}`;
     if (!(await allowRequest(serviceClient, dedupeKey, 1, DUPLICATE_WINDOW_SECONDS))) {
         return res.status(200).json({ ok: true });

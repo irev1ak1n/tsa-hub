@@ -54,6 +54,7 @@ export default function Help() {
                     className="rs-search-input"
                     placeholder="Search help topics"
                     value={query}
+                    maxLength={200}
                     onChange={(e) => setQuery(e.target.value)}
                     aria-label="Search help topics"
                 />

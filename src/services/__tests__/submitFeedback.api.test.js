@@ -20,7 +20,7 @@ function makeReq({ method = 'POST', body, headers = {}, ip = nextIp() } = {}) {
             host: 'tsa-hub.example',
             origin: 'https://tsa-hub.example',
             'content-type': 'application/json',
-            'x-forwarded-for': ip,
+            'x-vercel-forwarded-for': ip,
             ...headers,
         },
     };
@@ -48,6 +48,7 @@ beforeEach(() => {
     vi.stubEnv('VITE_SUPABASE_ANON_KEY', 'anon-key');
     vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY', '');
     vi.stubEnv('VERCEL_ENV', '');
+    vi.stubEnv('VERCEL', '1');
     vi.stubEnv('RESEND_API_KEY', 'resend-key');
     vi.stubEnv('FEEDBACK_TO_EMAIL', 'owner@example.com');
     insert.mockReset().mockResolvedValue({ error: null });
@@ -295,3 +296,108 @@ describe('production failure modes', () => {
         expect(res.statusCode).toBe(503);
     });
 });
+
+describe('rate limits cannot be bypassed with forged IPs', () => {
+    it('a client-supplied X-Forwarded-For does not create a fresh bucket', async () => {
+        const real = nextIp();
+        const statuses = [];
+        for (let i = 0; i < 10; i += 1) {
+            statuses.push((await call({
+                ip: real,
+                headers: { 'x-forwarded-for': `198.18.0.${i}, ${real}` },
+                body: { type: 'feedback', message: `spoof attempt ${i}` },
+            })).statusCode);
+        }
+        expect(statuses.slice(8)).toEqual([429, 429]);
+    });
+
+    it('requests from one IPv6 /64 share a bucket', async () => {
+        const statuses = [];
+        for (let i = 0; i < 10; i += 1) {
+            statuses.push((await call({ ip: `2001:db8:55:66:${i}::${i + 1}`, body: { type: 'feedback', message: `v6 rotation ${i}` } })).statusCode);
+        }
+        expect(statuses.slice(8)).toEqual([429, 429]);
+    });
+
+    it('malformed bodies still count against the IP limit', async () => {
+        const ip = nextIp();
+        const statuses = [];
+        for (let i = 0; i < 10; i += 1) statuses.push((await call({ ip, body: { type: 'nope' } })).statusCode);
+        expect(statuses.slice(0, 8).every((s) => s === 400)).toBe(true);
+        expect(statuses.slice(8)).toEqual([429, 429]);
+    });
+
+    it('concurrent requests cannot exceed the limit', async () => {
+        const ip = nextIp();
+        const results = await Promise.all(Array.from({ length: 30 }, (_, i) => call({ ip, body: { type: 'feedback', message: `parallel ${i}` } })));
+        expect(results.filter((r) => r.statusCode === 200)).toHaveLength(8);
+        expect(results.filter((r) => r.statusCode === 429)).toHaveLength(22);
+        expect(insert).toHaveBeenCalledTimes(8);
+    });
+});
+
+describe('malformed and hostile input', () => {
+    it('replaces unpaired surrogates so the database insert cannot fail', async () => {
+        const res = await call({ body: { type: 'feedback', message: 'bad \ud800 pair \udc00 ok 😀' } });
+        expect(res.statusCode).toBe(200);
+        const stored = insert.mock.calls[0][0].message;
+        expect(stored).toBe('bad � pair � ok 😀');
+        expect(() => encodeURIComponent(stored)).not.toThrow();
+    });
+
+    it.each([
+        [null],
+        [[]],
+        [['feedback']],
+        ['{"type":"feedback"'],
+        [42],
+        ['not json'],
+    ])('rejects a non-object or unparsable body %j without crashing', async (body) => {
+        const res = await call({ body });
+        expect(res.statusCode).toBe(400);
+        expect(insert).not.toHaveBeenCalled();
+    });
+
+    it('ignores unexpected and nested fields and never stores them', async () => {
+        const res = await call({ body: { type: 'feedback', message: 'hi', __proto__: { admin: true }, constructor: { x: 1 }, extra: { deep: { deeper: [1, 2, 3] } }, role: 'admin' } });
+        expect(res.statusCode).toBe(200);
+        expect(insert).toHaveBeenCalledWith({ message: 'hi', type: 'feedback' });
+        expect({}.admin).toBeUndefined();
+    });
+
+    it('rejects non-string field types instead of coercing them', async () => {
+        for (const body of [{ type: ['feedback'], message: 'x' }, { type: 'feedback', message: { a: 1 } }, { type: 'feedback', message: 12345 }]) {
+            expect((await call({ body })).statusCode).toBe(400);
+        }
+        expect(insert).not.toHaveBeenCalled();
+    });
+
+    it('only keeps a plain in-app path as the page used in the email', async () => {
+        await call({ body: { type: 'feedback', message: 'a', page: '/events/robotics' } });
+        await call({ body: { type: 'feedback', message: 'b', page: 'https://evil.example/\nBcc: x@evil.example' } });
+        await call({ body: { type: 'feedback', message: 'c', page: '/ok\r\nSubject: spoof' } });
+        const bodies = emailFetch.mock.calls.map(([, init]) => JSON.parse(init.body));
+        expect(bodies[0].text).toContain('Page/source: /events/robotics');
+        expect(bodies[1].text).not.toContain('Page/source');
+        expect(bodies[2].text).not.toContain('Page/source');
+        for (const b of bodies) {
+            expect(b.subject).toBe('TSA Hub - New Feedback');
+            expect(b.to).toBe('owner@example.com');
+        }
+    });
+
+    it('sends the message only as plain text, never as HTML', async () => {
+        await call({ body: { type: 'feedback', message: '<img src=x onerror=alert(1)><script>alert(1)</script>' } });
+        const payload = JSON.parse(emailFetch.mock.calls[0][1].body);
+        expect(payload.html).toBeUndefined();
+        expect(typeof payload.text).toBe('string');
+    });
+
+    it('returns only a generic error when the email provider or database misbehaves', async () => {
+        insert.mockRejectedValueOnce(new Error('connect ECONNREFUSED 10.1.2.3:5432 password=hunter2'));
+        const res = await call({ body: { type: 'feedback', message: 'boom' } });
+        expect(res.statusCode).toBe(500);
+        expect(JSON.stringify(res.body)).toBe('{"ok":false,"error":"server error"}');
+    });
+});
+
