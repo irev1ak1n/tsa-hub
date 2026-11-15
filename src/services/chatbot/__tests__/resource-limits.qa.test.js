@@ -30,6 +30,9 @@ function timed(fn) {
 }
 
 describe('Coach engine with hostile input', () => {
+    // Warm up lazy initialisation so the first timed case measures the input, not setup.
+    it('warms up', () => { ask('hello'); });
+
     for (const [name, text] of Object.entries(HOSTILE)) {
         it(`${name} (${text.length} chars) is answered quickly`, () => {
             let result;
