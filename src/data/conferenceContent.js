@@ -25,7 +25,7 @@ export const CONFERENCE_CONTENT = {
                     { label: 'Shirt', text: 'Official royal blue TSA shirt.' },
                     {
                         label: 'Pants or Skirt',
-                        text: 'Gray or black pants, or a gray or black skirt that is at least knee length. Starting June 25, 2028, only black will be allowed.',
+                        text: 'Gray or black pants, or a gray or black skirt that is at least knee length, until June 24, 2028. Only black is allowed beginning June 25, 2028.',
                         notAllowed: ['jeans', 'jeggings', 'leggings', 'baggy pants', 'pants with exterior pockets', 'shorts'],
                     },
                     {
@@ -71,6 +71,12 @@ export const CONFERENCE_CONTENT = {
                 ],
             },
             {
+                heading: 'TEAMS Attire',
+                paragraphs: [
+                    'TEAMS (Tests of Engineering Aptitude, Mathematics, and Science) participants must follow TSA competition attire for competition and stage appearances by June 25, 2028.',
+                ],
+            },
+            {
                 heading: 'Casual Attire',
                 paragraphs: [
                     'Appropriate T-shirts, shorts, and jeans may be worn during casual conference activities. Casual attire may not be worn during competitions or general sessions.',
@@ -80,7 +86,13 @@ export const CONFERENCE_CONTENT = {
                 heading: 'Parents, Guests, and Children',
                 paragraphs: [
                     'Registered parents, guests, and children should wear appropriate general-session attire when attending sessions or the Awards Ceremony.',
-                    'Those who do not meet the General Session Attire requirements may be placed in a designated seating area or may not be permitted to enter.',
+                    'Those who do not meet the General Session Attire requirements and want to attend the Awards Ceremony may be asked to sit in a designated section if they are permitted to enter.',
+                ],
+            },
+            {
+                heading: 'Updated Dress Code',
+                paragraphs: [
+                    'This version was approved by the TSA, Inc. Board of Directors. It replaces any dress code guidance from before September 19, 2026, including older competitive event guides and member guides.',
                 ],
             },
             {
