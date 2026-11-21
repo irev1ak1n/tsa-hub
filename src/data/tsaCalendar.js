@@ -3294,6 +3294,21 @@ export const CALENDAR_EVENTS = [
         }
     },
     {
+        "id": "manual-2027-student-leadership-week",
+        "title": "National Student Leadership Week",
+        "startDate": "2027-04-19",
+        "endDate": "2027-04-23",
+        "allDay": true,
+        "category": "important-date",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/docs/default-source/default-document-library/2026-2027-important-dates-and-deadlines.pdf",
+            "sourceType": "event-page"
+        }
+    },
+    {
         "id": "20fb101b-a923-4894-af2d-80e68a588475:2027-05-01",
         "title": "National TSA awards, recognitions, and scholarships deadline",
         "startDate": "2027-05-01",
@@ -3320,6 +3335,21 @@ export const CALENDAR_EVENTS = [
         "source": {
             "provider": "National TSA",
             "url": "https://tsaweb.org/conferences/2027-national-tsa-conference/dates-and-deadlines_2027",
+            "sourceType": "event-page"
+        }
+    },
+    {
+        "id": "manual-2027-officer-candidate-applications",
+        "title": "National TSA Officer Candidate applications due to National TSA",
+        "startDate": "2027-05-07",
+        "endDate": "2027-05-07",
+        "allDay": true,
+        "category": "event",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/docs/default-source/default-document-library/2026-2027-important-dates-and-deadlines.pdf",
             "sourceType": "event-page"
         }
     },
@@ -3456,6 +3486,21 @@ export const CALENDAR_EVENTS = [
             "provider": "National TSA",
             "url": "https://tsaweb.org/events/2027/06/23/default-calendar/2025-national-tsa-conference",
             "sourceType": "calendar"
+        }
+    },
+    {
+        "id": "manual-2027-affiliation-opens",
+        "title": "TSA Chapter Affiliation opens for the 2027-2028 school year",
+        "startDate": "2027-08-16",
+        "endDate": "2027-08-16",
+        "allDay": true,
+        "category": "important-date",
+        "description": "",
+        "location": "",
+        "source": {
+            "provider": "National TSA",
+            "url": "https://tsaweb.org/docs/default-source/default-document-library/2026-2027-important-dates-and-deadlines.pdf",
+            "sourceType": "event-page"
         }
     },
     {
